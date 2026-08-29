@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사이드실 용접 검사구 H값 최적화 디지털 트윈 시뮬레이터</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#082f49',
+              cyber: '#00f2fe',
+              neon: '#4facfe',
+            },
+            dark: {
+              950: '#07090e',
+              900: '#0b0f19',
+              850: '#111726',
+              800: '#161f33',
+              750: '#1e2942',
+              700: '#283654'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'laser-scan': 'laserScan 2s ease-in-out infinite',
+            'glow-pulse': 'glowPulse 2s infinite alternate',
+          },
+          keyframes: {
+            laserScan: {
+              '0%, 100%': { opacity: '0.3', transform: 'scaleY(0.95)' },
+              '50%': { opacity: '1', transform: 'scaleY(1.05)' },
+            },
+            glowPulse: {
+              '0%': { filter: 'drop-shadow(0 0 2px rgba(32, 224, 128, 0.4))' },
+              '100%': { filter: 'drop-shadow(0 0 8px rgba(32, 224, 128, 0.9))' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- KaTeX for Math rendering in Modal -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #07090e;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-thumb { background: #1e2942; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #283654; }
+
+    .cyber-card {
+      background: linear-gradient(135deg, rgba(17, 23, 38, 0.85) 0%, rgba(11, 15, 25, 0.95) 100%);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(40, 54, 84, 0.6);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .cyber-glow {
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+    }
+
+    .gauge-needle {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+
+  <!-- ================= HEADER ================= -->
+  <header class="border-b border-dark-750 bg-dark-900/90 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <!-- Title & Branding -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+              사이드실 용접 검사구 H값 최적화 디지털 트윈
+            </h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800">
+              v2.5 PRO
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            차체 용접 열변형 공차 보정 및 최적 심(Shim) 라이너 탐색 시뮬레이션
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Synthetic Data Badge -->
+        <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800/60 text-amber-300 text-xs">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>물리 기반 합성 데이터 모델링</span>
+        </div>
+
+        <!-- Sound Toggle -->
+        <button id="soundToggleBtn" onclick="toggleSound()" class="p-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 transition-colors" title="사운드 ON/OFF">
+          <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
+        </button>
+
+        <!-- Guide & Formula Modal Trigger -->
+        <button onclick="openModal('guideModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 border border-cyan-900/60 text-cyan-300 text-xs font-medium transition-all shadow-sm hover:border-cyan-500">
+          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
+          <span class="hidden sm:inline">공정 수식 & 모델 명세</span>
+        </button>
+
+        <!-- GitHub Info Modal Trigger -->
+        <button onclick="openModal('repoModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold shadow-md transition-all">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">배포 & 깃허브</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-5">
+    
+    <!-- Top Summary Banner -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="cyber-card rounded-xl p-3.5 flex items-center space-x-3">
+        <div class="p-2.5 rounded-lg bg-cyan-950/80 border border-cyan-800/80 text-cyan-400">
+          <i data-lucide="target" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">목표 H값 (Target)</div>
+          <div class="text-base sm:text-lg font-bold text-white font-mono">10.0 <span class="text-xs text-slate-400">mm</span></div>
+        </div>
+      </div>
+
+      <div class="cyber-card rounded-xl p-3.5 flex items-center space-x-3">
+        <div class="p-2.5 rounded-lg bg-blue-950/80 border border-blue-800/80 text-blue-400">
+          <i data-lucide="sliders" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">허용 공차 (Tolerance)</div>
+          <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono">± 5.0 <span class="text-xs text-slate-400">mm</span> <span class="text-xs font-normal text-slate-500">(5.0~15.0)</span></div>
+        </div>
+      </div>
+
+      <div class="cyber-card rounded-xl p-3.5 flex items-center space-x-3">
+        <div class="p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-400">
+          <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">공정 수율 (Yield)</div>
+          <div id="yieldStat" class="text-base sm:text-lg font-bold text-emerald-400 font-mono">- %</div>
+        </div>
+      </div>
+
+      <div class="cyber-card rounded-xl p-3.5 flex items-center space-x-3">
+        <div class="p-2.5 rounded-lg bg-indigo-950/80 border border-indigo-800/80 text-indigo-400">
+          <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">공정능력지수 (Cpk)</div>
+          <div id="cpkStat" class="text-base sm:text-lg font-bold text-indigo-300 font-mono">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Interactive Area: Twin Canvas + Shim Control Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- [LEFT] 2D Digital Twin & Sensor Dashboard (7 Cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        <!-- SVG Digital Twin Visualizer Card -->
+        <div class="cyber-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3 border-b border-dark-750 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <h2 class="text-xs sm:text-sm font-bold tracking-wider text-slate-200 uppercase">
+                사이드실 & 검사구 디지털 트윈 실시간 계측
+              </h2>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">Real-Time Inspection Model</span>
+          </div>
+
+          <!-- Dynamic SVG Canvas -->
+          <div class="w-full bg-dark-950/90 rounded-xl p-2 border border-dark-800 relative">
+            <svg id="twinSvg" class="w-full h-auto max-h-[290px]" viewBox="0 0 600 290" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rendered via JS dynamically -->
+            </svg>
+            <div class="absolute bottom-2 left-3 text-[10px] text-slate-500 font-mono flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span> 합격(OK: 5.0~15.0mm)
+              <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span> 규격 이탈(NG)
+            </div>
+          </div>
+
+          <!-- Simulation Execution Controls -->
+          <div class="mt-4 flex flex-wrap gap-2.5 items-center">
+            <button id="runBtn" onclick="runSimulation(5)" class="flex-1 min-w-[170px] py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-cyan-900/30 transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>공정 실행 (5회 생산 런)</span>
+            </button>
+
+            <button onclick="runAutoTuning()" class="py-2.5 px-3.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]" title="목표 H값에 근접하도록 라이너 자동 튜닝 탐색">
+              <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+              <span>AI 자동 최적화 탐색</span>
+            </button>
+
+            <button onclick="resetAll()" class="py-2.5 px-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-400 hover:text-slate-200 text-xs transition-colors" title="설정 초기화">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time SPC Trend Chart -->
+        <div class="cyber-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wide">
+                생산 런별 H값 산포 트렌드 모니터링 (SPC)
+              </h3>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">Target: 10.0mm [5~15mm]</span>
+          </div>
+          <div class="h-44 sm:h-48 w-full">
+            <canvas id="spcChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- [RIGHT] Shim/Liner Controls & Process Settings (5 Cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        
+        <!-- Hole Shim Controllers -->
+        <div class="cyber-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-3 border-b border-dark-750 pb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+              <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+                홀별 라이너(Shim) 개수 설정
+              </h2>
+            </div>
+            <span class="text-[11px] text-cyan-400 font-mono bg-cyan-950/70 px-2 py-0.5 rounded border border-cyan-900">
+              비례 증가 모드
+            </span>
+          </div>
+
+          <p class="text-[11px] text-slate-400 mb-3 leading-relaxed">
+            라이너 개수를 추가할수록 검사구 접촉 높이(H값)가 <span class="text-cyan-300 font-semibold">비례하여 증가</span>합니다. 각 홀마다 최적 조합을 튜닝하세요.
+          </p>
+
+          <!-- Dynamic 4 Holes List -->
+          <div id="holeControlsContainer" class="space-y-2.5">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Tip box -->
+          <div class="mt-3.5 p-2.5 rounded-xl bg-dark-900/80 border border-dark-750 text-[11px] text-slate-400 flex items-start gap-2">
+            <i data-lucide="info" class="w-4 h-4 text-cyan-400 shrink-0 mt-0.5"></i>
+            <div>
+              <span class="text-slate-300 font-semibold">최적화 가이드:</span>
+              기본 H값이 낮을 때(4mm대) 라이너를 약 8~11개 조절하여 목표 10.0mm ±5.0mm 중앙부에 안착시킵니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- Environmental Noise & Degradation Params -->
+        <div class="cyber-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-3 border-b border-dark-750 pb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+                용접 열변형 & 설비 열화 오차 설정
+              </h3>
+            </div>
+            <span class="text-[10px] text-amber-300 font-mono bg-amber-950/50 px-1.5 py-0.5 rounded border border-amber-900">
+              Synthetic Noise
+            </span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <!-- Thermal Distortion Slider -->
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>용접 열변형 표준편차 ($\sigma$)</span>
+                <span id="noiseThermalVal" class="font-mono text-cyan-400 font-bold">± 0.55 mm</span>
+              </div>
+              <input type="range" id="noiseThermalSlider" min="0.1" max="1.5" step="0.05" value="0.55" oninput="updateNoiseParam()" class="w-full accent-cyan-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+
+            <!-- JIG/Electrode Degradation Drift -->
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>지그 전극 마모/열화 드리프트</span>
+                <span id="noiseDegradeVal" class="font-mono text-amber-400 font-bold">보통 (Standard)</span>
+              </div>
+              <input type="range" id="noiseDegradeSlider" min="0" max="2" step="1" value="1" oninput="updateNoiseParam()" class="w-full accent-amber-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+
+            <!-- Outlier Spike Rate -->
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>순간 스패터 이상치(Outlier) 확률</span>
+                <span id="noiseSpikeVal" class="font-mono text-rose-400 font-bold">10 %</span>
+              </div>
+              <input type="range" id="noiseSpikeSlider" min="0" max="30" step="5" value="10" oninput="updateNoiseParam()" class="w-full accent-rose-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom History & Analytics Log Section -->
+    <div class="cyber-card rounded-2xl p-4 sm:p-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="history" class="w-4 h-4 text-cyan-400"></i>
+          <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+            생산 런 히스토리 및 통계 분석 로그
+          </h2>
+          <span id="bestTryBadge" class="hidden text-xs px-2.5 py-0.5 rounded-md bg-cyan-950 text-cyan-300 border border-cyan-700 font-medium"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportCSV()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-300 text-xs flex items-center gap-1">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>CSV 저장</span>
+          </button>
+          <button onclick="clearHistory()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>이력 삭제</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="historyLogContainer" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+        <div class="text-center py-8 text-slate-500 text-xs font-mono">
+          아직 생산 이력이 없습니다. 상단의 [공정 실행 (5회 생산 런)] 버튼을 클릭하여 시뮬레이션을 가동하세요.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-dark-750 bg-dark-900/60 py-4 mt-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div>
+        사이드실(Side-Sill) 용접 공정 H값 최적화 디지털 트윈 시뮬레이터
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Target: 10.0mm ± 5mm</span>
+        <span>•</span>
+        <span class="text-slate-400 font-mono">Synthetic Data Engine</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL 1: Math & Process Modeling Specs ================= -->
+  <div id="guideModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="cyber-card rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-cyan-800/80 p-6 space-y-5 text-slate-200">
+      <div class="flex items-center justify-between border-b border-dark-700 pb-3">
+        <div class="flex items-center gap-2 text-cyan-400">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+          <h2 class="text-base sm:text-lg font-bold text-white">용접 공정 수학/물리 모델링 및 노이즈 생성 명세</h2>
+        </div>
+        <button onclick="closeModal('guideModal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Warning Synthetic Notice -->
+      <div class="p-3.5 rounded-xl bg-amber-950/50 border border-amber-800/80 text-amber-200 text-xs flex items-start gap-2.5">
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+        <div>
+          <span class="font-bold text-amber-300">합성 데이터(Synthetic Simulation Data) 고지:</span>
+          본 시뮬레이터에서 연산되는 측정치는 차체 실측 계측기가 아닌, <strong>용접 열변형 특성 곡선 및 기구 공차, 열화 오차 모델을 모사한 수학적 합성 데이터</strong>입니다.
+        </div>
+      </div>
+
+      <!-- Section 1: Purpose -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+          <i data-lucide="target" class="w-4 h-4"></i> 1. 프로젝트 개발 목적 (Purpose)
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          자동차 차체 조립 공정 중 사이드실(Side-Sill) 용접 시 발생하는 열응력 변형 및 조립 누적 공차로 인해 검사구 기준 <strong>H값(단차/간극 측정치)</strong>의 산포가 발생합니다. 본 시스템은 각 홀 부위의 라이너(Shim Plate) 개수를 가감 조절하여 목표 기준치인 <strong>10.0mm (공차: 5.0 ~ 15.0mm)</strong> 내로 수렴시키는 공정 엔지니어링 최적화 디지털 트윈 시뮬레이터입니다.
+        </p>
+      </div>
+
+      <!-- Section 2: Mathematical Modeling & Formulas -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+          <i data-lucide="function-square" class="w-4 h-4"></i> 2. H값 비례 생성 함수 및 노이즈 수식 모델 (Formulas)
+        </h3>
+        
+        <div class="p-3 rounded-xl bg-dark-900 border border-dark-750 space-y-2 text-xs font-mono">
+          <p class="text-slate-300"><strong>[최종 계측 H값 산출식]</strong></p>
+          <p class="text-cyan-300 text-sm">
+            $$H_{\text{measured}}(i, n) = H_{\text{base}}(i, n) + \varepsilon_{\text{thermal}} + \Delta_{\text{degradation}} + \delta_{\text{spike}}$$
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-slate-400 text-[11px] pt-1">
+            <li><strong class="text-slate-200">\(H_{\text{base}}(i, n)\) (비례 기준 함수):</strong> 라이너 개수 \(n \in [0, 20]\)에 따라 \(3.8\text{mm} \to 21.2\text{mm}\)로 비례 증가하는 비선형 기준 테이블 (홀 A/B/C/D별 미세 공차 차이 반영)</li>
+            <li><strong class="text-slate-200">\(\varepsilon_{\text{thermal}}\) (용접 열변형 노이즈):</strong> Box-Muller 변환을 적용한 가우시안 정규분포 \(\mathcal{N}(0, \sigma_{\text{thermal}}^2)\) 난수 생성</li>
+            <li><strong class="text-slate-200">\(\Delta_{\text{degradation}}\) (설비 열화 드리프트):</strong> 연속 런 누적 시 전극 팁 마모 및 열팽창 누적 \(\alpha \cdot \ln(1 + N \cdot 0.05)\) 모델링</li>
+            <li><strong class="text-slate-200">\(\delta_{\text{spike}}\) (순간 스패터 이상치):</strong> 지정 확률(\(P=10\%\)) 발생 시 \(\pm 2.5\text{mm}\)의 급격한 이상 편차 발생</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 3: Visualization & Digital Twin -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+          <i data-lucide="eye" class="w-4 h-4"></i> 3. 시각화 및 분석 요소 (Visualization)
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
+          <div class="p-2.5 rounded-lg bg-dark-900/60 border border-dark-750">
+            <strong class="text-cyan-400">인터랙티브 2D 디지털 트윈:</strong><br/>
+            라이너 개수 증감에 따른 실제 심 플레이트 적층 애니메이션 및 검사구 프로브 레이저 측정 빔 연동.
+          </div>
+          <div class="p-2.5 rounded-lg bg-dark-900/60 border border-dark-750">
+            <strong class="text-cyan-400">SPC 공정능력지수 (Cpk):</strong><br/>
+            \(C_{pk} = \min\left(\frac{USL - \mu}{3\sigma}, \frac{\mu - LSL}{3\sigma}\right)\) 실시간 자동 연산 및 산포도 출력.
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Tech Stack -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i> 4. 기술 스택 (Tech Stack)
+        </h3>
+        <div class="flex flex-wrap gap-1.5 text-[11px] font-mono">
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">HTML5 Canvas & SVG</span>
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">Tailwind CSS (Dark Industrial)</span>
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">Chart.js (SPC Monitoring)</span>
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">Vanilla Modern ES6+</span>
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">Web Audio API (Haptic Audio)</span>
+          <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">Zero-Config GitHub Pages Ready</span>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-dark-700 flex justify-end">
+        <button onclick="closeModal('guideModal')" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs">
+          확인 완료
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 2: GitHub Repository & Deployment Guide ================= -->
+  <div id="repoModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="cyber-card rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto border border-blue-800/80 p-6 space-y-5 text-slate-200">
+      <div class="flex items-center justify-between border-b border-dark-700 pb-3">
+        <div class="flex items-center gap-2 text-cyan-400">
+          <i data-lucide="github" class="w-5 h-5"></i>
+          <h2 class="text-base sm:text-lg font-bold text-white">GitHub 레포지토리 네이밍 & 초간편 배포 가이드</h2>
+        </div>
+        <button onclick="closeModal('repoModal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Recommended Names -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider">추천 GitHub 레포지토리 이름</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+          <div class="p-2 rounded-lg bg-dark-900 border border-cyan-900 text-cyan-300 flex items-center justify-between">
+            <span>side-sill-welding-sim</span>
+            <span class="text-[10px] text-cyan-500">★ 추천 1</span>
+          </div>
+          <div class="p-2 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 flex items-center justify-between">
+            <span>welding-gauge-optimizer</span>
+            <span class="text-[10px] text-slate-500">추천 2</span>
+          </div>
+          <div class="p-2 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 flex items-center justify-between">
+            <span>smart-welding-digital-twin</span>
+            <span class="text-[10px] text-slate-500">추천 3</span>
+          </div>
+          <div class="p-2 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 flex items-center justify-between">
+            <span>h-value-liner-optimizer</span>
+            <span class="text-[10px] text-slate-500">추천 4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Deployment Steps -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider">터미널 Git 커밋 및 배포 명령어</h3>
+        <div class="p-3.5 rounded-xl bg-dark-950 border border-dark-750 font-mono text-xs text-cyan-300 space-y-1.5 overflow-x-auto">
+          <p class="text-slate-500"># 1. 로컬 저장소 초기화 및 첫 커밋</p>
+          <p>git init</p>
+          <p>git add .</p>
+          <p>git commit -m "feat: 사이드실 용접 검사구 H값 최적화 디지털 트윈 시뮬레이터 고도화"</p>
+          <p class="text-slate-500 pt-2"># 2. GitHub 원격 저장소 연결 및 푸시</p>
+          <p>git branch -M main</p>
+          <p>git remote add origin https://github.com/사용자아이디/side-sill-welding-sim.git</p>
+          <p>git push -u origin main</p>
+        </div>
+      </div>
+
+      <!-- GitHub Pages Deployment 1-Click -->
+      <div class="p-3 rounded-xl bg-dark-900 border border-dark-750 text-xs space-y-1">
+        <strong class="text-cyan-400">💡 GitHub Pages 무료 배포 활성화:</strong>
+        <p class="text-slate-400 leading-relaxed">
+          생성된 GitHub 레포지토리 상단의 <strong class="text-slate-200">Settings</strong> ➔ <strong class="text-slate-200">Pages</strong> ➔ Branch를 <strong class="text-slate-200">main</strong>으로 선택하고 Save를 누르면 <span class="text-cyan-300 font-mono">https://아이디.github.io/레포명</span> 으로 즉시 웹에 배포됩니다.
+        </p>
+      </div>
+
+      <div class="pt-3 border-t border-dark-700 flex justify-end">
+        <button onclick="closeModal('repoModal')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT SIMULATION CORE ================= -->
+  <script>
+    /* ============================================================
+     * CORE SIMULATION ENGINE & STATE
+     * ============================================================ */
+    const TARGET_H = 10.0;
+    const TOLERANCE = 5.0; // 5.0mm ~ 15.0mm
+    const USL = TARGET_H + TOLERANCE; // 15.0mm
+    const LSL = TARGET_H - TOLERANCE; // 5.0mm
+    const HOLE_NAMES = ['홀 A', '홀 B', '홀 C', '홀 D'];
+    
+    // 비례 경향 H값 테이블 (0개 ≈ 3.8~4.4mm -> 20개 ≈ 20.5~22.0mm)
+    // 최적 라이너 개수: 홀A=8개(10.1), 홀B=10개(9.9), 홀C=11개(10.2), 홀D=9개(10.0)
+    const HOLE_H_TABLE = [
+      // 홀 A — 최적 8개 (10.1mm)
+      // 0    1    2    3    4    5    6    7    8     9    10   11   12    13    14    15    16    17    18    19    20
+      [3.8, 4.6, 5.1, 6.7, 5.9, 6.4, 8.3, 7.1, 10.1, 9.4, 8.7, 9.2, 11.3, 11.9, 13.4, 14.8, 17.1, 16.2, 18.6, 19.8, 20.5],
+
+      // 홀 B — 최적 10개 (9.9mm)
+      // 0    1    2    3    4    5    6    7    8    9    10   11    12    13    14    15    16    17    18    19    20
+      [4.1, 4.9, 5.4, 7.0, 6.1, 6.9, 8.2, 7.6, 9.3, 8.7, 9.9, 11.0, 12.1, 13.9, 14.7, 16.0, 18.5, 17.8, 19.1, 20.4, 21.2],
+
+      // 홀 C — 최적 11개 (10.2mm)
+      // 0    1    2    3    4    5    6    7    8    9    10   11    12    13    14    15    16    17    18    19    20
+      [3.9, 4.7, 5.3, 5.9, 7.5, 6.8, 7.3, 9.0, 8.2, 9.8, 9.1, 10.2, 11.4, 12.3, 14.1, 16.6, 15.8, 17.4, 20.3, 18.9, 20.8],
+
+      // 홀 D — 최적 9개 (10.0mm)
+      // 0    1    2    3    4    5    6    7    8    9     10    11    12    13    14    15    16    17    18    19    20
+      [4.4, 5.3, 7.1, 6.2, 6.8, 8.5, 7.9, 9.4, 8.7, 10.0, 11.3, 12.6, 14.2, 16.5, 15.8, 17.1, 19.2, 18.4, 19.7, 21.2, 22.0]
+    ];
+
+    // State
+    let guides = [8, 10, 11, 9]; // Initialized to near-optimal
+    let historyData = [];
+    let cumulativeRuns = 0;
+    let soundEnabled = true;
+
+    // Process Noise Parameters
+    let paramThermalSigma = 0.55;
+    let paramDegradeLevel = 1; // 0: None, 1: Standard, 2: Heavy
+    let paramSpikeRate = 0.10; // 10%
+
+    // Audio Context (Synthesized effects)
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, duration, type = 'sine', gainVal = 0.1) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function playSuccessJingle() {
+      if (!soundEnabled) return;
+      playTone(523.25, 0.1, 'sine', 0.08); // C5
+      setTimeout(() => playTone(659.25, 0.1, 'sine', 0.08), 100); // E5
+      setTimeout(() => playTone(783.99, 0.2, 'sine', 0.1), 200); // G5
+    }
+
+    function playFailureTone() {
+      if (!soundEnabled) return;
+      playTone(220, 0.25, 'sawtooth', 0.08);
+      setTimeout(() => playTone(180, 0.35, 'sawtooth', 0.08), 200);
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      if (soundEnabled) {
+        icon.setAttribute('data-lucide', 'volume-2');
+        icon.classList.remove('text-slate-500');
+        icon.classList.add('text-cyan-400');
+        playTone(600, 0.1);
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+        icon.classList.remove('text-cyan-400');
+        icon.classList.add('text-slate-500');
+      }
+      lucide.createIcons();
+    }
+
+    /* ============================================================
+     * MATH / NOISE GENERATION FUNCTIONS
+     * ============================================================ */
+    function getBaseH(holeIdx, linerCount) {
+      const idx = Math.max(0, Math.min(20, Math.round(linerCount)));
+      return HOLE_H_TABLE[holeIdx][idx];
+    }
+
+    // Box-Muller Gaussian Random
+    function gaussianRandom(mean = 0, stdev = 1) {
+      let u = 1 - Math.random();
+      let v = Math.random();
+      let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+      return mean + z * stdev;
+    }
+
+    function calcSimulatedH(holeIdx, linerCount) {
+      const base = getBaseH(holeIdx, linerCount);
+      
+      // 1. Thermal distortion noise (Gaussian)
+      const thermalNoise = gaussianRandom(0, paramThermalSigma);
+      
+      // 2. Equipment degradation drift (Logarithmic cumulative wear)
+      let degradationDrift = 0;
+      if (paramDegradeLevel > 0) {
+        const driftFactor = paramDegradeLevel === 1 ? 0.08 : 0.18;
+        degradationDrift = Math.log(1 + cumulativeRuns * 0.05) * driftFactor * (holeIdx - 1.5);
+      }
+
+      // 3. Spatter/Outlier spike
+      let spikeNoise = 0;
+      if (Math.random() < paramSpikeRate) {
+        spikeNoise = (Math.random() > 0.5 ? 1 : -1) * (2.0 + Math.random() * 1.5);
+      }
+
+      const totalH = base + thermalNoise + degradationDrift + spikeNoise;
+      return Math.round(totalH * 10) / 10;
+    }
+
+    function isHValueOk(h) {
+      return h >= LSL && h <= USL;
+    }
+
+    /* ============================================================
+     * RENDERING: DIGITAL TWIN SVG
+     * ============================================================ */
+    function renderTwinVisualizer() {
+      const svg = document.getElementById('twinSvg');
+      const holeXs = [90, 220, 370, 500];
+      const beamY = 55, beamH = 45, gaugeY = 210, gaugeH = 34;
+
+      let html = `
+        <defs>
+          <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#162032" />
+            <stop offset="50%" stop-color="#1e2c44" />
+            <stop offset="100%" stop-color="#162032" />
+          </linearGradient>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0a192f" />
+            <stop offset="50%" stop-color="#112240" />
+            <stop offset="100%" stop-color="#0a192f" />
+          </linearGradient>
+          <filter id="laserGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Top Side-Sill Body Beam Frame -->
+        <rect x="25" y="${beamY}" width="550" height="${beamH}" rx="8" fill="url(#beamGrad)" stroke="#2b3d5b" stroke-width="1.5"/>
+        <rect x="35" y="${beamY + 4}" width="530" height="6" rx="3" fill="#0d1422" opacity="0.8"/>
+        <rect x="35" y="${beamY + beamH - 10}" width="530" height="6" rx="3" fill="#0d1422" opacity="0.8"/>
+        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#4a658a" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME</text>
+
+        <!-- Bottom Inspection Gauge Bar -->
+        <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="8" fill="url(#gaugeGrad)" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4"/>
+        <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#00f2fe" opacity="0.85" letter-spacing="2">
+          INSPECTION GAUGE BASE (기준 검사구)
+        </text>
+      `;
+
+      // Draw 4 Inspection Holes
+      for (let i = 0; i < 4; i++) {
+        const x = holeXs[i];
+        const count = guides[i];
+        const hVal = getBaseH(i, count);
+        const ok = isHValueOk(hVal);
+        const color = ok ? '#22c55e' : '#f43f5e';
+        const cy = beamY + beamH / 2;
+
+        // Hole Label
+        html += `
+          <text x="${x}" y="${beamY - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">${HOLE_NAMES[i]}</text>
+        `;
+
+        // Physical Shim (Liner) Stack Graphic (Layers underneath hole)
+        const shimHeight = Math.min(18, count * 0.9);
+        const shimY = beamY + beamH;
+        if (count > 0) {
+          html += `
+            <rect x="${x - 18}" y="${shimY}" width="36" height="${shimHeight}" rx="2" fill="#0284c7" stroke="#38bdf8" stroke-width="1" opacity="0.9"/>
+            <line x1="${x - 18}" y1="${shimY + shimHeight/2}" x2="${x + 18}" y2="${shimY + shimHeight/2}" stroke="#075985" stroke-dasharray="2,2"/>
+            <text x="${x}" y="${shimY + shimHeight + 11}" text-anchor="middle" font-size="9" font-weight="600" fill="#38bdf8">Shim: ${count}매</text>
+          `;
+        } else {
+          html += `
+            <text x="${x}" y="${shimY + 12}" text-anchor="middle" font-size="9" fill="#64748b">라이너 없음</text>
+          `;
+        }
+
+        // Circular Bore Hole on Beam
+        html += `
+          <circle cx="${x}" cy="${cy}" r="12" fill="#07090e" stroke="${color}" stroke-width="2" filter="url(#laserGlow)"/>
+          <circle cx="${x}" cy="${cy}" r="5" fill="${color}" opacity="0.6"/>
+        `;
+
+        // Laser / Probe Contact Line down to Gauge
+        const laserStartY = cy + 12;
+        const laserEndY = gaugeY - 5;
+        html += `
+          <line x1="${x}" y1="${laserStartY}" x2="${x}" y2="${laserEndY}" stroke="${color}" stroke-width="1.8" stroke-dasharray="4,3" opacity="0.85"/>
+          <circle cx="${x}" cy="${laserEndY}" r="3.5" fill="${color}"/>
+        `;
+
+        // H-Value Floating Digital Gauge Tag
+        const tagW = 60, tagH = 26;
+        const tagY = (gaugeY + beamY + beamH) / 2 - 13;
+        html += `
+          <rect x="${x - tagW/2}" y="${tagY}" width="${tagW}" height="${tagH}" rx="6" fill="#07090e" stroke="${color}" stroke-width="1.5"/>
+          <text x="${x}" y="${tagY + 18}" text-anchor="middle" font-size="13" font-weight="800" fill="${color}" font-family="JetBrains Mono, monospace">
+            ${hVal.toFixed(1)}<tspan font-size="9" font-weight="400">mm</tspan>
+          </text>
+        `;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    /* ============================================================
+     * RENDERING: SHIM CONTROLLER PANEL
+     * ============================================================ */
+    function renderHoleControllers() {
+      const container = document.getElementById('holeControlsContainer');
+      container.innerHTML = '';
+
+      for (let i = 0; i < 4; i++) {
+        const count = guides[i];
+        const hVal = getBaseH(i, count);
+        const ok = isHValueOk(hVal);
+        const diffFromTarget = (hVal - TARGET_H).toFixed(1);
+        const sign = diffFromTarget > 0 ? `+${diffFromTarget}` : diffFromTarget;
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border transition-all duration-200 ${
+          ok ? 'bg-dark-900/90 border-dark-750 hover:border-emerald-500/50' : 'bg-rose-950/20 border-rose-900/60'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <!-- Name & Current Count -->
+            <div class="flex items-center gap-2.5 min-w-[90px]">
+              <span class="w-7 h-7 rounded-lg bg-dark-800 border border-dark-700 flex items-center justify-center font-bold text-xs text-slate-300">
+                ${HOLE_NAMES[i].replace('홀 ', '')}
+              </span>
+              <div>
+                <div class="text-xs font-bold text-white">${HOLE_NAMES[i]}</div>
+                <div class="text-[10px] text-slate-400 font-mono">Liner Stack</div>
+              </div>
+            </div>
+
+            <!-- Stepper Buttons & Slider -->
+            <div class="flex items-center gap-2">
+              <button onclick="adjustLiner(${i}, -1)" class="w-7 h-7 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 border border-dark-700 text-slate-200 font-bold flex items-center justify-center transition-all">
+                -
+              </button>
+              
+              <span class="w-8 text-center font-mono font-bold text-sm text-cyan-300">
+                ${count}
+              </span>
+
+              <button onclick="adjustLiner(${i}, 1)" class="w-7 h-7 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 border border-dark-700 text-slate-200 font-bold flex items-center justify-center transition-all">
+                +
+              </button>
+            </div>
+
+            <!-- Estimated H Result & Status Pill -->
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-500 font-mono hidden sm:inline">(${sign})</span>
+              <div class="px-2.5 py-1 rounded-lg font-mono font-bold text-xs flex items-center gap-1 ${
+                ok ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-700/60' : 'bg-rose-950/80 text-rose-400 border border-rose-700/60'
+              }">
+                <span>${hVal.toFixed(1)}mm</span>
+                <span class="text-[9px] px-1 py-0.2 rounded font-bold uppercase ${ok ? 'bg-emerald-800/60 text-emerald-200' : 'bg-rose-800/60 text-rose-200'}">
+                  ${ok ? 'OK' : 'NG'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider bar -->
+          <div class="mt-2 pt-1 border-t border-dark-800/60 flex items-center gap-2">
+            <span class="text-[10px] text-slate-500 font-mono">0</span>
+            <input type="range" min="0" max="20" step="1" value="${count}" oninput="setLiner(${i}, this.value)" class="w-full accent-cyan-400 bg-dark-950 h-1 rounded-lg cursor-pointer" />
+            <span class="text-[10px] text-slate-500 font-mono">20</span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      }
+
+      renderTwinVisualizer();
+    }
+
+    function adjustLiner(holeIdx, delta) {
+      const next = Math.max(0, Math.min(20, guides[holeIdx] + delta));
+      if (next !== guides[holeIdx]) {
+        guides[holeIdx] = next;
+        playTone(350 + next * 20, 0.05, 'sine', 0.04);
+        renderHoleControllers();
+      }
+    }
+
+    function setLiner(holeIdx, val) {
+      const num = parseInt(val, 10);
+      if (!isNaN(num) && num !== guides[holeIdx]) {
+        guides[holeIdx] = num;
+        renderHoleControllers();
+      }
+    }
+
+    function updateNoiseParam() {
+      paramThermalSigma = parseFloat(document.getElementById('noiseThermalSlider').value);
+      document.getElementById('noiseThermalVal').textContent = `± ${paramThermalSigma.toFixed(2)} mm`;
+
+      paramDegradeLevel = parseInt(document.getElementById('noiseDegradeSlider').value, 10);
+      const degradeLabels = ['없음 (Zero)', '보통 (Standard)', '가속 열화 (Heavy)'];
+      document.getElementById('noiseDegradeVal').textContent = degradeLabels[paramDegradeLevel];
+
+      paramSpikeRate = parseInt(document.getElementById('noiseSpikeSlider').value, 10) / 100;
+      document.getElementById('noiseSpikeVal').textContent = `${(paramSpikeRate * 100).toFixed(0)} %`;
+    }
+
+    /* ============================================================
+     * SIMULATION RUN LOGIC (5 Runs)
+     * ============================================================ */
+    function runSimulation(runCount = 5) {
+      initAudio();
+      cumulativeRuns += runCount;
+
+      const runResults = [];
+      let totalItems = runCount * 4;
+      let okCount = 0;
+
+      for (let p = 0; p < runCount; p++) {
+        const prod = [];
+        for (let i = 0; i < 4; i++) {
+          const val = calcSimulatedH(i, guides[i]);
+          if (isHValueOk(val)) okCount++;
+          prod.push(val);
+        }
+        runResults.push(prod);
+      }
+
+      const yieldRate = (okCount / totalItems) * 100;
+      const historyItem = {
+        id: historyData.length + 1,
+        timestamp: new Date().toLocaleTimeString(),
+        guides: [...guides],
+        results: runResults,
+        yieldRate: yieldRate,
+        okCount: okCount,
+        totalCount: totalItems
+      };
+
+      historyData.push(historyItem);
+
+      // Sound feedback
+      if (yieldRate >= 90) {
+        playSuccessJingle();
+      } else {
+        playFailureTone();
+      }
+
+      renderHistoryLog();
+      updateSPCChart();
+      updateTopMetrics();
+    }
+
+    /* ============================================================
+     * AI AUTO-TUNING SEARCH (Optimal Liner Finder)
+     * ============================================================ */
+    function runAutoTuning() {
+      initAudio();
+      playTone(800, 0.15, 'triangle', 0.1);
+
+      // Search optimal liner for each hole that minimizes |baseH - TARGET_H|
+      const optimalLiners = [];
+      for (let i = 0; i < 4; i++) {
+        let bestCount = 0;
+        let minDiff = Infinity;
+        for (let count = 0; count <= 20; count++) {
+          const diff = Math.abs(getBaseH(i, count) - TARGET_H);
+          if (diff < minDiff) {
+            minDiff = diff;
+            bestCount = count;
+          }
+        }
+        optimalLiners.push(bestCount);
+      }
+
+      guides = optimalLiners;
+      renderHoleControllers();
+
+      // Automatically run simulation once to verify
+      setTimeout(() => {
+        runSimulation(5);
+      }, 300);
+    }
+
+    function resetAll() {
+      guides = [4, 4, 4, 4];
+      renderHoleControllers();
+    }
+
+    /* ============================================================
+     * HISTORY & METRICS LOGIC
+     * ============================================================ */
+    function renderHistoryLog() {
+      const container = document.getElementById('historyLogContainer');
+      const badge = document.getElementById('bestTryBadge');
+
+      if (historyData.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-500 text-xs font-mono">
+            아직 생산 이력이 없습니다. 상단의 [공정 실행 (5회 생산 런)] 버튼을 클릭하여 시뮬레이션을 가동하세요.
+          </div>
+        `;
+        badge.classList.add('hidden');
+        return;
+      }
+
+      // Find Best Run (Highest Yield & closest to 10mm)
+      let bestIdx = 0;
+      let bestYield = -1;
+      historyData.forEach((item, idx) => {
+        if (item.yieldRate > bestYield) {
+          bestYield = item.yieldRate;
+          bestIdx = idx;
+        }
+      });
+
+      badge.textContent = `★ 최고 수율: 시도 #${bestIdx + 1} (${bestYield.toFixed(0)}%)`;
+      badge.classList.remove('hidden');
+
+      container.innerHTML = '';
+
+      // Render items in reverse chronological order
+      for (let r = historyData.length - 1; r >= 0; r--) {
+        const item = historyData[r];
+        const isBest = (r === bestIdx);
+
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-xl border transition-all ${
+          isBest ? 'bg-cyan-950/30 border-cyan-700/80 shadow-md shadow-cyan-950/50' : 'bg-dark-900/80 border-dark-750'
+        }`;
+
+        // Header line
+        const guideSummary = item.guides.map((g, i) => `${HOLE_NAMES[i]}:${g}매`).join(' | ');
+        let html = `
+          <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-dark-800">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-xs text-white">시도 #${item.id}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${item.timestamp}</span>
+              ${isBest ? '<span class="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/40">BEST CONFIG</span>' : ''}
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-slate-400 font-mono hidden md:inline">[ ${guideSummary} ]</span>
+              <span class="text-xs font-mono font-bold ${item.yieldRate >= 90 ? 'text-emerald-400' : 'text-amber-400'}">
+                수율 ${item.yieldRate.toFixed(0)}% (${item.okCount}/${item.totalCount})
+              </span>
+            </div>
+          </div>
+        `;
+
+        // 5 Production Runs Table Grid
+        html += `<div class="space-y-1 text-xs">`;
+        for (let p = 0; p < item.results.length; p++) {
+          html += `
+            <div class="flex items-center gap-2 flex-wrap py-0.5">
+              <span class="text-[10px] text-slate-500 font-mono w-12">생산 ${p + 1}:</span>
+          `;
+          for (let i = 0; i < 4; i++) {
+            const v = item.results[p][i];
+            const ok = isHValueOk(v);
+            html += `
+              <span class="px-2 py-0.5 rounded font-mono text-[11px] font-semibold ${
+                ok ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950/80 text-rose-300 border border-rose-800/60'
+              }">
+                ${HOLE_NAMES[i]} ${v.toFixed(1)}
+              </span>
+            `;
+          }
+          html += `</div>`;
+        }
+
+        // Average row
+        html += `
+          <div class="flex items-center gap-2 flex-wrap pt-1.5 mt-1 border-t border-dark-800/80">
+            <span class="text-[10px] text-cyan-400 font-bold font-mono w-12">5회 평균:</span>
+        `;
+        for (let i = 0; i < 4; i++) {
+          let sum = 0;
+          for (let p = 0; p < item.results.length; p++) sum += item.results[p][i];
+          const avg = Math.round((sum / item.results.length) * 10) / 10;
+          const ok = isHValueOk(avg);
+          html += `
+            <span class="px-2 py-0.5 rounded font-mono text-[11px] font-bold ${
+              ok ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'bg-rose-950 text-rose-300 border border-rose-800'
+            }">
+              ${HOLE_NAMES[i]} ${avg.toFixed(1)} mm
+            </span>
+          `;
+        }
+        html += `</div></div>`;
+
+        card.innerHTML = html;
+        container.appendChild(card);
+      }
+    }
+
+    function updateTopMetrics() {
+      if (historyData.length === 0) return;
+
+      // Cumulative Yield
+      let totalAll = 0, okAll = 0;
+      let allMeasurements = [];
+
+      historyData.forEach(h => {
+        totalAll += h.totalCount;
+        okAll += h.okCount;
+        h.results.forEach(row => {
+          allMeasurements.push(...row);
+        });
+      });
+
+      const totalYield = ((okAll / totalAll) * 100).toFixed(1);
+      document.getElementById('yieldStat').textContent = `${totalYield} %`;
+
+      // Cpk calculation
+      if (allMeasurements.length > 3) {
+        const mean = allMeasurements.reduce((a, b) => a + b, 0) / allMeasurements.length;
+        const variance = allMeasurements.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (allMeasurements.length - 1);
+        const stdev = Math.sqrt(variance);
+
+        if (stdev > 0) {
+          const cpu = (USL - mean) / (3 * stdev);
+          const cpl = (mean - LSL) / (3 * stdev);
+          const cpk = Math.min(cpu, cpl);
+          document.getElementById('cpkStat').textContent = cpk.toFixed(2);
+        }
+      }
+    }
+
+    function clearHistory() {
+      if (confirm('모든 생산 이력 데이터를 초기화하시겠습니까?')) {
+        historyData = [];
+        cumulativeRuns = 0;
+        document.getElementById('yieldStat').textContent = '- %';
+        document.getElementById('cpkStat').textContent = '-';
+        renderHistoryLog();
+        updateSPCChart();
+      }
+    }
+
+    function exportCSV() {
+      if (historyData.length === 0) {
+        alert('내보낼 생산 데이터가 없습니다.');
+        return;
+      }
+
+      let csv = '시도ID,시간,홀A라이너,홀B라이너,홀C라이너,홀D라이너,생산회차,홀A_H값,홀B_H값,홀C_H값,홀D_H값,합격여부\n';
+      historyData.forEach(h => {
+        h.results.forEach((prod, pIdx) => {
+          const isAllOk = prod.every(v => isHValueOk(v)) ? 'OK' : 'NG';
+          csv += `${h.id},${h.timestamp},${h.guides[0]},${h.guides[1]},${h.guides[2]},${h.guides[3]},${pIdx + 1},${prod[0]},${prod[1]},${prod[2]},${prod[3]},${isAllOk}\n`;
+        });
+      });
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `side_sill_welding_h_sim_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ============================================================
+     * CHART.JS: SPC REAL-TIME MONITORING
+     * ============================================================ */
+    let chartInstance = null;
+
+    function initSPCChart() {
+      const ctx = document.getElementById('spcChart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: '홀 A',
+              data: [],
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              tension: 0.3,
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: '홀 B',
+              data: [],
+              borderColor: '#818cf8',
+              backgroundColor: 'rgba(129, 140, 248, 0.1)',
+              tension: 0.3,
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: '홀 C',
+              data: [],
+              borderColor: '#34d399',
+              backgroundColor: 'rgba(52, 211, 153, 0.1)',
+              tension: 0.3,
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: '홀 D',
+              data: [],
+              borderColor: '#fbbf24',
+              backgroundColor: 'rgba(251, 191, 36, 0.1)',
+              tension: 0.3,
+              borderWidth: 2,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 400 },
+          scales: {
+            y: {
+              min: 2,
+              max: 22,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          }
+        }
+      });
+    }
+
+    function updateSPCChart() {
+      if (!chartInstance) return;
+
+      const labels = [];
+      const dataA = [], dataB = [], dataC = [], dataD = [];
+
+      // Flatten last 15 production runs
+      let totalProdCount = 0;
+      historyData.forEach(h => {
+        h.results.forEach((row, pIdx) => {
+          totalProdCount++;
+          labels.push(`#${totalProdCount}`);
+          dataA.push(row[0]);
+          dataB.push(row[1]);
+          dataC.push(row[2]);
+          dataD.push(row[3]);
+        });
+      });
+
+      // Slice last 25 points for neat display
+      const maxPoints = 25;
+      chartInstance.data.labels = labels.slice(-maxPoints);
+      chartInstance.data.datasets[0].data = dataA.slice(-maxPoints);
+      chartInstance.data.datasets[1].data = dataB.slice(-maxPoints);
+      chartInstance.data.datasets[2].data = dataC.slice(-maxPoints);
+      chartInstance.data.datasets[3].data = dataD.slice(-maxPoints);
+      chartInstance.update();
+    }
+
+    /* ============================================================
+     * MODAL HELPERS
+     * ============================================================ */
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      if (window.renderMathInElement) {
+        renderMathInElement(document.getElementById(id));
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Close modal on ESC key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal('guideModal');
+        closeModal('repoModal');
+      }
+    });
+
+    /* ============================================================
+     * INITIALIZATION
+     * ============================================================ */
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderHoleControllers();
+      initSPCChart();
+    });
+  </script>
+</body>
+</html>
