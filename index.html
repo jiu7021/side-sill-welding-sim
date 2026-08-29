@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>SmartFactory-Twin | 현대/기아 생산기술 통합 디지털 트윈 플랫폼</title>
+  <title>AutoFit-3D | 지능형 인라인 3D 갭·단차 및 공차 최적화 디지털 트윈</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -88,22 +88,22 @@
       <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
         <div class="flex items-center space-x-2.5">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
-            <i data-lucide="cpu" class="w-5 h-5"></i>
+            <i data-lucide="scan-line" class="w-5 h-5"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
               <h1 class="text-sm sm:text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
-                HMG SmartFactory Twin
+                AutoFit-3D | 스마트 제조 인라인 디지털 트윈
               </h1>
               <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">
                 PRO-DX
               </span>
             </div>
-            <p class="text-[11px] text-slate-400">현대/기아 완성차 생산기술 디지털 트윈 포털</p>
+            <p class="text-[11px] text-slate-400">완성차 의장 무빙파트 갭·단차 및 조립 공차 최적화 시스템</p>
           </div>
         </div>
 
-        <!-- Mobile Sound & Guide buttons -->
+        <!-- Mobile Sound button -->
         <div class="flex md:hidden items-center space-x-1.5">
           <button onclick="toggleAudio()" class="p-1.5 rounded-lg bg-dark-800 border border-dark-700 text-cyan-400">
             <i id="soundIconMob" data-lucide="volume-2" class="w-4 h-4"></i>
@@ -115,11 +115,11 @@
       <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-750 text-xs w-full md:w-auto justify-center">
         <button id="tabBtn-trim" onclick="switchProcessTab('trim')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md">
           <i data-lucide="scan-line" class="w-4 h-4"></i>
-          <span>① 의장: 3D 로봇 갭·단차 트윈</span>
+          <span>① 의장 공정: 3D 로봇 갭·단차 트윈</span>
         </button>
         <button id="tabBtn-sidesill" onclick="switchProcessTab('sidesill')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200">
-          <i data-lucide="wrench" class="w-4 h-4"></i>
-          <span>② 조립: 사이드실 H값 최적화</span>
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>② 조립 공정: 사이드실 H값 최적화</span>
         </button>
       </div>
 
@@ -129,15 +129,10 @@
           <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
         </button>
 
-        <button onclick="openModal('studyModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 border border-cyan-900 text-cyan-300 text-xs font-semibold transition-all">
-          <i data-lucide="graduation-cap" class="w-4 h-4 text-cyan-400"></i>
-          <span>생기 도메인 & 면접 가이드</span>
+        <button onclick="openModal('studyModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-cyan-900 text-cyan-300 text-xs font-semibold transition-all">
+          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
+          <span>공정 기술 표준서 (SOP)</span>
         </button>
-
-        <a href="https://github.com/jiu7021/side-sill-welding-sim" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-white text-xs font-bold transition-all">
-          <i data-lucide="github" class="w-4 h-4"></i>
-          <span>GitHub</span>
-        </a>
       </div>
     </div>
   </header>
@@ -145,7 +140,36 @@
   <!-- ================= TAB 1: TRIM & FINAL ASSEMBLY (3D ROBOT GAP & FLUSH) ================= -->
   <main id="tabContent-trim" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-4">
     
-    <!-- Top Process KPI Summary Bar -->
+    <!-- Vehicle Selection Queue Bar (Real-world Production Line) -->
+    <div class="glass-panel rounded-xl p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border border-cyan-900/60">
+      <div class="flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400 shrink-0">
+          <i data-lucide="git-commit" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-white uppercase tracking-wide">인라인 생산 라인 차체 투입 큐 (Production Queue)</span>
+            <span id="vehicleStateBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700">
+              #VIN-101 (ALL OK)
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5">
+            생산 라인으로 인입되는 차체 번호(VIN)를 선택하여 각 차체별 실측 8대 부위 갭/단차 및 불량(NG) 처방을 실시간 모니터링합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- Vehicle Selector Pills -->
+      <div class="flex items-center gap-1.5 flex-wrap self-end md:self-center">
+        <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300">#001 (정상)</button>
+        <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#002 (도어처짐 NG ⚠️)</button>
+        <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#003 (간극과다 NG ⚠️)</button>
+        <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#004 (정상)</button>
+        <button onclick="loadVehicleData(4)" id="vehBtn-4" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#005 (테일단차 NG ⚠️)</button>
+      </div>
+    </div>
+
+    <!-- Process KPI Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
         <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
@@ -172,8 +196,8 @@
           <i data-lucide="check-circle" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">의장 합격 수율 (Yield)</div>
-          <div id="topYield" class="text-base font-bold text-emerald-400 font-mono">96.8 %</div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">현재 차체 검사 결과</div>
+          <div id="topYield" class="text-base font-bold text-emerald-400 font-mono">ALL PASS (OK)</div>
         </div>
       </div>
 
@@ -183,7 +207,7 @@
         </div>
         <div>
           <div class="text-[10px] font-medium text-slate-400 uppercase">공정능력지수 (Cpk)</div>
-          <div id="topCpk" class="text-base font-bold text-indigo-300 font-mono">1.42</div>
+          <div id="topCpk" class="text-base font-bold text-indigo-300 font-mono">1.38</div>
         </div>
       </div>
     </div>
@@ -591,42 +615,43 @@
   <footer class="border-t border-dark-750 bg-dark-900/60 py-3.5 mt-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
       <div>
-        HMG SmartFactory Twin | 완성차 생산기술 의장 3D 로봇 갭단차 & 사이드실 H값 최적화 디지털 트윈
+        AutoFit-3D | 지능형 인라인 로봇 3D 갭·단차 및 조립 공차 최적화 디지털 트윈
       </div>
       <div class="flex items-center gap-4">
-        <span>Target: Gap 3.5mm / Flush 0.0mm / H 10.0mm (±1.0mm)</span>
+        <span>Standard: Gap 3.5mm / Flush 0.0mm / H 10.0mm (±1.0mm)</span>
         <span>•</span>
-        <span class="text-slate-400 font-mono">Three.js WebGL & SVG Twin</span>
+        <span class="text-slate-400 font-mono">Three.js WebGL & SVG Engine</span>
       </div>
     </div>
   </footer>
 
-  <!-- ================= STUDY & INTERVIEW GUIDE MODAL ================= -->
+  <!-- ================= PROCESS TECHNICAL SPECS MODAL ================= -->
   <div id="studyModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="glass-panel rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-cyan-800 p-6 space-y-5 text-slate-200">
       <div class="flex items-center justify-between border-b border-dark-700 pb-3">
         <div class="flex items-center gap-2 text-cyan-400">
-          <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-          <h2 class="text-base sm:text-lg font-bold text-white">현대/기아 완성차 생산기술 엔지니어링 가이드 & 면접 전략</h2>
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+          <h2 class="text-base sm:text-lg font-bold text-white">완성차 의장 공정 인라인 갭/단차 기술 표준서 (Technical SOP)</h2>
         </div>
         <button onclick="closeModal('studyModal')" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Section 1: Process Background -->
+      <!-- Section 1: Measurement Architecture -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="car" class="w-4 h-4"></i> 1. 의장 공정(Trim & Assembly) 갭/단차(Gap & Flush)의 핵심 중요성
+          <i data-lucide="crosshair" class="w-4 h-4"></i> 1. 인라인 8대 주요 측정 부위 선정 기준 (8 Key Inspection Points)
         </h3>
         <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-2 leading-relaxed">
           <p>
-            <strong>의장 공정</strong>은 도장된 차체에 도어, 글래스, 콕핏, 시트, 전장 모듈을 장착하는 완성차 최종 단계입니다.
+            완성차 조립 라인에서 차체 1대당 외관 품질(풍절음, 누수, 심미성)을 결정짓는 8대 핵심 분할선(Split Lines)을 고속 레이저로 전수 계측합니다:
           </p>
           <ul class="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
-            <li><strong class="text-slate-200">간극(Gap):</strong> 도어-펜더, 후드-램프 등 인접 패널 사이의 수평 틈새 (기준: $3.5\text{mm} \pm 0.5\text{mm}$)</li>
-            <li><strong class="text-slate-200">단차(Flush):</strong> 인접 패널 간의 높낮이 단차 및 평탄도 (기준: $0.0\text{mm} \pm 0.5\text{mm}$)</li>
-            <li><strong class="text-slate-200">품질 영향:</strong> 단차가 $0.5\text{mm}$ 이상 벌어지면 고속 주행 시 <strong>풍절음(Wind Noise)</strong>, <strong>웨더스트립 기밀성 저하로 인한 누수</strong>, 외관 단차 감성 품질 불량으로 직결됩니다.</li>
+            <li><strong class="text-slate-200">PT-01 ~ 02 (후드-헤드램프 좌/우):</strong> 전방 충돌 크러시존 및 본넷 단차 관리 (간극 3.5mm / 단차 0.0mm)</li>
+            <li><strong class="text-slate-200">PT-03 ~ 04 (앞도어-프론트 펜더 좌/우):</strong> 도어 오픈 시 간섭 방지 및 A필러 풍절음(NVH) 직결 부위</li>
+            <li><strong class="text-slate-200">PT-05 ~ 06 (앞도어-뒷도어 B필러 좌/우):</strong> 도어 처짐(Door Sagging) 및 래치(Latch) 체결 평탄도 기준점</li>
+            <li><strong class="text-slate-200">PT-07 ~ 08 (테일게이트-리어 쿼터 좌/우):</strong> 후방 트렁크 수밀성(Water-leak) 및 테일램프 정렬선</li>
           </ul>
         </div>
       </div>
@@ -641,7 +666,7 @@
             $$Z = \frac{B \cdot f}{x_{\text{sensor}} + f \cdot \tan(\theta)}$$
           </p>
           <p class="text-slate-400 text-[11px] leading-relaxed">
-            로봇 엔드이펙터의 레이저 슬릿 광원에서 투사된 레이저가 차체 표면에서 반사되어 CMOS 센서에 맺히는 삼각 위치 관계를 통해 실시간 단면 높이 프로파일 $Z(x)$을 획득합니다.
+            로봇 엔드이펙터의 레이저 슬릿 광원에서 투사된 레이저가 패널 표면에서 반사되어 CMOS 센서에 맺히는 삼각 위치 관계를 통해 실시간 단면 높이 프로파일 $Z(x)$을 획득합니다.
           </p>
         </div>
       </div>
@@ -649,11 +674,11 @@
       <!-- Section 3: Prescriptive Hinge Kinematics -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="cpu" class="w-4 h-4"></i> 3. AI 힌지(Hinge) 자동 처방 알고리즘
+          <i data-lucide="cpu" class="w-4 h-4"></i> 3. 힌지 레버비 기구학 및 심(Shim) 자동 처방 수식
         </h3>
         <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-1.5 leading-relaxed">
           <p>
-            도어 처짐(Sagging) 및 Flush 오차 $\Delta F$가 감지되었을 때, 힌지 간격 거리 $L_{\text{hinge}}$와 도어 길이 $L_{\text{door}}$의 기구학적 레버 비율을 통해 필요한 심(Shim) 라이너 두께 $\Delta t_{\text{shim}}$를 자동 계산합니다:
+            도어 후단 B필러 단차 오차 $\Delta F_{\text{rear}}$ 발생 시, 힌지 간격 거리 $L_{\text{hinge}}$와 도어 길이 $L_{\text{door}}$의 기구학적 레버 비율을 통해 필요한 심(Shim) 두께 $\Delta t_{\text{shim}}$를 연산합니다:
           </p>
           <p class="font-mono text-cyan-300 text-xs py-1">
             $$\Delta t_{\text{upper}} = \Delta F_{\text{rear}} \cdot \left(\frac{L_{\text{hinge}}}{L_{\text{door}}}\right)$$
@@ -661,17 +686,16 @@
         </div>
       </div>
 
-      <!-- Section 4: Interview Q&A -->
+      <!-- Section 4: Troubleshooting SOP -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="message-square" class="w-4 h-4"></i> 4. 현대/기아 의장 생산기술 면접 예상 질문 & 답변 가이드
+          <i data-lucide="alert-octagon" class="w-4 h-4"></i> 4. 인라인 단차 이탈 시 표준 조치 절차 (Troubleshooting SOP)
         </h3>
         <div class="space-y-2 text-xs">
           <div class="p-3 rounded-xl bg-dark-950 border border-dark-800">
-            <strong class="text-white">Q. 의장 라인에서 도어 장착 후 단차 불량이 발생하면 어떻게 조치하겠는가?</strong>
-            <p class="text-slate-400 mt-1">
-              "과거에는 작업자가 감각에 의존해 도어 힌지 볼트를 풀고 수작업으로 밀어 맞췄지만, 본 디지털 트윈 시스템처럼 <strong>6축 로봇 3D 레이저 스캐너의 실측 Gap/Flush 데이터를 기반으로 상/하단 힌지 심(Shim) 보정량 및 볼팅 체결 각도를 정량 처방</strong>하여 Cpk 1.33 이상의 양산 산포를 확보하겠습니다."
-            </p>
+            <strong class="text-white font-semibold">1단계 (단차 NG 감지):</strong> 레이저 스캔 결과 Flush > 0.5mm 초과 시 즉시 라인 경보 및 처방값 산출.<br/>
+            <strong class="text-white font-semibold">2단계 (처방 자동 전송):</strong> 상단 힌지 심 보정량($+0.45\text{mm}$) 및 하단 볼팅 각도를 무선 전동 툴/작업자 HMI로 전송.<br/>
+            <strong class="text-white font-semibold">3단계 (재검 및 Cpk 보증):</strong> 튜닝 후 2차 인라인 재검을 통해 $C_{pk} \ge 1.33$ 공정 능력 확보.
           </div>
         </div>
       </div>
@@ -684,7 +708,7 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT: TAB 1 (TRIM 3D ROBOT) + TAB 2 (SIDE-SILL) ================= -->
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
     /* ============================================================
      * TAB SWITCHER LOGIC
@@ -720,24 +744,84 @@
     }
 
     /* ============================================================
-     * TAB 1: TRIM 3D ROBOT TWIN ENGINE
+     * TAB 1: MULTI-VEHICLE DATASET & TRIM 3D ROBOT ENGINE
      * ============================================================ */
     const TARGET_GAP = 3.50;
     const TARGET_FLUSH = 0.00;
     const GAP_TOL = 0.50;
     const FLUSH_TOL = 0.50;
 
-    const INSPECTION_POINTS = [
-      { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.48, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.52, flush: -0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 3.46, flush: -0.06, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.55, flush: 0.08, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.50, flush: 0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.44, flush: -0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.51, flush: 0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
-      { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.49, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+    // 5 Distinct Production Vehicles (With realistic Pass & Fail NG scenarios)
+    const VEHICLE_DATASETS = [
+      {
+        vin: '#VIN-101', name: '차량 #001 (정상 양품)', isAllOk: true,
+        points: [
+          { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.48, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.52, flush: -0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 3.46, flush: -0.06, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.55, flush: 0.08, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.50, flush: 0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.44, flush: -0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.51, flush: 0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.49, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+        ]
+      },
+      {
+        vin: '#VIN-102', name: '차량 #002 (도어처짐 단차 NG ⚠️)', isAllOk: false,
+        points: [
+          { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.50, flush: 0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.48, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 3.40, flush: -0.15, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.52, flush: 0.10, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.65, flush: 0.88, upperShim: '심(Shim) +0.45mm 추가 처방 필요', lowerShim: '체결 각도 +0.6° 보정 필요' },
+          { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.46, flush: -0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.53, flush: 0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.47, flush: -0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+        ]
+      },
+      {
+        vin: '#VIN-103', name: '차량 #003 (앞도어 간극과다 NG ⚠️)', isAllOk: false,
+        points: [
+          { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.51, flush: -0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.49, flush: 0.06, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 4.38, flush: 0.12, upperShim: '힌지 X축 -0.85mm 인입 처방', lowerShim: '볼트 체결 토크 30N·m 재체결' },
+          { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.45, flush: -0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.32, flush: -0.08, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.50, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.48, flush: 0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.50, flush: -0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
+        ]
+      },
+      {
+        vin: '#VIN-104', name: '차량 #004 (정상 양품)', isAllOk: true,
+        points: [
+          { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.46, flush: 0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.54, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 3.48, flush: -0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.51, flush: 0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.49, flush: 0.00, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.52, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.50, flush: 0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.47, flush: -0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
+        ]
+      },
+      {
+        vin: '#VIN-105', name: '차량 #005 (테일게이트 단차 NG ⚠️)', isAllOk: false,
+        points: [
+          { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.52, flush: 0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.47, flush: -0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 2, code: 'PT-03', name: 'FL Door - Front Fender', targetPos: [-0.65, 0.65, 0.85], gap: 3.50, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 3, code: 'PT-04', name: 'FR Door - Front Fender', targetPos: [-0.65, 0.65, -0.85], gap: 3.48, flush: -0.06, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 4, code: 'PT-05', name: 'FL Door - RL Door B-Pillar', targetPos: [0.35, 0.65, 0.85], gap: 3.51, flush: 0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 5, code: 'PT-06', name: 'FR Door - RR Door B-Pillar', targetPos: [0.35, 0.65, -0.85], gap: 3.46, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
+          { id: 6, code: 'PT-07', name: 'Tailgate - Left Quarter', targetPos: [1.65, 0.85, 0.65], gap: 3.85, flush: -0.76, upperShim: '스트라이커 브라켓 +0.65mm 외측 조정', lowerShim: '가스리프터 댐핑 장력 재조정' },
+          { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.20, flush: 0.62, upperShim: '힌지 우측 심 -0.50mm 감량', lowerShim: '웨더스트립 밀착도 2차 점검' },
+        ]
+      }
     ];
 
+    let currentVehicleIdx = 0;
+    let inspectionPoints = JSON.parse(JSON.stringify(VEHICLE_DATASETS[0].points));
     let currentPointIdx = 2;
     let isAutoScanning = false;
     let autoScanTimer = null;
@@ -748,10 +832,41 @@
     let carGroup, robotGroup, laserBeam;
     let pinMarkers = [];
 
-    // Custom Orbit Interaction State (No CDN dependency)
+    // Custom Orbit Interaction State
     let isDragging = false;
     let prevMouseX = 0, prevMouseY = 0;
     let sphericalTheta = -0.7, sphericalPhi = 1.0, sphericalRadius = 5.2;
+
+    function loadVehicleData(vIdx) {
+      currentVehicleIdx = vIdx;
+      const veh = VEHICLE_DATASETS[vIdx];
+      inspectionPoints = JSON.parse(JSON.stringify(veh.points));
+
+      // Update Vehicle button styles
+      document.querySelectorAll('.veh-btn').forEach((btn, i) => {
+        btn.className = (i === vIdx)
+          ? 'veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md'
+          : 'veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700';
+      });
+
+      // Update State Badge
+      const badge = document.getElementById('vehicleStateBadge');
+      const yieldText = document.getElementById('topYield');
+      if (veh.isAllOk) {
+        badge.textContent = `${veh.vin} (ALL PASS OK)`;
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700';
+        yieldText.textContent = 'ALL PASS (OK)';
+        yieldText.className = 'text-base font-bold text-emerald-400 font-mono';
+      } else {
+        badge.textContent = `${veh.vin} (단차 이탈 NG ⚠️)`;
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
+        yieldText.textContent = 'DEFECT DETECTED (NG)';
+        yieldText.className = 'text-base font-bold text-rose-400 font-mono';
+      }
+
+      updatePinMarkerColors();
+      selectInspectionPoint(currentPointIdx);
+    }
 
     function initThree() {
       const container = document.getElementById('threeContainer');
@@ -771,7 +886,6 @@
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // Append Canvas safely
       let old = container.querySelector('canvas');
       if (old) old.remove();
       renderer.domElement.style.position = 'absolute';
@@ -783,7 +897,7 @@
       container.insertBefore(renderer.domElement, container.firstChild);
 
       // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
       scene.add(ambientLight);
 
       const dirLight = new THREE.DirectionalLight(0x00f2fe, 1.4);
@@ -794,19 +908,15 @@
       dirLight2.position.set(-5, 6, -5);
       scene.add(dirLight2);
 
-      // Grid Floor
       const grid = new THREE.GridHelper(10, 20, 0x00f2fe, 0x151b2d);
       grid.position.y = 0;
       scene.add(grid);
 
-      // Build 3D Meshes
       buildCarModel();
       buildIndustrialRobot();
       buildInspectionPins();
 
-      // Custom Mouse Drag Orbit Controls
       setupCustomOrbit(container);
-
       window.addEventListener('resize', onWindowResize);
       animateThree();
     }
@@ -872,35 +982,21 @@
 
     function buildCarModel() {
       carGroup = new THREE.Group();
-
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85, roughness: 0.25 });
       const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.35, roughness: 0.1 });
 
-      // Lower Body
-      const lowerGeo = new THREE.BoxGeometry(3.6, 0.55, 1.6);
-      const lowerBody = new THREE.Mesh(lowerGeo, bodyMat);
-      lowerBody.position.set(0, 0.45, 0);
-      carGroup.add(lowerBody);
+      const lowerBody = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.55, 1.6), bodyMat);
+      lowerBody.position.set(0, 0.45, 0); carGroup.add(lowerBody);
 
-      // Cabin Glass
-      const cabinGeo = new THREE.BoxGeometry(2.0, 0.55, 1.4);
-      const cabin = new THREE.Mesh(cabinGeo, glassMat);
-      cabin.position.set(0.1, 0.95, 0);
-      carGroup.add(cabin);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.55, 1.4), glassMat);
+      cabin.position.set(0.1, 0.95, 0); carGroup.add(cabin);
 
-      // Roof
-      const roofGeo = new THREE.BoxGeometry(1.9, 0.08, 1.38);
-      const roof = new THREE.Mesh(roofGeo, bodyMat);
-      roof.position.set(0.1, 1.25, 0);
-      carGroup.add(roof);
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.08, 1.38), bodyMat);
+      roof.position.set(0.1, 1.25, 0); carGroup.add(roof);
 
-      // Hood
-      const hoodGeo = new THREE.BoxGeometry(1.0, 0.12, 1.45);
-      const hood = new THREE.Mesh(hoodGeo, bodyMat);
-      hood.position.set(-1.25, 0.72, 0);
-      carGroup.add(hood);
+      const hood = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.12, 1.45), bodyMat);
+      hood.position.set(-1.25, 0.72, 0); carGroup.add(hood);
 
-      // 4 Wheels
       const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.22, 18);
       const wheelMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.7 });
       const wheelPositions = [
@@ -914,7 +1010,6 @@
         carGroup.add(wheel);
       });
 
-      // Split Gap Seam Lines (Neon)
       const seamGeo = new THREE.BoxGeometry(0.02, 0.56, 0.02);
       const seamMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
       const s1 = new THREE.Mesh(seamGeo, seamMat); s1.position.set(-0.65, 0.65, 0.81); carGroup.add(s1);
@@ -931,30 +1026,22 @@
       const robotMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.7, roughness: 0.3 });
       const jointMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 });
 
-      // Pedestal
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.2, 18), jointMat);
-      base.position.y = 0.1;
-      robotGroup.add(base);
+      base.position.y = 0.1; robotGroup.add(base);
 
-      // J1 & Arms
       const j1 = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.35, 16), robotMat);
-      j1.position.y = 0.35;
-      robotGroup.add(j1);
+      j1.position.y = 0.35; robotGroup.add(j1);
 
       const arm1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.9, 0.18), jointMat);
-      arm1.position.set(0.1, 0.85, 0); arm1.rotation.z = -0.3;
-      robotGroup.add(arm1);
+      arm1.position.set(0.1, 0.85, 0); arm1.rotation.z = -0.3; robotGroup.add(arm1);
 
       const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), robotMat);
-      arm2.position.set(0.45, 1.45, -0.2); arm2.rotation.z = 0.6;
-      robotGroup.add(arm2);
+      arm2.position.set(0.45, 1.45, -0.2); arm2.rotation.z = 0.6; robotGroup.add(arm2);
 
-      // Tool Head
       robotTCP = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.28), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
       robotTCP.position.set(0.7, 1.3, -0.4);
       robotGroup.add(robotTCP);
 
-      // 3D Laser Fan Beam
       const laserGeo = new THREE.ConeGeometry(0.45, 1.2, 4, 1, true);
       const laserMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.4, side: THREE.DoubleSide });
       laserBeam = new THREE.Mesh(laserGeo, laserMat);
@@ -966,7 +1053,8 @@
     }
 
     function buildInspectionPins() {
-      INSPECTION_POINTS.forEach((pt, idx) => {
+      pinMarkers = [];
+      inspectionPoints.forEach((pt, idx) => {
         const pinGroup = new THREE.Group();
         pinGroup.position.set(pt.targetPos[0], pt.targetPos[1], pt.targetPos[2]);
 
@@ -978,8 +1066,21 @@
         dot.position.y = 0.04;
         pinGroup.add(dot);
 
-        pinMarkers.push(pinGroup);
+        pinMarkers.push({ group: pinGroup, ring: ring, dot: dot });
         scene.add(pinGroup);
+      });
+      updatePinMarkerColors();
+    }
+
+    function updatePinMarkerColors() {
+      pinMarkers.forEach((p, idx) => {
+        const pt = inspectionPoints[idx];
+        const gapOk = (pt.gap >= (TARGET_GAP - GAP_TOL) && pt.gap <= (TARGET_GAP + GAP_TOL));
+        const flushOk = (pt.flush >= (TARGET_FLUSH - FLUSH_TOL) && pt.flush <= (TARGET_FLUSH + FLUSH_TOL));
+        const allOk = gapOk && flushOk;
+
+        p.ring.material.color.setHex(allOk ? 0x22c55e : 0xf43f5e);
+        p.dot.material.color.setHex(allOk ? 0x00f2fe : 0xf43f5e);
       });
     }
 
@@ -988,8 +1089,8 @@
       if (laserBeam) {
         laserBeam.material.opacity = 0.35 + Math.sin(Date.now() * 0.005) * 0.15;
       }
-      pinMarkers.forEach((pin, idx) => {
-        pin.position.y = INSPECTION_POINTS[idx].targetPos[1] + Math.sin(Date.now() * 0.004 + idx) * 0.015;
+      pinMarkers.forEach((p, idx) => {
+        p.group.position.y = inspectionPoints[idx].targetPos[1] + Math.sin(Date.now() * 0.004 + idx) * 0.015;
       });
       if (renderer && scene && camera) {
         renderer.render(scene, camera);
@@ -998,12 +1099,20 @@
 
     function selectInspectionPoint(idx) {
       currentPointIdx = idx;
-      const pt = INSPECTION_POINTS[idx];
+      const pt = inspectionPoints[idx];
 
       document.querySelectorAll('.pt-btn').forEach((btn, i) => {
-        btn.className = (i === idx)
-          ? 'pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center shadow-md'
-          : 'pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center';
+        const ptItem = inspectionPoints[i];
+        const ok = (ptItem.gap >= 3.0 && ptItem.gap <= 4.0) && (ptItem.flush >= -0.5 && ptItem.flush <= 0.5);
+        if (i === idx) {
+          btn.className = ok
+            ? 'pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center shadow-md'
+            : 'pt-btn p-1.5 rounded-lg bg-rose-950 border border-rose-400 text-rose-300 text-[11px] font-bold text-center shadow-md';
+        } else {
+          btn.className = ok
+            ? 'pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center'
+            : 'pt-btn p-1.5 rounded-lg bg-rose-950/40 border border-rose-900 text-rose-300 text-[11px] font-bold text-center';
+        }
       });
 
       if (robotTCP) {
@@ -1019,7 +1128,7 @@
       const allOk = gapOk && flushOk;
 
       const badge = document.getElementById('activePtStatus');
-      badge.textContent = allOk ? 'OK (합격)' : 'NG (규격 이탈)';
+      badge.textContent = allOk ? 'OK (합격)' : 'NG (규격 이탈 ⚠️)';
       badge.className = allOk
         ? 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700'
         : 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
@@ -1056,7 +1165,7 @@
       ctx.lineTo(w/2 - gap * 6, leftY);
       ctx.stroke();
 
-      // Right Panel
+      // Right Panel (Flush Step)
       ctx.strokeStyle = (Math.abs(flush) > FLUSH_TOL) ? '#f43f5e' : '#38bdf8';
       ctx.beginPath();
       const rightY = leftY + flush * 25;
@@ -1076,7 +1185,7 @@
       if (isAutoScanning) {
         btnText.textContent = '스캔 일시정지';
         autoScanTimer = setInterval(() => {
-          let next = (currentPointIdx + 1) % INSPECTION_POINTS.length;
+          let next = (currentPointIdx + 1) % inspectionPoints.length;
           selectInspectionPoint(next);
         }, 2000);
       } else {
@@ -1086,23 +1195,18 @@
     }
 
     function injectDistortion() {
-      const pt = INSPECTION_POINTS[currentPointIdx];
+      const pt = inspectionPoints[currentPointIdx];
       pt.gap = 4.35; pt.flush = 0.82;
-      pt.upperShim = '심(Shim) +0.45mm 추가 필요';
+      pt.upperShim = '심(Shim) +0.45mm 추가 처방 필요';
       pt.lowerShim = '체결 각도 +0.8° 보정 필요';
       document.getElementById('boltTorqueVal').textContent = '22.1 N·m (토크 부족 ⚠️)';
       document.getElementById('boltTorqueVal').className = 'text-rose-400 font-mono font-bold';
+      updatePinMarkerColors();
       selectInspectionPoint(currentPointIdx);
     }
 
     function resetProcessData() {
-      INSPECTION_POINTS[currentPointIdx].gap = 3.50;
-      INSPECTION_POINTS[currentPointIdx].flush = 0.00;
-      INSPECTION_POINTS[currentPointIdx].upperShim = '±0.00mm (최적 상태)';
-      INSPECTION_POINTS[currentPointIdx].lowerShim = '0.0° (정방향)';
-      document.getElementById('boltTorqueVal').textContent = '28.4 N·m';
-      document.getElementById('boltTorqueVal').className = 'text-emerald-400 font-mono font-bold';
-      selectInspectionPoint(currentPointIdx);
+      loadVehicleData(currentVehicleIdx);
     }
 
     let spcTrimChart = null;
@@ -1111,16 +1215,18 @@
       const labels = [], gapData = [], flushData = [];
       for (let i = 1; i <= 30; i++) {
         labels.push(`#${i}`);
-        gapData.push(3.50 + (Math.random() - 0.5) * 0.35);
-        flushData.push(0.00 + (Math.random() - 0.5) * 0.30);
+        // Introduce intermittent outlier vehicles
+        const isSpike = (i === 7 || i === 18 || i === 25);
+        gapData.push(isSpike ? 4.35 : (3.50 + (Math.random() - 0.5) * 0.35));
+        flushData.push(isSpike ? 0.85 : (0.00 + (Math.random() - 0.5) * 0.30));
       }
       spcTrimChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [
-            { label: '간극 (Gap: 3.5±0.5mm)', data: gapData, borderColor: '#00f2fe', borderWidth: 2, pointRadius: 2 },
-            { label: '단차 (Flush: 0.0±0.5mm)', data: flushData, borderColor: '#818cf8', borderWidth: 2, pointRadius: 2 }
+            { label: '간극 (Gap: 3.5±0.5mm)', data: gapData, borderColor: '#00f2fe', borderWidth: 2, pointRadius: 2.5 },
+            { label: '단차 (Flush: 0.0±0.5mm)', data: flushData, borderColor: '#818cf8', borderWidth: 2, pointRadius: 2.5 }
           ]
         },
         options: {
@@ -1140,8 +1246,8 @@
      * ============================================================ */
     const TARGET_H = 10.0;
     const TOLERANCE = 1.0;
-    const USL = TARGET_H + TOLERANCE; // 11.0mm
-    const LSL = TARGET_H - TOLERANCE; // 9.0mm
+    const USL = TARGET_H + TOLERANCE;
+    const LSL = TARGET_H - TOLERANCE;
     const HOLE_NAMES = ['홀 A', '홀 B', '홀 C', '홀 D'];
     
     const HOLE_H_TABLE = [
@@ -1499,7 +1605,7 @@
       lucide.createIcons();
       initThree();
       initTrimSPC();
-      selectInspectionPoint(2);
+      loadVehicleData(0);
       renderHoleControllers();
       initSideSPCChart();
     });
