@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>AutoFit-3D | 의장 공정 로봇 3D 갭·단차(Gap & Flush) 디지털 트윈</title>
+  <title>SmartFactory-Twin | 현대/기아 생산기술 통합 디지털 트윈 플랫폼</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -48,9 +48,8 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Three.js & OrbitControls -->
+  <!-- Three.js (r128) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
 
   <!-- KaTeX for Math rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -78,132 +77,145 @@
       border: 1px solid rgba(38, 49, 82, 0.6);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
     }
-
-    .glow-cyan {
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
 
-  <!-- ================= HEADER ================= -->
-  <header class="border-b border-dark-750 bg-dark-900/90 sticky top-0 z-40 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+  <!-- ================= HEADER WITH PROCESS TABS ================= -->
+  <header class="border-b border-dark-750 bg-dark-900/95 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row items-center justify-between gap-2.5">
       <!-- Title & Branding -->
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
-          <i data-lucide="scan-line" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-xl font-extrabold bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
-              AutoFit-3D | 의장 공정 6축 로봇 갭·단차 디지털 트윈
-            </h1>
-            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">
-              TRIM & FINAL ASSEMBLY
-            </span>
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
           </div>
-          <p class="text-xs text-slate-400">
-            인라인 3D 레이저 스캐닝 기반 무빙파트(Door/Hood) Gap & Flush 실시간 계측 및 힌지 자동 처방
-          </p>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
+                HMG SmartFactory Twin
+              </h1>
+              <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">
+                PRO-DX
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400">현대/기아 완성차 생산기술 디지털 트윈 포털</p>
+          </div>
+        </div>
+
+        <!-- Mobile Sound & Guide buttons -->
+        <div class="flex md:hidden items-center space-x-1.5">
+          <button onclick="toggleAudio()" class="p-1.5 rounded-lg bg-dark-800 border border-dark-700 text-cyan-400">
+            <i id="soundIconMob" data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Header Action Buttons -->
-      <div class="flex items-center space-x-2">
+      <!-- Process Switcher Tabs (2-in-1 Dual Twin) -->
+      <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-750 text-xs w-full md:w-auto justify-center">
+        <button id="tabBtn-trim" onclick="switchProcessTab('trim')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md">
+          <i data-lucide="scan-line" class="w-4 h-4"></i>
+          <span>① 의장: 3D 로봇 갭·단차 트윈</span>
+        </button>
+        <button id="tabBtn-sidesill" onclick="switchProcessTab('sidesill')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200">
+          <i data-lucide="wrench" class="w-4 h-4"></i>
+          <span>② 조립: 사이드실 H값 최적화</span>
+        </button>
+      </div>
+
+      <!-- Header Action Buttons (Desktop) -->
+      <div class="hidden md:flex items-center space-x-2">
         <button id="soundBtn" onclick="toggleAudio()" class="p-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 transition-colors" title="효과음 토글">
           <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
         </button>
 
         <button onclick="openModal('studyModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 border border-cyan-900 text-cyan-300 text-xs font-semibold transition-all">
           <i data-lucide="graduation-cap" class="w-4 h-4 text-cyan-400"></i>
-          <span class="hidden sm:inline">의장 공정 학습 & 면접 가이드</span>
+          <span>생기 도메인 & 면접 가이드</span>
         </button>
 
-        <a href="https://github.com/jiu7021/side-sill-welding-sim" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold transition-all shadow-md">
+        <a href="https://github.com/jiu7021/side-sill-welding-sim" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-white text-xs font-bold transition-all">
           <i data-lucide="github" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">GitHub</span>
+          <span>GitHub</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-4">
+  <!-- ================= TAB 1: TRIM & FINAL ASSEMBLY (3D ROBOT GAP & FLUSH) ================= -->
+  <main id="tabContent-trim" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-4">
     
     <!-- Top Process KPI Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="glass-panel rounded-xl p-3.5 flex items-center space-x-3">
-        <div class="p-2.5 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
-          <i data-lucide="maximize-2" class="w-5 h-5"></i>
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
+          <i data-lucide="maximize-2" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">기준 간극 (Gap Target)</div>
-          <div class="text-base sm:text-lg font-bold text-white font-mono">3.50 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">기준 간극 (Gap Target)</div>
+          <div class="text-base font-bold text-white font-mono">3.50 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
         </div>
       </div>
 
-      <div class="glass-panel rounded-xl p-3.5 flex items-center space-x-3">
-        <div class="p-2.5 rounded-lg bg-blue-950 border border-blue-800 text-blue-400">
-          <i data-lucide="align-vertical-space-around" class="w-5 h-5"></i>
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-blue-950 border border-blue-800 text-blue-400">
+          <i data-lucide="align-vertical-space-around" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">기준 단차 (Flush Target)</div>
-          <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono">0.00 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">기준 단차 (Flush Target)</div>
+          <div class="text-base font-bold text-cyan-300 font-mono">0.00 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
         </div>
       </div>
 
-      <div class="glass-panel rounded-xl p-3.5 flex items-center space-x-3">
-        <div class="p-2.5 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400">
-          <i data-lucide="check-circle" class="w-5 h-5"></i>
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">의장 합격 수율 (Yield)</div>
-          <div id="topYield" class="text-base sm:text-lg font-bold text-emerald-400 font-mono">96.8 %</div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">의장 합격 수율 (Yield)</div>
+          <div id="topYield" class="text-base font-bold text-emerald-400 font-mono">96.8 %</div>
         </div>
       </div>
 
-      <div class="glass-panel rounded-xl p-3.5 flex items-center space-x-3">
-        <div class="p-2.5 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
-          <i data-lucide="activity" class="w-5 h-5"></i>
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
+          <i data-lucide="activity" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">공정능력지수 (Cpk)</div>
-          <div id="topCpk" class="text-base sm:text-lg font-bold text-indigo-300 font-mono">1.42</div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">공정능력지수 (Cpk)</div>
+          <div id="topCpk" class="text-base font-bold text-indigo-300 font-mono">1.42</div>
         </div>
       </div>
     </div>
 
-    <!-- Middle Workspace: 3D Twin Canvas + Real-Time Metrology Panel -->
+    <!-- Workspace: 3D WebGL Canvas + Real-Time Metrology Panel -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
       
       <!-- [LEFT 60%] 3D WebGL Digital Twin Canvas -->
-      <div class="lg:col-span-7 glass-panel rounded-2xl p-4 flex flex-col relative overflow-hidden">
-        <!-- 3D Canvas Top Bar -->
+      <div class="lg:col-span-7 glass-panel rounded-2xl p-3.5 sm:p-4 flex flex-col relative overflow-hidden">
         <div class="flex items-center justify-between mb-2 z-10">
           <div class="flex items-center gap-2">
-            <span class="relative flex h-2.5 w-2.5">
+            <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
             </span>
             <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-              3D WebGL 인터랙티브 의장 라인 로봇 관제
+              3D WebGL 의장 라인 6축 로봇 인라인 계측
             </h2>
           </div>
           
-          <!-- View Control Buttons -->
-          <div class="flex items-center gap-1.5 bg-dark-900/80 p-1 rounded-lg border border-dark-750 text-xs">
-            <button onclick="setCameraView('iso')" class="px-2 py-1 rounded hover:bg-dark-750 text-slate-300">Iso</button>
-            <button onclick="setCameraView('front')" class="px-2 py-1 rounded hover:bg-dark-750 text-slate-300">Front</button>
-            <button onclick="setCameraView('side')" class="px-2 py-1 rounded hover:bg-dark-750 text-slate-300">Side</button>
-            <button onclick="setCameraView('top')" class="px-2 py-1 rounded hover:bg-dark-750 text-slate-300">Top</button>
+          <div class="flex items-center gap-1 bg-dark-900/80 p-0.5 rounded-lg border border-dark-750 text-xs">
+            <button onclick="setCameraView('iso')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Iso</button>
+            <button onclick="setCameraView('front')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Front</button>
+            <button onclick="setCameraView('side')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Side</button>
+            <button onclick="setCameraView('top')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Top</button>
           </div>
         </div>
 
         <!-- Three.js Container -->
-        <div id="threeContainer" class="w-full h-[360px] sm:h-[420px] bg-dark-950 rounded-xl relative overflow-hidden border border-dark-800 cursor-grab active:cursor-grabbing">
-          <!-- Floating Status Overlay -->
-          <div class="absolute top-3 left-3 z-10 bg-dark-900/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-dark-750 text-[11px] font-mono space-y-0.5 pointer-events-none">
+        <div id="threeContainer" class="w-full h-[340px] sm:h-[400px] bg-dark-950 rounded-xl relative overflow-hidden border border-dark-800 cursor-grab active:cursor-grabbing">
+          <!-- Canvas Overlay Elements -->
+          <div class="absolute top-3 left-3 z-10 bg-dark-900/85 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-dark-750 text-[11px] font-mono space-y-0.5 pointer-events-none">
             <div class="text-cyan-400 font-bold flex items-center gap-1.5">
               <i data-lucide="bot" class="w-3.5 h-3.5"></i>
               <span id="robotStatusText">ROBOT SCANNING : PT-03 [FL DOOR]</span>
@@ -211,16 +223,13 @@
             <div class="text-slate-400 text-[10px]">TCP: X: 1240.2 Y: -620.5 Z: 890.1 mm</div>
           </div>
 
-          <!-- Bottom Control Tips -->
-          <div class="absolute bottom-3 left-3 z-10 text-[10px] text-slate-500 font-mono flex items-center gap-2 pointer-events-none">
-            <span>🖱️ 마우스 좌클릭: 360° 회전</span>
-            <span>•</span>
-            <span>우클릭: 이동</span>
+          <div class="absolute bottom-3 left-3 z-10 text-[10px] text-slate-500 font-mono flex items-center gap-1.5 pointer-events-none">
+            <span>🖱️ 마우스 좌클릭 드래그: 360° 회전</span>
             <span>•</span>
             <span>휠: 줌</span>
           </div>
 
-          <div class="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+          <div class="absolute bottom-3 right-3 z-10">
             <button onclick="toggleAutoScan()" id="autoScanBtn" class="px-2.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700 text-cyan-300 font-semibold text-xs flex items-center gap-1.5 shadow-md">
               <i data-lucide="play" class="w-3.5 h-3.5"></i>
               <span id="autoScanText">로봇 자동 연속 스캔</span>
@@ -230,19 +239,19 @@
 
         <!-- 8 Inspection Points Selector Quick Buttons -->
         <div class="mt-3 grid grid-cols-4 sm:grid-cols-8 gap-1.5">
-          <button onclick="selectInspectionPoint(0)" id="ptBtn-0" class="pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-500 text-cyan-300 text-[11px] font-bold text-center transition-all">PT-01<br/><span class="text-[9px] font-normal text-slate-400">Hood-L</span></button>
-          <button onclick="selectInspectionPoint(1)" id="ptBtn-1" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-02<br/><span class="text-[9px] font-normal text-slate-400">Hood-R</span></button>
-          <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-03<br/><span class="text-[9px] font-normal text-slate-400">FL-Fender</span></button>
-          <button onclick="selectInspectionPoint(3)" id="ptBtn-3" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-04<br/><span class="text-[9px] font-normal text-slate-400">FR-Fender</span></button>
-          <button onclick="selectInspectionPoint(4)" id="ptBtn-4" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-05<br/><span class="text-[9px] font-normal text-slate-400">FL-RL Door</span></button>
-          <button onclick="selectInspectionPoint(5)" id="ptBtn-5" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-06<br/><span class="text-[9px] font-normal text-slate-400">FR-RR Door</span></button>
-          <button onclick="selectInspectionPoint(6)" id="ptBtn-6" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-07<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp L</span></button>
-          <button onclick="selectInspectionPoint(7)" id="ptBtn-7" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center transition-all">PT-08<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp R</span></button>
+          <button onclick="selectInspectionPoint(0)" id="ptBtn-0" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-01<br/><span class="text-[9px] font-normal text-slate-400">Hood-L</span></button>
+          <button onclick="selectInspectionPoint(1)" id="ptBtn-1" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-02<br/><span class="text-[9px] font-normal text-slate-400">Hood-R</span></button>
+          <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center transition-all">PT-03<br/><span class="text-[9px] font-normal text-slate-400">FL-Fender</span></button>
+          <button onclick="selectInspectionPoint(3)" id="ptBtn-3" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-04<br/><span class="text-[9px] font-normal text-slate-400">FR-Fender</span></button>
+          <button onclick="selectInspectionPoint(4)" id="ptBtn-4" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-05<br/><span class="text-[9px] font-normal text-slate-400">FL-RL Door</span></button>
+          <button onclick="selectInspectionPoint(5)" id="ptBtn-5" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-06<br/><span class="text-[9px] font-normal text-slate-400">FR-RR Door</span></button>
+          <button onclick="selectInspectionPoint(6)" id="ptBtn-6" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-07<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp L</span></button>
+          <button onclick="selectInspectionPoint(7)" id="ptBtn-7" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-08<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp R</span></button>
         </div>
       </div>
 
       <!-- [RIGHT 40%] Real-time Inspection & AI Prescriptive Hinge Panel -->
-      <div class="lg:col-span-5 space-y-4">
+      <div class="lg:col-span-5 space-y-3.5">
         
         <!-- Live Measured Gap & Flush Card -->
         <div class="glass-panel rounded-2xl p-4">
@@ -258,48 +267,42 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="grid grid-cols-2 gap-2.5 mb-3">
             <!-- Gap Meter -->
-            <div class="p-3 rounded-xl bg-dark-900/90 border border-dark-750">
+            <div class="p-2.5 rounded-xl bg-dark-900/90 border border-dark-750">
               <div class="flex justify-between text-xs text-slate-400 mb-1">
                 <span>간극 (Gap)</span>
                 <span class="font-mono text-[10px]">목표: 3.50mm</span>
               </div>
-              <div id="liveGapVal" class="text-xl font-bold font-mono text-white">3.48 <span class="text-xs text-slate-400">mm</span></div>
-              <div class="w-full bg-dark-950 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div id="gapProgressBar" class="h-full bg-cyan-400 rounded-full transition-all duration-300" style="width: 70%"></div>
-              </div>
+              <div id="liveGapVal" class="text-lg sm:text-xl font-bold font-mono text-white">3.48 <span class="text-xs text-slate-400">mm</span></div>
             </div>
 
             <!-- Flush Meter -->
-            <div class="p-3 rounded-xl bg-dark-900/90 border border-dark-750">
+            <div class="p-2.5 rounded-xl bg-dark-900/90 border border-dark-750">
               <div class="flex justify-between text-xs text-slate-400 mb-1">
                 <span>단차 (Flush)</span>
                 <span class="font-mono text-[10px]">목표: 0.00mm</span>
               </div>
-              <div id="liveFlushVal" class="text-xl font-bold font-mono text-cyan-300">-0.05 <span class="text-xs text-slate-400">mm</span></div>
-              <div class="w-full bg-dark-950 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div id="flushProgressBar" class="h-full bg-emerald-400 rounded-full transition-all duration-300" style="width: 50%"></div>
-              </div>
+              <div id="liveFlushVal" class="text-lg sm:text-xl font-bold font-mono text-cyan-300">-0.05 <span class="text-xs text-slate-400">mm</span></div>
             </div>
           </div>
 
           <!-- 2D Laser Triangulation Profile Slice Canvas -->
-          <div class="p-2.5 rounded-xl bg-dark-950 border border-dark-800">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1.5">
+          <div class="p-2 rounded-xl bg-dark-950 border border-dark-800">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1">
               <span>3D 레이저 삼각측량 단면 프로파일 (Laser Profile)</span>
               <span class="text-cyan-400">100 Pts Scan</span>
             </div>
-            <canvas id="laserCanvas" class="w-full h-24 bg-dark-950 rounded"></canvas>
+            <canvas id="laserCanvas" class="w-full h-20 bg-dark-950 rounded"></canvas>
           </div>
         </div>
 
         <!-- 💡 AI Prescriptive Hinge Alignment Card -->
         <div class="glass-panel rounded-2xl p-4 border border-cyan-900/60 bg-gradient-to-b from-dark-900 via-dark-850 to-dark-900">
-          <div class="flex items-center justify-between border-b border-dark-750 pb-2 mb-2.5">
+          <div class="flex items-center justify-between border-b border-dark-750 pb-2 mb-2">
             <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-lg bg-cyan-950 border border-cyan-700 flex items-center justify-center text-cyan-300">
-                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+              <div class="w-5 h-5 rounded-lg bg-cyan-950 border border-cyan-700 flex items-center justify-center text-cyan-300">
+                <i data-lucide="wrench" class="w-3 h-3"></i>
               </div>
               <h3 class="text-xs sm:text-sm font-bold text-white">
                 AI 도어 힌지(Hinge) 자동 얼라인먼트 처방
@@ -309,25 +312,25 @@
           </div>
 
           <div class="space-y-2 text-xs">
-            <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
-              <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+            <div class="p-2 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
+              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
               <div>
-                <span class="font-bold text-white">상단 힌지 보정 권장:</span>
+                <span class="font-bold text-white">상단 힌지:</span>
                 <span id="upperHingePrescription" class="font-mono text-cyan-300 font-bold ml-1">심(Shim) 유지 (±0.00mm)</span>
               </div>
             </div>
 
-            <div class="p-2.5 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
-              <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+            <div class="p-2 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
+              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
               <div>
-                <span class="font-bold text-white">하단 힌지 보정 권장:</span>
+                <span class="font-bold text-white">하단 힌지:</span>
                 <span id="lowerHingePrescription" class="font-mono text-cyan-300 font-bold ml-1">체결 각도 정방향 (0.0°)</span>
               </div>
             </div>
 
-            <div class="p-2 rounded-lg bg-dark-900 border border-dark-800 text-[11px] text-slate-400 leading-relaxed">
-              <span class="text-slate-300 font-semibold">체결 토크 상태:</span>
-              <span id="boltTorqueVal" class="text-emerald-400 font-mono font-bold">28.4 N·m (규격: 28~32 N·m)</span>
+            <div class="p-1.5 rounded-lg bg-dark-900 border border-dark-800 text-[11px] text-slate-400 flex justify-between">
+              <span>체결 토크: <strong id="boltTorqueVal" class="text-emerald-400 font-mono">28.4 N·m</strong></span>
+              <span class="text-slate-500 font-mono">규격: 28~32 N·m</span>
             </div>
           </div>
         </div>
@@ -336,45 +339,264 @@
 
     </div>
 
-    <!-- Bottom Statistical Process Control (SPC) & Real-world Dataset Section -->
-    <div class="glass-panel rounded-2xl p-4 sm:p-5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-3 mb-3">
+    <!-- Bottom Statistical Process Control (SPC) Section -->
+    <div class="glass-panel rounded-2xl p-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-2.5 mb-2.5">
         <div class="flex items-center gap-2">
           <i data-lucide="line-chart" class="w-4 h-4 text-cyan-400"></i>
           <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-            인라인 100대 연속 생산 Gap & Flush SPC 관리도 (Trend Monitor)
+            인라인 30대 연속 생산 Gap & Flush SPC 관리도 (Trend Monitor)
           </h2>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="injectDistortion()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1">
-            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-400"></i>
-            <span>의장 단차 불량(NG) 강제 주입</span>
+          <button onclick="injectDistortion()" class="px-2 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="alert-triangle" class="w-3 h-3 text-rose-400"></i>
+            <span>단차 불량(NG) 강제 주입</span>
           </button>
-          <button onclick="resetProcessData()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <button onclick="resetProcessData()" class="px-2 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="refresh-cw" class="w-3 h-3 text-cyan-400"></i>
             <span>데이터 초기화</span>
           </button>
         </div>
       </div>
 
-      <div class="h-44 sm:h-52 w-full">
+      <div class="h-40 sm:h-48 w-full">
         <canvas id="spcTrendChart"></canvas>
       </div>
     </div>
 
   </main>
 
+  <!-- ================= TAB 2: SIDE-SILL H-VALUE LINER SIMULATOR (ORIGINAL RESTORED) ================= -->
+  <main id="tabContent-sidesill" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-4 hidden">
+    
+    <!-- Top Summary Banner -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
+          <i data-lucide="target" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">목표 H값 (Target)</div>
+          <div class="text-base font-bold text-white font-mono">10.0 <span class="text-xs text-slate-400">mm</span></div>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-blue-950 border border-blue-800 text-blue-400">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">정밀 허용 공차</div>
+          <div class="text-base font-bold text-cyan-300 font-mono">± 1.0 <span class="text-xs text-slate-400">mm (9~11mm)</span></div>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">공정 수율 (Yield)</div>
+          <div id="yieldStat" class="text-base font-bold text-emerald-400 font-mono">- %</div>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
+        <div class="p-2 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-[10px] font-medium text-slate-400 uppercase">공정능력지수 (Cpk)</div>
+          <div id="cpkStat" class="text-base font-bold text-indigo-300 font-mono">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Interactive Area: 2D Twin Canvas + Shim Control Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      
+      <!-- [LEFT] 2D Digital Twin & Sensor Dashboard (7 Cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="glass-panel rounded-2xl p-4 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3 border-b border-dark-750 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <h2 class="text-xs sm:text-sm font-bold tracking-wider text-slate-200 uppercase">
+                사이드실 & 검사구 2D 디지털 트윈 실시간 계측
+              </h2>
+            </div>
+            <span class="text-[11px] text-cyan-400 font-mono">Tolerance: ±1.0mm (9.0~11.0mm)</span>
+          </div>
+
+          <!-- Dynamic SVG Canvas -->
+          <div class="w-full bg-dark-950 rounded-xl p-2 border border-dark-800 relative">
+            <svg id="twinSvg" class="w-full h-auto max-h-[280px]" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rendered via JS dynamically -->
+            </svg>
+            <div class="absolute bottom-2 left-3 text-[10px] text-slate-500 font-mono flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span> 합격(OK: 9.0 ~ 11.0mm)
+              <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span> 정밀 공차 이탈(NG)
+            </div>
+          </div>
+
+          <!-- Simulation Execution Controls -->
+          <div class="mt-3.5 flex flex-wrap gap-2 items-center">
+            <button onclick="runSimulation(5)" class="flex-1 min-w-[160px] py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-cyan-900/30 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+              <span>공정 실행 (5회 생산 런)</span>
+            </button>
+
+            <button onclick="runAutoTuning()" class="py-2 px-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 font-semibold text-xs transition-all flex items-center gap-1 shadow-sm active:scale-[0.98]">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>AI 자동 최적화 탐색</span>
+            </button>
+
+            <button onclick="resetAllLiners()" class="py-2 px-2.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-400 hover:text-slate-200 text-xs transition-colors" title="설정 초기화">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time SPC Trend Chart (Side-Sill) -->
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wide">
+                생산 런별 H값 산포 트렌드 모니터링 (SPC)
+              </h3>
+            </div>
+            <span class="text-[11px] text-cyan-300 font-mono">Target: 10.0mm (9.0~11.0mm)</span>
+          </div>
+          <div class="h-40 sm:h-44 w-full">
+            <canvas id="spcChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- [RIGHT] Shim/Liner Controls & Process Settings (5 Cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        
+        <!-- Hole Shim Controllers -->
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2.5 border-b border-dark-750 pb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+              <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+                홀별 라이너(Shim) 개수 설정
+              </h2>
+            </div>
+            <span class="text-[10px] text-cyan-400 font-mono bg-cyan-950 px-2 py-0.5 rounded border border-cyan-900">
+              비례 증가 모드
+            </span>
+          </div>
+
+          <!-- Dynamic 4 Holes List -->
+          <div id="holeControlsContainer" class="space-y-2">
+            <!-- Injected via JS -->
+          </div>
+
+          <div class="mt-3 p-2.5 rounded-xl bg-dark-900/80 border border-dark-750 text-[11px] text-slate-400 flex items-start gap-2">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5"></i>
+            <div>
+              <span class="text-slate-300 font-semibold">정밀 공차 가이드:</span>
+              최적 개수(홀A: 8개, 홀B: 10개, 홀C: 11개, 홀D: 9개)에서 벗어나면 NG가 발생합니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- Environmental Noise & Degradation Params -->
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2.5 border-b border-dark-750 pb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+                용접 열변형 & 설비 열화 오차 설정
+              </h3>
+            </div>
+            <span class="text-[10px] text-amber-300 font-mono bg-amber-950 px-1.5 py-0.5 rounded border border-amber-900">
+              Synthetic Noise
+            </span>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>용접 열변형 표준편차 ($\sigma$)</span>
+                <span id="noiseThermalVal" class="font-mono text-cyan-400 font-bold">± 0.55 mm</span>
+              </div>
+              <input type="range" id="noiseThermalSlider" min="0.1" max="1.5" step="0.05" value="0.55" oninput="updateNoiseParam()" class="w-full accent-cyan-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>지그 전극 마모/열화 드리프트</span>
+                <span id="noiseDegradeVal" class="font-mono text-amber-400 font-bold">보통 (Standard)</span>
+              </div>
+              <input type="range" id="noiseDegradeSlider" min="0" max="2" step="1" value="1" oninput="updateNoiseParam()" class="w-full accent-amber-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>순간 스패터 이상치(Outlier) 확률</span>
+                <span id="noiseSpikeVal" class="font-mono text-rose-400 font-bold">10 %</span>
+              </div>
+              <input type="range" id="noiseSpikeSlider" min="0" max="30" step="5" value="10" oninput="updateNoiseParam()" class="w-full accent-rose-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom History & Analytics Log Section (Side-Sill) -->
+    <div class="glass-panel rounded-2xl p-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-2.5 mb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="history" class="w-4 h-4 text-cyan-400"></i>
+          <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+            생산 런 히스토리 및 통계 분석 로그
+          </h2>
+          <span id="bestTryBadge" class="hidden text-xs px-2 py-0.5 rounded-md bg-cyan-950 text-cyan-300 border border-cyan-700 font-medium"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportCSV()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs flex items-center gap-1">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>CSV 저장</span>
+          </button>
+          <button onclick="clearHistory()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>이력 삭제</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="historyLogContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+        <div class="text-center py-6 text-slate-500 text-xs font-mono">
+          아직 생산 이력이 없습니다. 상단의 [공정 실행 (5회 생산 런)] 버튼을 클릭하여 시뮬레이션을 가동하세요.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
   <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-dark-750 bg-dark-900/60 py-4 mt-6">
+  <footer class="border-t border-dark-750 bg-dark-900/60 py-3.5 mt-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
       <div>
-        AutoFit-3D | 현대자동차·기아 의장 공정 6축 로봇 갭·단차 디지털 트윈
+        HMG SmartFactory Twin | 완성차 생산기술 의장 3D 로봇 갭단차 & 사이드실 H값 최적화 디지털 트윈
       </div>
       <div class="flex items-center gap-4">
-        <span>Standard: Gap 3.5mm / Flush 0.0mm (±0.5mm)</span>
+        <span>Target: Gap 3.5mm / Flush 0.0mm / H 10.0mm (±1.0mm)</span>
         <span>•</span>
-        <span class="text-slate-400 font-mono">Three.js WebGL Engine</span>
+        <span class="text-slate-400 font-mono">Three.js WebGL & SVG Twin</span>
       </div>
     </div>
   </footer>
@@ -385,7 +607,7 @@
       <div class="flex items-center justify-between border-b border-dark-700 pb-3">
         <div class="flex items-center gap-2 text-cyan-400">
           <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-          <h2 class="text-base sm:text-lg font-bold text-white">완성차 의장(Trim & Final) 공정 엔지니어링 가이드 & 면접 전략</h2>
+          <h2 class="text-base sm:text-lg font-bold text-white">현대/기아 완성차 생산기술 엔지니어링 가이드 & 면접 전략</h2>
         </div>
         <button onclick="closeModal('studyModal')" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -395,15 +617,15 @@
       <!-- Section 1: Process Background -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="car" class="w-4 h-4"></i> 1. 의장 공정(Trim & Assembly)에서 갭/단차(Gap & Flush)가 왜 중요한가?
+          <i data-lucide="car" class="w-4 h-4"></i> 1. 의장 공정(Trim & Assembly) 갭/단차(Gap & Flush)의 핵심 중요성
         </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900/90 border border-dark-750 text-xs text-slate-300 space-y-2 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-2 leading-relaxed">
           <p>
-            <strong>의장 공정</strong>은 도장된 차체(BIW)에 도어, 글래스, 콕핏, 시트, 전장 모듈을 장착하는 완성차 최종 단계입니다.
+            <strong>의장 공정</strong>은 도장된 차체에 도어, 글래스, 콕핏, 시트, 전장 모듈을 장착하는 완성차 최종 단계입니다.
           </p>
           <ul class="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
-            <li><strong class="text-slate-200">간극(Gap):</strong> 도어-펜더, 후드-램프 등 인접 패널 사이의 수평 틈새 (통상 기준: $3.5\text{mm} \pm 0.5\text{mm}$)</li>
-            <li><strong class="text-slate-200">단차(Flush):</strong> 인접 패널 간의 높낮이 단차 및 평탄도 (통상 기준: $0.0\text{mm} \pm 0.5\text{mm}$)</li>
+            <li><strong class="text-slate-200">간극(Gap):</strong> 도어-펜더, 후드-램프 등 인접 패널 사이의 수평 틈새 (기준: $3.5\text{mm} \pm 0.5\text{mm}$)</li>
+            <li><strong class="text-slate-200">단차(Flush):</strong> 인접 패널 간의 높낮이 단차 및 평탄도 (기준: $0.0\text{mm} \pm 0.5\text{mm}$)</li>
             <li><strong class="text-slate-200">품질 영향:</strong> 단차가 $0.5\text{mm}$ 이상 벌어지면 고속 주행 시 <strong>풍절음(Wind Noise)</strong>, <strong>웨더스트립 기밀성 저하로 인한 누수</strong>, 외관 단차 감성 품질 불량으로 직결됩니다.</li>
           </ul>
         </div>
@@ -412,9 +634,9 @@
       <!-- Section 2: Mathematical & Optical Measurement -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="function-square" class="w-4 h-4"></i> 2. 6축 로봇 + 3D 레이저 삼각측량(Laser Triangulation) 원리
+          <i data-lucide="function-square" class="w-4 h-4"></i> 2. 6축 로봇 + 3D 레이저 삼각측량(Laser Triangulation) 광학 원리
         </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900/90 border border-dark-750 text-xs text-slate-300 space-y-2 font-mono">
+        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-2 font-mono">
           <p class="text-cyan-300">
             $$Z = \frac{B \cdot f}{x_{\text{sensor}} + f \cdot \tan(\theta)}$$
           </p>
@@ -429,7 +651,7 @@
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
           <i data-lucide="cpu" class="w-4 h-4"></i> 3. AI 힌지(Hinge) 자동 처방 알고리즘
         </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900/90 border border-dark-750 text-xs text-slate-300 space-y-1.5 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-1.5 leading-relaxed">
           <p>
             도어 처짐(Sagging) 및 Flush 오차 $\Delta F$가 감지되었을 때, 힌지 간격 거리 $L_{\text{hinge}}$와 도어 길이 $L_{\text{door}}$의 기구학적 레버 비율을 통해 필요한 심(Shim) 라이너 두께 $\Delta t_{\text{shim}}$를 자동 계산합니다:
           </p>
@@ -462,15 +684,48 @@
     </div>
   </div>
 
-  <!-- ================= THREE.JS & APPLICATION LOGIC ================= -->
+  <!-- ================= JAVASCRIPT: TAB 1 (TRIM 3D ROBOT) + TAB 2 (SIDE-SILL) ================= -->
   <script>
     /* ============================================================
-     * 1. GLOBAL STATE & INSPECTION POINTS DEFINITION
+     * TAB SWITCHER LOGIC
      * ============================================================ */
-    const TARGET_GAP = 3.50; // mm
-    const TARGET_FLUSH = 0.00; // mm
-    const GAP_TOL = 0.50; // 3.00 ~ 4.00mm
-    const FLUSH_TOL = 0.50; // -0.50 ~ +0.50mm
+    let currentTab = 'trim';
+
+    function switchProcessTab(tabId) {
+      currentTab = tabId;
+      const trimBtn = document.getElementById('tabBtn-trim');
+      const sideBtn = document.getElementById('tabBtn-sidesill');
+      const trimContent = document.getElementById('tabContent-trim');
+      const sideContent = document.getElementById('tabContent-sidesill');
+
+      if (tabId === 'trim') {
+        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
+        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        trimContent.classList.remove('hidden');
+        sideContent.classList.add('hidden');
+        setTimeout(() => {
+          onWindowResize();
+          if (spcTrimChart) spcTrimChart.resize();
+        }, 50);
+      } else {
+        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
+        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        sideContent.classList.remove('hidden');
+        trimContent.classList.add('hidden');
+        setTimeout(() => {
+          renderTwinVisualizer();
+          if (chartInstance) chartInstance.resize();
+        }, 50);
+      }
+    }
+
+    /* ============================================================
+     * TAB 1: TRIM 3D ROBOT TWIN ENGINE
+     * ============================================================ */
+    const TARGET_GAP = 3.50;
+    const TARGET_FLUSH = 0.00;
+    const GAP_TOL = 0.50;
+    const FLUSH_TOL = 0.50;
 
     const INSPECTION_POINTS = [
       { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.48, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -483,44 +738,42 @@
       { id: 7, code: 'PT-08', name: 'Tailgate - Right Quarter', targetPos: [1.65, 0.85, -0.65], gap: 3.49, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
     ];
 
-    let currentPointIdx = 2; // Start with FL-Door
+    let currentPointIdx = 2;
     let isAutoScanning = false;
     let autoScanTimer = null;
     let audioEnabled = true;
 
-    // SPC History Data
-    let spcHistory = [];
-    let spcChartInstance = null;
-
-    /* ============================================================
-     * 2. THREE.JS 3D ENVIRONMENT SETUP
-     * ============================================================ */
-    let scene, camera, renderer, controls;
-    let carGroup, robotGroup, laserBeam, laserPointLights = [];
+    // Three.js State
+    let scene, camera, renderer;
+    let carGroup, robotGroup, laserBeam;
     let pinMarkers = [];
+
+    // Custom Orbit Interaction State (No CDN dependency)
+    let isDragging = false;
+    let prevMouseX = 0, prevMouseY = 0;
+    let sphericalTheta = -0.7, sphericalPhi = 1.0, sphericalRadius = 5.2;
 
     function initThree() {
       const container = document.getElementById('threeContainer');
       if (!container) return;
 
-      const width = container.clientWidth || 600;
-      const height = container.clientHeight || 400;
+      const width = container.clientWidth || 550;
+      const height = container.clientHeight || 360;
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x06080e);
       scene.fog = new THREE.FogExp2(0x06080e, 0.08);
 
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(-3.2, 2.4, 3.8);
+      updateCameraSpherical();
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      // Canvas insertion (prevent removing UI overlays)
-      let oldCanvas = container.querySelector('canvas');
-      if (oldCanvas) oldCanvas.remove();
+
+      // Append Canvas safely
+      let old = container.querySelector('canvas');
+      if (old) old.remove();
       renderer.domElement.style.position = 'absolute';
       renderer.domElement.style.top = '0';
       renderer.domElement.style.left = '0';
@@ -529,106 +782,126 @@
       renderer.domElement.style.zIndex = '1';
       container.insertBefore(renderer.domElement, container.firstChild);
 
-      if (typeof THREE.OrbitControls !== 'undefined') {
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2 + 0.05;
-        controls.minDistance = 1.5;
-        controls.maxDistance = 10;
-        controls.target.set(0, 0.6, 0);
-      } else {
-        console.warn('OrbitControls not loaded, fallback to static camera');
-      }
-
       // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
-      const dirLight = new THREE.DirectionalLight(0x00f2fe, 1.2);
+      const dirLight = new THREE.DirectionalLight(0x00f2fe, 1.4);
       dirLight.position.set(5, 8, 5);
-      dirLight.castShadow = true;
       scene.add(dirLight);
 
-      const dirLight2 = new THREE.DirectionalLight(0x3b82f6, 0.8);
+      const dirLight2 = new THREE.DirectionalLight(0x3b82f6, 1.0);
       dirLight2.position.set(-5, 6, -5);
       scene.add(dirLight2);
 
       // Grid Floor
-      const grid = new THREE.GridHelper(12, 24, 0x00f2fe, 0x151b2d);
+      const grid = new THREE.GridHelper(10, 20, 0x00f2fe, 0x151b2d);
       grid.position.y = 0;
       scene.add(grid);
 
-      // Build 3D Objects
+      // Build 3D Meshes
       buildCarModel();
       buildIndustrialRobot();
       buildInspectionPins();
 
+      // Custom Mouse Drag Orbit Controls
+      setupCustomOrbit(container);
+
       window.addEventListener('resize', onWindowResize);
-      animate();
+      animateThree();
+    }
+
+    function updateCameraSpherical() {
+      const x = sphericalRadius * Math.sin(sphericalPhi) * Math.sin(sphericalTheta);
+      const y = sphericalRadius * Math.cos(sphericalPhi);
+      const z = sphericalRadius * Math.sin(sphericalPhi) * Math.cos(sphericalTheta);
+      camera.position.set(x, y + 0.6, z);
+      camera.lookAt(0, 0.6, 0);
+    }
+
+    function setupCustomOrbit(container) {
+      container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      });
+
+      window.addEventListener('mouseup', () => { isDragging = false; });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - prevMouseX;
+        const deltaY = e.clientY - prevMouseY;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+
+        sphericalTheta -= deltaX * 0.008;
+        sphericalPhi = Math.max(0.15, Math.min(Math.PI / 2 - 0.05, sphericalPhi - deltaY * 0.008));
+        updateCameraSpherical();
+      });
+
+      container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        sphericalRadius = Math.max(2.5, Math.min(9.0, sphericalRadius + e.deltaY * 0.005));
+        updateCameraSpherical();
+      }, { passive: false });
+    }
+
+    function setCameraView(view) {
+      if (view === 'iso') {
+        sphericalTheta = -0.75; sphericalPhi = 1.0; sphericalRadius = 5.2;
+      } else if (view === 'front') {
+        sphericalTheta = -Math.PI / 2; sphericalPhi = 1.35; sphericalRadius = 4.8;
+      } else if (view === 'side') {
+        sphericalTheta = 0; sphericalPhi = 1.35; sphericalRadius = 4.8;
+      } else if (view === 'top') {
+        sphericalTheta = 0; sphericalPhi = 0.2; sphericalRadius = 5.5;
+      }
+      updateCameraSpherical();
     }
 
     function onWindowResize() {
       const container = document.getElementById('threeContainer');
-      if (!container) return;
-      const width = container.clientWidth;
-      const height = container.clientHeight;
+      if (!container || !renderer || !camera) return;
+      const width = container.clientWidth || 550;
+      const height = container.clientHeight || 360;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
     }
 
-    /* ============================================================
-     * 3. 3D CAR MODEL CONSTRUCTION (EV Sedan Frame)
-     * ============================================================ */
     function buildCarModel() {
       carGroup = new THREE.Group();
 
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        metalness: 0.85,
-        roughness: 0.25,
-        wireframe: false
-      });
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85, roughness: 0.25 });
+      const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.35, roughness: 0.1 });
 
-      const glassMat = new THREE.MeshPhysicalMaterial({
-        color: 0x00f2fe,
-        transparent: true,
-        opacity: 0.35,
-        roughness: 0.1,
-        transmission: 0.9,
-        thickness: 0.5
-      });
-
-      const panelLineMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true });
-
-      // Main Lower Body
+      // Lower Body
       const lowerGeo = new THREE.BoxGeometry(3.6, 0.55, 1.6);
       const lowerBody = new THREE.Mesh(lowerGeo, bodyMat);
       lowerBody.position.set(0, 0.45, 0);
-      lowerBody.castShadow = true;
       carGroup.add(lowerBody);
 
-      // Cabin / Roof
+      // Cabin Glass
       const cabinGeo = new THREE.BoxGeometry(2.0, 0.55, 1.4);
       const cabin = new THREE.Mesh(cabinGeo, glassMat);
       cabin.position.set(0.1, 0.95, 0);
       carGroup.add(cabin);
 
-      // Roof Cover
+      // Roof
       const roofGeo = new THREE.BoxGeometry(1.9, 0.08, 1.38);
       const roof = new THREE.Mesh(roofGeo, bodyMat);
       roof.position.set(0.1, 1.25, 0);
       carGroup.add(roof);
 
-      // Hood (Front)
+      // Hood
       const hoodGeo = new THREE.BoxGeometry(1.0, 0.12, 1.45);
       const hood = new THREE.Mesh(hoodGeo, bodyMat);
       hood.position.set(-1.25, 0.72, 0);
       carGroup.add(hood);
 
       // 4 Wheels
-      const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.22, 24);
+      const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.22, 18);
       const wheelMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.7 });
       const wheelPositions = [
         [-1.1, 0.32, 0.82], [-1.1, 0.32, -0.82],
@@ -641,73 +914,49 @@
         carGroup.add(wheel);
       });
 
-      // Panel Split Gap Seams (Glowing Cyber Edge Lines)
-      const doorSeamGeo = new THREE.BoxGeometry(0.015, 0.58, 0.015);
+      // Split Gap Seam Lines (Neon)
+      const seamGeo = new THREE.BoxGeometry(0.02, 0.56, 0.02);
       const seamMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-      const seam1 = new THREE.Mesh(doorSeamGeo, seamMat);
-      seam1.position.set(-0.65, 0.65, 0.81);
-      carGroup.add(seam1);
-
-      const seam2 = new THREE.Mesh(doorSeamGeo, seamMat);
-      seam2.position.set(0.35, 0.65, 0.81);
-      carGroup.add(seam2);
+      const s1 = new THREE.Mesh(seamGeo, seamMat); s1.position.set(-0.65, 0.65, 0.81); carGroup.add(s1);
+      const s2 = new THREE.Mesh(seamGeo, seamMat); s2.position.set(0.35, 0.65, 0.81); carGroup.add(s2);
 
       scene.add(carGroup);
     }
 
-    /* ============================================================
-     * 4. 3D 6-AXIS INDUSTRIAL ROBOT & LASER SCANNER
-     * ============================================================ */
-    let robotBase, robotJ1, robotJ2, robotJ3, robotTCP;
-
+    let robotTCP;
     function buildIndustrialRobot() {
       robotGroup = new THREE.Group();
-      robotGroup.position.set(-1.8, 0, 1.8); // Located beside assembly line
+      robotGroup.position.set(-1.8, 0, 1.8);
 
       const robotMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.7, roughness: 0.3 });
       const jointMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 });
 
-      // Base Pedestal
-      const baseGeo = new THREE.CylinderGeometry(0.35, 0.4, 0.2, 24);
-      robotBase = new THREE.Mesh(baseGeo, jointMat);
-      robotBase.position.y = 0.1;
-      robotGroup.add(robotBase);
+      // Pedestal
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.2, 18), jointMat);
+      base.position.y = 0.1;
+      robotGroup.add(base);
 
-      // Joint 1
-      const j1Geo = new THREE.CylinderGeometry(0.25, 0.25, 0.35, 20);
-      robotJ1 = new THREE.Mesh(j1Geo, robotMat);
-      robotJ1.position.y = 0.35;
-      robotGroup.add(robotJ1);
+      // J1 & Arms
+      const j1 = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.35, 16), robotMat);
+      j1.position.y = 0.35;
+      robotGroup.add(j1);
 
-      // Arm 1
-      const arm1Geo = new THREE.BoxGeometry(0.18, 0.9, 0.18);
-      robotJ2 = new THREE.Mesh(arm1Geo, jointMat);
-      robotJ2.position.set(0.1, 0.85, 0);
-      robotJ2.rotation.z = -0.3;
-      robotGroup.add(robotJ2);
+      const arm1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.9, 0.18), jointMat);
+      arm1.position.set(0.1, 0.85, 0); arm1.rotation.z = -0.3;
+      robotGroup.add(arm1);
 
-      // Arm 2
-      const arm2Geo = new THREE.BoxGeometry(0.14, 0.85, 0.14);
-      robotJ3 = new THREE.Mesh(arm2Geo, robotMat);
-      robotJ3.position.set(0.45, 1.45, -0.2);
-      robotJ3.rotation.z = 0.6;
-      robotGroup.add(robotJ3);
+      const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), robotMat);
+      arm2.position.set(0.45, 1.45, -0.2); arm2.rotation.z = 0.6;
+      robotGroup.add(arm2);
 
-      // Scanner End-Effector Tool
-      const toolGeo = new THREE.BoxGeometry(0.2, 0.12, 0.28);
-      const toolMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 });
-      robotTCP = new THREE.Mesh(toolGeo, toolMat);
+      // Tool Head
+      robotTCP = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.28), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
       robotTCP.position.set(0.7, 1.3, -0.4);
       robotGroup.add(robotTCP);
 
-      // 3D Laser Fan Sheet Mesh (Neon Cyan)
+      // 3D Laser Fan Beam
       const laserGeo = new THREE.ConeGeometry(0.45, 1.2, 4, 1, true);
-      const laserMat = new THREE.MeshBasicMaterial({
-        color: 0x00f2fe,
-        transparent: true,
-        opacity: 0.4,
-        side: THREE.DoubleSide
-      });
+      const laserMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.4, side: THREE.DoubleSide });
       laserBeam = new THREE.Mesh(laserGeo, laserMat);
       laserBeam.rotation.x = Math.PI;
       laserBeam.position.set(0, -0.6, 0);
@@ -716,25 +965,16 @@
       scene.add(robotGroup);
     }
 
-    /* ============================================================
-     * 5. 3D INSPECTION PIN MARKERS
-     * ============================================================ */
     function buildInspectionPins() {
       INSPECTION_POINTS.forEach((pt, idx) => {
         const pinGroup = new THREE.Group();
         pinGroup.position.set(pt.targetPos[0], pt.targetPos[1], pt.targetPos[2]);
 
-        // Ring
-        const ringGeo = new THREE.RingGeometry(0.05, 0.08, 20);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.05, 0.08, 16), new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide }));
         ring.rotation.x = -Math.PI / 2;
         pinGroup.add(ring);
 
-        // Core dot
-        const dotGeo = new THREE.SphereGeometry(0.035, 12, 12);
-        const dotMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
-        const dot = new THREE.Mesh(dotGeo, dotMat);
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 10), new THREE.MeshBasicMaterial({ color: 0x00f2fe }));
         dot.position.y = 0.04;
         pinGroup.add(dot);
 
@@ -743,63 +983,34 @@
       });
     }
 
-    /* ============================================================
-     * 6. CAMERA & ROBOT KINEMATICS ANIMATION
-     * ============================================================ */
-    function setCameraView(view) {
-      if (view === 'iso') {
-        camera.position.set(-3.2, 2.4, 3.8);
-      } else if (view === 'front') {
-        camera.position.set(-4.5, 1.2, 0);
-      } else if (view === 'side') {
-        camera.position.set(0, 1.2, 4.5);
-      } else if (view === 'top') {
-        camera.position.set(0, 5.5, 0.1);
-      }
-      controls.target.set(0, 0.6, 0);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-
-      // Pulsing laser animation
+    function animateThree() {
+      requestAnimationFrame(animateThree);
       if (laserBeam) {
-        const time = Date.now() * 0.005;
-        laserBeam.material.opacity = 0.35 + Math.sin(time) * 0.15;
+        laserBeam.material.opacity = 0.35 + Math.sin(Date.now() * 0.005) * 0.15;
       }
-
-      // Pin hovering
       pinMarkers.forEach((pin, idx) => {
         pin.position.y = INSPECTION_POINTS[idx].targetPos[1] + Math.sin(Date.now() * 0.004 + idx) * 0.015;
       });
-
-      renderer.render(scene, camera);
+      if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+      }
     }
 
-    /* ============================================================
-     * 7. POINT SELECTION & LASER PROFILE RENDER
-     * ============================================================ */
     function selectInspectionPoint(idx) {
       currentPointIdx = idx;
       const pt = INSPECTION_POINTS[idx];
 
-      // Update button active state
       document.querySelectorAll('.pt-btn').forEach((btn, i) => {
-        if (i === idx) {
-          btn.className = 'pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center shadow-md';
-        } else {
-          btn.className = 'pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 hover:border-dark-700 text-slate-300 text-[11px] font-bold text-center';
-        }
+        btn.className = (i === idx)
+          ? 'pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center shadow-md'
+          : 'pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center';
       });
 
-      // Move Robot End-Effector to Point
       if (robotTCP) {
         robotGroup.position.set(pt.targetPos[0] - 0.4, 0, pt.targetPos[2] > 0 ? 1.6 : -1.6);
         robotTCP.position.set(0.4, pt.targetPos[1] + 0.3, 0);
       }
 
-      // Update Header Text & Values
       document.getElementById('activePtTitle').textContent = `${pt.code} : ${pt.name}`;
       document.getElementById('robotStatusText').textContent = `ROBOT SCANNING : ${pt.code} [${pt.name}]`;
 
@@ -807,19 +1018,14 @@
       const flushOk = (pt.flush >= (TARGET_FLUSH - FLUSH_TOL) && pt.flush <= (TARGET_FLUSH + FLUSH_TOL));
       const allOk = gapOk && flushOk;
 
-      const statusBadge = document.getElementById('activePtStatus');
-      if (allOk) {
-        statusBadge.textContent = 'OK (합격)';
-        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700';
-      } else {
-        statusBadge.textContent = 'NG (규격 이탈)';
-        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
-      }
+      const badge = document.getElementById('activePtStatus');
+      badge.textContent = allOk ? 'OK (합격)' : 'NG (규격 이탈)';
+      badge.className = allOk
+        ? 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700'
+        : 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
 
       document.getElementById('liveGapVal').innerHTML = `${pt.gap.toFixed(2)} <span class="text-xs text-slate-400">mm</span>`;
       document.getElementById('liveFlushVal').innerHTML = `${(pt.flush > 0 ? '+' : '') + pt.flush.toFixed(2)} <span class="text-xs text-slate-400">mm</span>`;
-
-      // Update Prescriptions
       document.getElementById('upperHingePrescription').textContent = pt.upperShim;
       document.getElementById('lowerHingePrescription').textContent = pt.lowerShim;
 
@@ -827,71 +1033,61 @@
       playBeep(allOk ? 650 : 250);
     }
 
-    /* 2D Canvas Laser Profile Curve */
     function drawLaserProfile(gap, flush) {
       const canvas = document.getElementById('laserCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const w = canvas.width = canvas.clientWidth;
-      const h = canvas.height = canvas.clientHeight;
+      const w = canvas.width = canvas.clientWidth || 300;
+      const h = canvas.height = canvas.clientHeight || 80;
 
       ctx.clearRect(0, 0, w, h);
-
-      // Grid line
       ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
       ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
       ctx.stroke();
 
-      // Left Panel Profile
+      // Left Panel
       ctx.strokeStyle = '#00f2fe';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
-      const leftY = h/2 - 15;
-      ctx.moveTo(20, leftY);
+      const leftY = h/2 - 12;
+      ctx.moveTo(15, leftY);
       ctx.lineTo(w/2 - gap * 6, leftY);
       ctx.stroke();
 
-      // Right Panel Profile (with Flush Step)
+      // Right Panel
       ctx.strokeStyle = (Math.abs(flush) > FLUSH_TOL) ? '#f43f5e' : '#38bdf8';
       ctx.beginPath();
       const rightY = leftY + flush * 25;
       ctx.moveTo(w/2 + gap * 6, rightY);
-      ctx.lineTo(w - 20, rightY);
+      ctx.lineTo(w - 15, rightY);
       ctx.stroke();
 
-      // Gap arrow & text
       ctx.fillStyle = '#94a3b8';
       ctx.font = '10px JetBrains Mono';
-      ctx.fillText(`Gap: ${gap.toFixed(2)}mm`, w/2 - 28, h - 8);
-      ctx.fillText(`Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, w/2 + 20, 16);
+      ctx.fillText(`Gap: ${gap.toFixed(2)}mm`, w/2 - 28, h - 6);
+      ctx.fillText(`Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, w/2 + 15, 14);
     }
 
-    /* ============================================================
-     * 8. AUTOMATIC CONTINUOUS SCAN CYCLE
-     * ============================================================ */
     function toggleAutoScan() {
       isAutoScanning = !isAutoScanning;
       const btnText = document.getElementById('autoScanText');
       if (isAutoScanning) {
         btnText.textContent = '스캔 일시정지';
         autoScanTimer = setInterval(() => {
-          let nextIdx = (currentPointIdx + 1) % INSPECTION_POINTS.length;
-          selectInspectionPoint(nextIdx);
-        }, 2200);
+          let next = (currentPointIdx + 1) % INSPECTION_POINTS.length;
+          selectInspectionPoint(next);
+        }, 2000);
       } else {
         btnText.textContent = '로봇 자동 연속 스캔';
         clearInterval(autoScanTimer);
       }
     }
 
-    /* Fault Injection */
     function injectDistortion() {
       const pt = INSPECTION_POINTS[currentPointIdx];
-      pt.gap = 4.35; // Abnormal gap
-      pt.flush = 0.82; // Abnormal flush
+      pt.gap = 4.35; pt.flush = 0.82;
       pt.upperShim = '심(Shim) +0.45mm 추가 필요';
       pt.lowerShim = '체결 각도 +0.8° 보정 필요';
       document.getElementById('boltTorqueVal').textContent = '22.1 N·m (토크 부족 ⚠️)';
@@ -904,76 +1100,363 @@
       INSPECTION_POINTS[currentPointIdx].flush = 0.00;
       INSPECTION_POINTS[currentPointIdx].upperShim = '±0.00mm (최적 상태)';
       INSPECTION_POINTS[currentPointIdx].lowerShim = '0.0° (정방향)';
-      document.getElementById('boltTorqueVal').textContent = '28.4 N·m (규격 정상)';
+      document.getElementById('boltTorqueVal').textContent = '28.4 N·m';
       document.getElementById('boltTorqueVal').className = 'text-emerald-400 font-mono font-bold';
       selectInspectionPoint(currentPointIdx);
     }
 
-    /* ============================================================
-     * 9. SPC TREND CHART (Chart.js)
-     * ============================================================ */
-    function initSPC() {
+    let spcTrimChart = null;
+    function initTrimSPC() {
       const ctx = document.getElementById('spcTrendChart').getContext('2d');
-      
-      const labels = [];
-      const gapData = [];
-      const flushData = [];
-
+      const labels = [], gapData = [], flushData = [];
       for (let i = 1; i <= 30; i++) {
         labels.push(`#${i}`);
         gapData.push(3.50 + (Math.random() - 0.5) * 0.35);
         flushData.push(0.00 + (Math.random() - 0.5) * 0.30);
       }
-
-      spcChartInstance = new Chart(ctx, {
+      spcTrimChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [
-            {
-              label: '간극 (Gap: 3.5±0.5mm)',
-              data: gapData,
-              borderColor: '#00f2fe',
-              borderWidth: 2,
-              pointRadius: 2.5,
-              tension: 0.2
-            },
-            {
-              label: '단차 (Flush: 0.0±0.5mm)',
-              data: flushData,
-              borderColor: '#818cf8',
-              borderWidth: 2,
-              pointRadius: 2.5,
-              tension: 0.2
-            }
+            { label: '간극 (Gap: 3.5±0.5mm)', data: gapData, borderColor: '#00f2fe', borderWidth: 2, pointRadius: 2 },
+            { label: '단차 (Flush: 0.0±0.5mm)', data: flushData, borderColor: '#818cf8', borderWidth: 2, pointRadius: 2 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y: {
-              min: -1.0,
-              max: 5.0,
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#94a3b8', font: { size: 10 } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { color: '#94a3b8', font: { size: 10 } }
-            }
+            y: { min: -1.0, max: 5.0, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
           },
-          plugins: {
-            legend: {
-              labels: { color: '#cbd5e1', font: { size: 11 } }
-            }
-          }
+          plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
         }
       });
     }
 
     /* ============================================================
-     * 10. AUDIO FX & MODALS
+     * TAB 2: SIDE-SILL H-VALUE SIMULATOR ENGINE (ORIGINAL RESTORED)
+     * ============================================================ */
+    const TARGET_H = 10.0;
+    const TOLERANCE = 1.0;
+    const USL = TARGET_H + TOLERANCE; // 11.0mm
+    const LSL = TARGET_H - TOLERANCE; // 9.0mm
+    const HOLE_NAMES = ['홀 A', '홀 B', '홀 C', '홀 D'];
+    
+    const HOLE_H_TABLE = [
+      [3.8, 4.6, 5.1, 6.7, 5.9, 6.4, 8.3, 7.1, 10.1, 9.4, 8.7, 9.2, 11.3, 11.9, 13.4, 14.8, 17.1, 16.2, 18.6, 19.8, 20.5],
+      [4.1, 4.9, 5.4, 7.0, 6.1, 6.9, 8.2, 7.6, 9.3, 8.7, 9.9, 11.0, 12.1, 13.9, 14.7, 16.0, 18.5, 17.8, 19.1, 20.4, 21.2],
+      [3.9, 4.7, 5.3, 5.9, 7.5, 6.8, 7.3, 9.0, 8.2, 9.8, 9.1, 10.2, 11.4, 12.3, 14.1, 16.6, 15.8, 17.4, 20.3, 18.9, 20.8],
+      [4.4, 5.3, 7.1, 6.2, 6.8, 8.5, 7.9, 9.4, 8.7, 10.0, 11.3, 12.6, 14.2, 16.5, 15.8, 17.1, 19.2, 18.4, 19.7, 21.2, 22.0]
+    ];
+
+    let guides = [8, 10, 11, 9];
+    let historyData = [];
+    let cumulativeRuns = 0;
+    let paramThermalSigma = 0.55;
+    let paramDegradeLevel = 1;
+    let paramSpikeRate = 0.10;
+
+    function getBaseH(holeIdx, linerCount) {
+      const idx = Math.max(0, Math.min(20, Math.round(linerCount)));
+      return HOLE_H_TABLE[holeIdx][idx];
+    }
+
+    function gaussianRandom(mean = 0, stdev = 1) {
+      let u = 1 - Math.random(), v = Math.random();
+      return mean + (Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)) * stdev;
+    }
+
+    function calcSimulatedH(holeIdx, linerCount) {
+      const base = getBaseH(holeIdx, linerCount);
+      const thermal = gaussianRandom(0, paramThermalSigma);
+      let degrade = (paramDegradeLevel > 0) ? Math.log(1 + cumulativeRuns * 0.05) * (paramDegradeLevel === 1 ? 0.08 : 0.18) * (holeIdx - 1.5) : 0;
+      let spike = (Math.random() < paramSpikeRate) ? (Math.random() > 0.5 ? 1 : -1) * (2.0 + Math.random() * 1.5) : 0;
+      return Math.round((base + thermal + degrade + spike) * 10) / 10;
+    }
+
+    function isHValueOk(h) { return h >= LSL && h <= USL; }
+
+    function renderTwinVisualizer() {
+      const svg = document.getElementById('twinSvg');
+      if (!svg) return;
+      const holeXs = [90, 220, 370, 500];
+      const beamY = 55, beamH = 45, gaugeY = 205, gaugeH = 34;
+
+      let html = `
+        <defs>
+          <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#162032" /><stop offset="50%" stop-color="#1e2c44" /><stop offset="100%" stop-color="#162032" />
+          </linearGradient>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0a192f" /><stop offset="50%" stop-color="#112240" /><stop offset="100%" stop-color="#0a192f" />
+          </linearGradient>
+        </defs>
+        <rect x="25" y="${beamY}" width="550" height="${beamH}" rx="8" fill="url(#beamGrad)" stroke="#2b3d5b" stroke-width="1.5"/>
+        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#4a658a" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME</text>
+        <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="8" fill="url(#gaugeGrad)" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4"/>
+        <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#00f2fe" opacity="0.85">INSPECTION GAUGE BASE (10.0mm ±1.0mm)</text>
+      `;
+
+      for (let i = 0; i < 4; i++) {
+        const x = holeXs[i];
+        const count = guides[i];
+        const hVal = getBaseH(i, count);
+        const ok = isHValueOk(hVal);
+        const color = ok ? '#22c55e' : '#f43f5e';
+        const cy = beamY + beamH / 2;
+
+        html += `<text x="${x}" y="${beamY - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">${HOLE_NAMES[i]}</text>`;
+        const shimHeight = Math.min(18, count * 0.9);
+        const shimY = beamY + beamH;
+        if (count > 0) {
+          html += `
+            <rect x="${x - 18}" y="${shimY}" width="36" height="${shimHeight}" rx="2" fill="#0284c7" stroke="#38bdf8" stroke-width="1" opacity="0.9"/>
+            <text x="${x}" y="${shimY + shimHeight + 11}" text-anchor="middle" font-size="9" font-weight="600" fill="#38bdf8">${count}매</text>
+          `;
+        }
+        html += `
+          <circle cx="${x}" cy="${cy}" r="12" fill="#07090e" stroke="${color}" stroke-width="2"/>
+          <line x1="${x}" y1="${cy + 12}" x2="${x}" y2="${gaugeY - 5}" stroke="${color}" stroke-width="1.8" stroke-dasharray="4,3"/>
+          <rect x="${x - 30}" y="${(gaugeY + beamY + beamH) / 2 - 13}" width="60" height="26" rx="6" fill="#07090e" stroke="${color}" stroke-width="1.5"/>
+          <text x="${x}" y="${(gaugeY + beamY + beamH) / 2 + 5}" text-anchor="middle" font-size="13" font-weight="800" fill="${color}" font-family="JetBrains Mono">${hVal.toFixed(1)}mm</text>
+        `;
+      }
+      svg.innerHTML = html;
+    }
+
+    function renderHoleControllers() {
+      const container = document.getElementById('holeControlsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (let i = 0; i < 4; i++) {
+        const count = guides[i];
+        const hVal = getBaseH(i, count);
+        const ok = isHValueOk(hVal);
+
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-xl border transition-all ${ok ? 'bg-dark-900 border-dark-750' : 'bg-rose-950/20 border-rose-900/60'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-dark-800 border border-dark-700 flex items-center justify-center font-bold text-xs text-slate-300">${HOLE_NAMES[i].replace('홀 ','')}</span>
+              <span class="text-xs font-bold text-white">${HOLE_NAMES[i]}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="adjustLiner(${i}, -1)" class="w-6 h-6 rounded bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-200 font-bold">-</button>
+              <span class="w-7 text-center font-mono font-bold text-sm text-cyan-300">${count}</span>
+              <button onclick="adjustLiner(${i}, 1)" class="w-6 h-6 rounded bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-200 font-bold">+</button>
+            </div>
+            <div class="px-2 py-0.5 rounded font-mono font-bold text-xs ${ok ? 'bg-emerald-950 text-emerald-400 border border-emerald-700' : 'bg-rose-950 text-rose-400 border border-rose-700'}">
+              ${hVal.toFixed(1)}mm (${ok ? 'OK' : 'NG'})
+            </div>
+          </div>
+          <input type="range" min="0" max="20" value="${count}" oninput="setLiner(${i}, this.value)" class="w-full accent-cyan-400 bg-dark-950 h-1 rounded-lg cursor-pointer mt-1.5" />
+        `;
+        container.appendChild(card);
+      }
+      renderTwinVisualizer();
+    }
+
+    function adjustLiner(idx, delta) {
+      const next = Math.max(0, Math.min(20, guides[idx] + delta));
+      if (next !== guides[idx]) { guides[idx] = next; playBeep(350 + next * 20); renderHoleControllers(); }
+    }
+
+    function setLiner(idx, val) {
+      guides[idx] = parseInt(val, 10);
+      renderHoleControllers();
+    }
+
+    function updateNoiseParam() {
+      paramThermalSigma = parseFloat(document.getElementById('noiseThermalSlider').value);
+      document.getElementById('noiseThermalVal').textContent = `± ${paramThermalSigma.toFixed(2)} mm`;
+      paramDegradeLevel = parseInt(document.getElementById('noiseDegradeSlider').value, 10);
+      document.getElementById('noiseDegradeVal').textContent = ['없음 (Zero)', '보통 (Standard)', '가속 열화 (Heavy)'][paramDegradeLevel];
+      paramSpikeRate = parseInt(document.getElementById('noiseSpikeSlider').value, 10) / 100;
+      document.getElementById('noiseSpikeVal').textContent = `${(paramSpikeRate * 100).toFixed(0)} %`;
+    }
+
+    function runSimulation(runCount = 5) {
+      cumulativeRuns += runCount;
+      const runResults = [];
+      let totalItems = runCount * 4, okCount = 0;
+
+      for (let p = 0; p < runCount; p++) {
+        const prod = [];
+        for (let i = 0; i < 4; i++) {
+          const val = calcSimulatedH(i, guides[i]);
+          if (isHValueOk(val)) okCount++;
+          prod.push(val);
+        }
+        runResults.push(prod);
+      }
+
+      const yieldRate = (okCount / totalItems) * 100;
+      historyData.push({
+        id: historyData.length + 1,
+        timestamp: new Date().toLocaleTimeString(),
+        guides: [...guides],
+        results: runResults,
+        yieldRate: yieldRate,
+        okCount: okCount,
+        totalCount: totalItems
+      });
+
+      playBeep(yieldRate >= 80 ? 600 : 200);
+      renderHistoryLog();
+      updateSideSPCChart();
+      updateTopSideMetrics();
+    }
+
+    function runAutoTuning() {
+      playBeep(800);
+      const optimal = [];
+      for (let i = 0; i < 4; i++) {
+        let best = 0, minDiff = Infinity;
+        for (let count = 0; count <= 20; count++) {
+          const diff = Math.abs(getBaseH(i, count) - TARGET_H);
+          if (diff < minDiff) { minDiff = diff; best = count; }
+        }
+        optimal.push(best);
+      }
+      guides = optimal;
+      renderHoleControllers();
+      setTimeout(() => runSimulation(5), 300);
+    }
+
+    function resetAllLiners() {
+      guides = [8, 10, 11, 9];
+      renderHoleControllers();
+    }
+
+    function renderHistoryLog() {
+      const container = document.getElementById('historyLogContainer');
+      const badge = document.getElementById('bestTryBadge');
+      if (!container) return;
+
+      if (historyData.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs font-mono">생산 이력이 없습니다.</div>`;
+        badge.classList.add('hidden');
+        return;
+      }
+
+      let bestIdx = 0, bestYield = -1;
+      historyData.forEach((item, idx) => {
+        if (item.yieldRate > bestYield) { bestYield = item.yieldRate; bestIdx = idx; }
+      });
+      badge.textContent = `★ 최고 수율: 시도 #${bestIdx + 1} (${bestYield.toFixed(0)}%)`;
+      badge.classList.remove('hidden');
+
+      container.innerHTML = '';
+      for (let r = historyData.length - 1; r >= 0; r--) {
+        const item = historyData[r];
+        const isBest = (r === bestIdx);
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border ${isBest ? 'bg-cyan-950/40 border-cyan-700' : 'bg-dark-900 border-dark-750'}`;
+        card.innerHTML = `
+          <div class="flex justify-between text-xs pb-1 mb-1 border-b border-dark-800">
+            <span class="font-bold text-white">시도 #${item.id} (${item.timestamp})</span>
+            <span class="font-mono font-bold ${item.yieldRate >= 80 ? 'text-emerald-400' : 'text-amber-400'}">수율 ${item.yieldRate.toFixed(0)}%</span>
+          </div>
+          <div class="flex gap-1.5 flex-wrap text-[11px] font-mono">
+            ${item.guides.map((g, i) => `<span class="px-1.5 py-0.5 rounded bg-dark-950 text-cyan-300 border border-dark-750">${HOLE_NAMES[i]}:${g}매</span>`).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function updateTopSideMetrics() {
+      let totalAll = 0, okAll = 0, allVals = [];
+      historyData.forEach(h => {
+        totalAll += h.totalCount; okAll += h.okCount;
+        h.results.forEach(row => allVals.push(...row));
+      });
+      document.getElementById('yieldStat').textContent = `${((okAll / totalAll) * 100).toFixed(1)} %`;
+      if (allVals.length > 3) {
+        const mean = allVals.reduce((a,b)=>a+b,0)/allVals.length;
+        const stdev = Math.sqrt(allVals.reduce((a,b)=>a+Math.pow(b-mean,2),0)/(allVals.length-1));
+        if (stdev > 0) {
+          const cpk = Math.min((USL - mean)/(3*stdev), (mean - LSL)/(3*stdev));
+          document.getElementById('cpkStat').textContent = cpk.toFixed(2);
+        }
+      }
+    }
+
+    let chartInstance = null;
+    function initSideSPCChart() {
+      const ctx = document.getElementById('spcChart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            { label: '홀 A', data: [], borderColor: '#38bdf8', borderWidth: 2, pointRadius: 2.5 },
+            { label: '홀 B', data: [], borderColor: '#818cf8', borderWidth: 2, pointRadius: 2.5 },
+            { label: '홀 C', data: [], borderColor: '#34d399', borderWidth: 2, pointRadius: 2.5 },
+            { label: '홀 D', data: [], borderColor: '#fbbf24', borderWidth: 2, pointRadius: 2.5 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 6, max: 14, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+          },
+          plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+        }
+      });
+    }
+
+    function updateSideSPCChart() {
+      if (!chartInstance) return;
+      const labels = [], dataA = [], dataB = [], dataC = [], dataD = [];
+      let total = 0;
+      historyData.forEach(h => {
+        h.results.forEach(row => {
+          total++;
+          labels.push(`#${total}`);
+          dataA.push(row[0]); dataB.push(row[1]); dataC.push(row[2]); dataD.push(row[3]);
+        });
+      });
+      const maxPts = 25;
+      chartInstance.data.labels = labels.slice(-maxPts);
+      chartInstance.data.datasets[0].data = dataA.slice(-maxPts);
+      chartInstance.data.datasets[1].data = dataB.slice(-maxPts);
+      chartInstance.data.datasets[2].data = dataC.slice(-maxPts);
+      chartInstance.data.datasets[3].data = dataD.slice(-maxPts);
+      chartInstance.update();
+    }
+
+    function exportCSV() {
+      if (historyData.length === 0) { alert('데이터가 없습니다.'); return; }
+      let csv = '시도,시간,홀A,홀B,홀C,홀D,회차,H_A,H_B,H_C,H_D,판정\n';
+      historyData.forEach(h => {
+        h.results.forEach((prod, pIdx) => {
+          csv += `${h.id},${h.timestamp},${h.guides[0]},${h.guides[1]},${h.guides[2]},${h.guides[3]},${pIdx+1},${prod[0]},${prod[1]},${prod[2]},${prod[3]},${prod.every(isHValueOk)?'OK':'NG'}\n`;
+        });
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `side_sill_sim_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+    }
+
+    function clearHistory() {
+      if (confirm('이력을 삭제하시겠습니까?')) {
+        historyData = []; cumulativeRuns = 0;
+        document.getElementById('yieldStat').textContent = '- %';
+        document.getElementById('cpkStat').textContent = '-';
+        renderHistoryLog();
+        updateSideSPCChart();
+      }
+    }
+
+    /* ============================================================
+     * AUDIO & MODALS
      * ============================================================ */
     let audioCtx = null;
     function playBeep(freq) {
@@ -985,16 +1468,17 @@
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
       } catch(e) {}
     }
 
     function toggleAudio() {
       audioEnabled = !audioEnabled;
-      document.getElementById('soundIcon').setAttribute('data-lucide', audioEnabled ? 'volume-2' : 'volume-x');
+      const iconName = audioEnabled ? 'volume-2' : 'volume-x';
+      document.getElementById('soundIcon').setAttribute('data-lucide', iconName);
+      const mobIcon = document.getElementById('soundIconMob');
+      if (mobIcon) mobIcon.setAttribute('data-lucide', iconName);
       lucide.createIcons();
     }
 
@@ -1002,16 +1486,23 @@
       document.getElementById(id).classList.remove('hidden');
       if (window.renderMathInElement) renderMathInElement(document.getElementById(id));
     }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal('studyModal');
+    });
 
-    /* Init */
+    /* ============================================================
+     * INITIALIZATION
+     * ============================================================ */
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initThree();
-      initSPC();
+      initTrimSPC();
       selectInspectionPoint(2);
+      renderHoleControllers();
+      initSideSPCChart();
+    });
+  </script>
 </body>
 </html>
