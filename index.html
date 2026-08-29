@@ -51,11 +51,6 @@
   <!-- Three.js (r128) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- KaTeX for Math rendering -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     
@@ -93,45 +88,31 @@
           <div>
             <div class="flex items-center gap-2">
               <h1 class="text-sm sm:text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
-                AutoFit-3D | 스마트 제조 인라인 디지털 트윈
+                AutoFit-3D | 지능형 인라인 디지털 트윈
               </h1>
               <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">
                 PRO-DX
               </span>
             </div>
-            <p class="text-[11px] text-slate-400">완성차 의장 무빙파트 갭·단차 및 조립 공차 최적화 시스템</p>
+            <p class="text-[11px] text-slate-400">완성차 6축 로봇 3D 갭·단차 계측 및 차체 공차 최적화 시스템</p>
           </div>
         </div>
 
-        <!-- Mobile Sound button -->
-        <div class="flex md:hidden items-center space-x-1.5">
-          <button onclick="toggleAudio()" class="p-1.5 rounded-lg bg-dark-800 border border-dark-700 text-cyan-400">
-            <i id="soundIconMob" data-lucide="volume-2" class="w-4 h-4"></i>
-          </button>
-        </div>
+        <!-- Audio toggle button -->
+        <button id="soundBtn" onclick="toggleAudio()" class="p-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 transition-colors" title="효과음 토글">
+          <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
+        </button>
       </div>
 
       <!-- Process Switcher Tabs (2-in-1 Dual Twin) -->
       <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-750 text-xs w-full md:w-auto justify-center">
-        <button id="tabBtn-trim" onclick="switchProcessTab('trim')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md">
+        <button id="tabBtn-trim" onclick="switchProcessTab('trim')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md">
           <i data-lucide="scan-line" class="w-4 h-4"></i>
           <span>① 의장 공정: 3D 로봇 갭·단차 트윈</span>
         </button>
-        <button id="tabBtn-sidesill" onclick="switchProcessTab('sidesill')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200">
+        <button id="tabBtn-sidesill" onclick="switchProcessTab('sidesill')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200">
           <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>② 조립 공정: 사이드실 H값 최적화</span>
-        </button>
-      </div>
-
-      <!-- Header Action Buttons (Desktop) -->
-      <div class="hidden md:flex items-center space-x-2">
-        <button id="soundBtn" onclick="toggleAudio()" class="p-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 transition-colors" title="효과음 토글">
-          <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
-        </button>
-
-        <button onclick="openModal('studyModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-cyan-900 text-cyan-300 text-xs font-semibold transition-all">
-          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
-          <span>공정 기술 표준서 (SOP)</span>
+          <span>② 차체 공정: 사이드실 H값 최적화</span>
         </button>
       </div>
     </div>
@@ -148,24 +129,24 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-white uppercase tracking-wide">인라인 생산 라인 차체 투입 큐 (Production Queue)</span>
+            <span class="text-xs font-bold text-white uppercase tracking-wide">인라인 생산 라인 실시간 차체 투입 큐 (VIN Inspection Queue)</span>
             <span id="vehicleStateBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700">
-              #VIN-101 (ALL OK)
+              #VIN-101 (ALL PASS OK)
             </span>
           </div>
           <p class="text-[11px] text-slate-400 mt-0.5">
-            생산 라인으로 인입되는 차체 번호(VIN)를 선택하여 각 차체별 실측 8대 부위 갭/단차 및 불량(NG) 처방을 실시간 모니터링합니다.
+            생산 라인으로 인입되는 차체를 선택하여 각 차량별 실측 8대 부위 갭/단차 및 불합격(NG) 시 힌지 보정 처방을 확인하세요.
           </p>
         </div>
       </div>
 
       <!-- Vehicle Selector Pills -->
       <div class="flex items-center gap-1.5 flex-wrap self-end md:self-center">
-        <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300">#001 (정상)</button>
-        <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#002 (도어처짐 NG ⚠️)</button>
-        <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#003 (간극과다 NG ⚠️)</button>
-        <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#004 (정상)</button>
-        <button onclick="loadVehicleData(4)" id="vehBtn-4" class="veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#005 (테일단차 NG ⚠️)</button>
+        <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md">#001 (양품)</button>
+        <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#002 (도어처짐 NG ⚠️)</button>
+        <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#003 (간극과다 NG ⚠️)</button>
+        <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#004 (양품)</button>
+        <button onclick="loadVehicleData(4)" id="vehBtn-4" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#005 (테일단차 NG ⚠️)</button>
       </div>
     </div>
 
@@ -312,12 +293,15 @@
           </div>
 
           <!-- 2D Laser Triangulation Profile Slice Canvas -->
-          <div class="p-2 rounded-xl bg-dark-950 border border-dark-800">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1">
-              <span>3D 레이저 삼각측량 단면 프로파일 (Laser Profile)</span>
-              <span class="text-cyan-400">100 Pts Scan</span>
+          <div class="p-3 rounded-xl bg-dark-950 border border-dark-800">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1.5">
+              <span class="text-cyan-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="scan" class="w-3.5 h-3.5 text-cyan-400"></i>
+                3D 레이저 삼각측량 단면 프로파일 (Laser Profile)
+              </span>
+              <span class="text-emerald-400 font-mono text-[10px]">60 FPS LIVE</span>
             </div>
-            <canvas id="laserCanvas" class="w-full h-20 bg-dark-950 rounded"></canvas>
+            <canvas id="laserCanvas" class="w-full h-24 bg-dark-950 rounded border border-dark-850"></canvas>
           </div>
         </div>
 
@@ -374,11 +358,11 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="injectDistortion()" class="px-2 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1">
+          <button onclick="injectDistortion()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1">
             <i data-lucide="alert-triangle" class="w-3 h-3 text-rose-400"></i>
             <span>단차 불량(NG) 강제 주입</span>
           </button>
-          <button onclick="resetProcessData()" class="px-2 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
+          <button onclick="resetProcessData()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
             <i data-lucide="refresh-cw" class="w-3 h-3 text-cyan-400"></i>
             <span>데이터 초기화</span>
           </button>
@@ -595,7 +579,7 @@
             <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i>
             <span>CSV 저장</span>
           </button>
-          <button onclick="clearHistory()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1">
+          <button onclick="clearHistory()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             <span>이력 삭제</span>
           </button>
@@ -615,7 +599,7 @@
   <footer class="border-t border-dark-750 bg-dark-900/60 py-3.5 mt-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
       <div>
-        AutoFit-3D | 지능형 인라인 로봇 3D 갭·단차 및 조립 공차 최적화 디지털 트윈
+        AutoFit-3D | 지능형 인라인 3D 갭·단차 및 공차 최적화 디지털 트윈 시스템
       </div>
       <div class="flex items-center gap-4">
         <span>Standard: Gap 3.5mm / Flush 0.0mm / H 10.0mm (±1.0mm)</span>
@@ -624,89 +608,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- ================= PROCESS TECHNICAL SPECS MODAL ================= -->
-  <div id="studyModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="glass-panel rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-cyan-800 p-6 space-y-5 text-slate-200">
-      <div class="flex items-center justify-between border-b border-dark-700 pb-3">
-        <div class="flex items-center gap-2 text-cyan-400">
-          <i data-lucide="book-open" class="w-6 h-6"></i>
-          <h2 class="text-base sm:text-lg font-bold text-white">완성차 의장 공정 인라인 갭/단차 기술 표준서 (Technical SOP)</h2>
-        </div>
-        <button onclick="closeModal('studyModal')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Section 1: Measurement Architecture -->
-      <div class="space-y-2">
-        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="crosshair" class="w-4 h-4"></i> 1. 인라인 8대 주요 측정 부위 선정 기준 (8 Key Inspection Points)
-        </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-2 leading-relaxed">
-          <p>
-            완성차 조립 라인에서 차체 1대당 외관 품질(풍절음, 누수, 심미성)을 결정짓는 8대 핵심 분할선(Split Lines)을 고속 레이저로 전수 계측합니다:
-          </p>
-          <ul class="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
-            <li><strong class="text-slate-200">PT-01 ~ 02 (후드-헤드램프 좌/우):</strong> 전방 충돌 크러시존 및 본넷 단차 관리 (간극 3.5mm / 단차 0.0mm)</li>
-            <li><strong class="text-slate-200">PT-03 ~ 04 (앞도어-프론트 펜더 좌/우):</strong> 도어 오픈 시 간섭 방지 및 A필러 풍절음(NVH) 직결 부위</li>
-            <li><strong class="text-slate-200">PT-05 ~ 06 (앞도어-뒷도어 B필러 좌/우):</strong> 도어 처짐(Door Sagging) 및 래치(Latch) 체결 평탄도 기준점</li>
-            <li><strong class="text-slate-200">PT-07 ~ 08 (테일게이트-리어 쿼터 좌/우):</strong> 후방 트렁크 수밀성(Water-leak) 및 테일램프 정렬선</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Section 2: Mathematical & Optical Measurement -->
-      <div class="space-y-2">
-        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="function-square" class="w-4 h-4"></i> 2. 6축 로봇 + 3D 레이저 삼각측량(Laser Triangulation) 광학 원리
-        </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-2 font-mono">
-          <p class="text-cyan-300">
-            $$Z = \frac{B \cdot f}{x_{\text{sensor}} + f \cdot \tan(\theta)}$$
-          </p>
-          <p class="text-slate-400 text-[11px] leading-relaxed">
-            로봇 엔드이펙터의 레이저 슬릿 광원에서 투사된 레이저가 패널 표면에서 반사되어 CMOS 센서에 맺히는 삼각 위치 관계를 통해 실시간 단면 높이 프로파일 $Z(x)$을 획득합니다.
-          </p>
-        </div>
-      </div>
-
-      <!-- Section 3: Prescriptive Hinge Kinematics -->
-      <div class="space-y-2">
-        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="cpu" class="w-4 h-4"></i> 3. 힌지 레버비 기구학 및 심(Shim) 자동 처방 수식
-        </h3>
-        <div class="p-3.5 rounded-xl bg-dark-900 border border-dark-750 text-xs text-slate-300 space-y-1.5 leading-relaxed">
-          <p>
-            도어 후단 B필러 단차 오차 $\Delta F_{\text{rear}}$ 발생 시, 힌지 간격 거리 $L_{\text{hinge}}$와 도어 길이 $L_{\text{door}}$의 기구학적 레버 비율을 통해 필요한 심(Shim) 두께 $\Delta t_{\text{shim}}$를 연산합니다:
-          </p>
-          <p class="font-mono text-cyan-300 text-xs py-1">
-            $$\Delta t_{\text{upper}} = \Delta F_{\text{rear}} \cdot \left(\frac{L_{\text{hinge}}}{L_{\text{door}}}\right)$$
-          </p>
-        </div>
-      </div>
-
-      <!-- Section 4: Troubleshooting SOP -->
-      <div class="space-y-2">
-        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="alert-octagon" class="w-4 h-4"></i> 4. 인라인 단차 이탈 시 표준 조치 절차 (Troubleshooting SOP)
-        </h3>
-        <div class="space-y-2 text-xs">
-          <div class="p-3 rounded-xl bg-dark-950 border border-dark-800">
-            <strong class="text-white font-semibold">1단계 (단차 NG 감지):</strong> 레이저 스캔 결과 Flush > 0.5mm 초과 시 즉시 라인 경보 및 처방값 산출.<br/>
-            <strong class="text-white font-semibold">2단계 (처방 자동 전송):</strong> 상단 힌지 심 보정량($+0.45\text{mm}$) 및 하단 볼팅 각도를 무선 전동 툴/작업자 HMI로 전송.<br/>
-            <strong class="text-white font-semibold">3단계 (재검 및 Cpk 보증):</strong> 튜닝 후 2차 인라인 재검을 통해 $C_{pk} \ge 1.33$ 공정 능력 확보.
-          </div>
-        </div>
-      </div>
-
-      <div class="pt-3 border-t border-dark-700 flex justify-end">
-        <button onclick="closeModal('studyModal')" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs">
-          확인 완료
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
@@ -723,8 +624,8 @@
       const sideContent = document.getElementById('tabContent-sidesill');
 
       if (tabId === 'trim') {
-        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
-        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
+        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
         trimContent.classList.remove('hidden');
         sideContent.classList.add('hidden');
         setTimeout(() => {
@@ -732,8 +633,8 @@
           if (spcTrimChart) spcTrimChart.resize();
         }, 50);
       } else {
-        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
-        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
+        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
         sideContent.classList.remove('hidden');
         trimContent.classList.add('hidden');
         setTimeout(() => {
@@ -751,10 +652,9 @@
     const GAP_TOL = 0.50;
     const FLUSH_TOL = 0.50;
 
-    // 5 Distinct Production Vehicles (With realistic Pass & Fail NG scenarios)
     const VEHICLE_DATASETS = [
       {
-        vin: '#VIN-101', name: '차량 #001 (정상 양품)', isAllOk: true,
+        vin: '#VIN-101', name: '차량 #001 (양품)', isAllOk: true,
         points: [
           { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.48, flush: 0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
           { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.52, flush: -0.04, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -767,7 +667,7 @@
         ]
       },
       {
-        vin: '#VIN-102', name: '차량 #002 (도어처짐 단차 NG ⚠️)', isAllOk: false,
+        vin: '#VIN-102', name: '차량 #002 (도어처짐 NG ⚠️)', isAllOk: false,
         points: [
           { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.50, flush: 0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
           { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.48, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -780,7 +680,7 @@
         ]
       },
       {
-        vin: '#VIN-103', name: '차량 #003 (앞도어 간극과다 NG ⚠️)', isAllOk: false,
+        vin: '#VIN-103', name: '차량 #003 (간극과다 NG ⚠️)', isAllOk: false,
         points: [
           { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.51, flush: -0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
           { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.49, flush: 0.06, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -793,7 +693,7 @@
         ]
       },
       {
-        vin: '#VIN-104', name: '차량 #004 (정상 양품)', isAllOk: true,
+        vin: '#VIN-104', name: '차량 #004 (양품)', isAllOk: true,
         points: [
           { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.46, flush: 0.01, upperShim: '±0.00mm', lowerShim: '0.0°' },
           { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.54, flush: -0.02, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -806,7 +706,7 @@
         ]
       },
       {
-        vin: '#VIN-105', name: '차량 #005 (테일게이트 단차 NG ⚠️)', isAllOk: false,
+        vin: '#VIN-105', name: '차량 #005 (테일단차 NG ⚠️)', isAllOk: false,
         points: [
           { id: 0, code: 'PT-01', name: 'Hood - Left Lamp', targetPos: [-1.4, 0.75, 0.6], gap: 3.52, flush: 0.03, upperShim: '±0.00mm', lowerShim: '0.0°' },
           { id: 1, code: 'PT-02', name: 'Hood - Right Lamp', targetPos: [-1.4, 0.75, -0.6], gap: 3.47, flush: -0.05, upperShim: '±0.00mm', lowerShim: '0.0°' },
@@ -832,7 +732,6 @@
     let carGroup, robotGroup, laserBeam;
     let pinMarkers = [];
 
-    // Custom Orbit Interaction State
     let isDragging = false;
     let prevMouseX = 0, prevMouseY = 0;
     let sphericalTheta = -0.7, sphericalPhi = 1.0, sphericalRadius = 5.2;
@@ -842,14 +741,12 @@
       const veh = VEHICLE_DATASETS[vIdx];
       inspectionPoints = JSON.parse(JSON.stringify(veh.points));
 
-      // Update Vehicle button styles
       document.querySelectorAll('.veh-btn').forEach((btn, i) => {
         btn.className = (i === vIdx)
-          ? 'veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md'
-          : 'veh-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700';
+          ? 'veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md'
+          : 'veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700';
       });
 
-      // Update State Badge
       const badge = document.getElementById('vehicleStateBadge');
       const yieldText = document.getElementById('topYield');
       if (veh.isAllOk) {
@@ -896,7 +793,6 @@
       renderer.domElement.style.zIndex = '1';
       container.insertBefore(renderer.domElement, container.firstChild);
 
-      // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
       scene.add(ambientLight);
 
@@ -1146,37 +1042,81 @@
       const canvas = document.getElementById('laserCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const w = canvas.width = canvas.clientWidth || 300;
-      const h = canvas.height = canvas.clientHeight || 80;
+      const w = canvas.width = canvas.clientWidth || 320;
+      const h = canvas.height = canvas.clientHeight || 96;
 
       ctx.clearRect(0, 0, w, h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.beginPath();
-      ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
-      ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
-      ctx.stroke();
 
-      // Left Panel
+      // 1. Grid Background (Optical Profiler Grid)
+      ctx.strokeStyle = 'rgba(0, 242, 254, 0.07)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+      const midY = h / 2;
+      const midX = w / 2;
+      const gapPx = gap * 7;
+      const flushPx = flush * 28;
+
+      // 2. Left Panel Surface
+      const leftY = midY - 6;
       ctx.strokeStyle = '#00f2fe';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      const leftY = h/2 - 12;
-      ctx.moveTo(15, leftY);
-      ctx.lineTo(w/2 - gap * 6, leftY);
+      ctx.moveTo(20, leftY);
+      ctx.lineTo(midX - gapPx / 2, leftY);
       ctx.stroke();
 
-      // Right Panel (Flush Step)
-      ctx.strokeStyle = (Math.abs(flush) > FLUSH_TOL) ? '#f43f5e' : '#38bdf8';
+      // Left Laser Point Cloud Dots
+      ctx.fillStyle = '#38bdf8';
+      for (let px = 25; px < midX - gapPx / 2; px += 10) {
+        ctx.fillRect(px, leftY - 1, 2, 2);
+      }
+
+      // 3. Right Panel Surface
+      const rightY = leftY + flushPx;
+      const isFlushNg = Math.abs(flush) > FLUSH_TOL;
+      ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
       ctx.beginPath();
-      const rightY = leftY + flush * 25;
-      ctx.moveTo(w/2 + gap * 6, rightY);
-      ctx.lineTo(w - 15, rightY);
+      ctx.moveTo(midX + gapPx / 2, rightY);
+      ctx.lineTo(w - 20, rightY);
       ctx.stroke();
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '10px JetBrains Mono';
-      ctx.fillText(`Gap: ${gap.toFixed(2)}mm`, w/2 - 28, h - 6);
-      ctx.fillText(`Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, w/2 + 15, 14);
+      // Right Laser Point Cloud Dots
+      ctx.fillStyle = isFlushNg ? '#fb7185' : '#38bdf8';
+      for (let px = midX + gapPx / 2; px < w - 20; px += 10) {
+        ctx.fillRect(px, rightY - 1, 2, 2);
+      }
+
+      // 4. Gap Dimension Line & Dimension Text
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(midX - gapPx / 2, leftY + 18);
+      ctx.lineTo(midX + gapPx / 2, leftY + 18);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#00f2fe';
+      ctx.font = 'bold 11px JetBrains Mono';
+      ctx.textAlign = 'center';
+      ctx.fillText(`↔ Gap: ${gap.toFixed(2)}mm`, midX, leftY + 32);
+
+      // 5. Flush Step Dimension Line
+      if (Math.abs(flush) > 0.02) {
+        ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        ctx.moveTo(midX + gapPx / 2 + 10, leftY);
+        ctx.lineTo(midX + gapPx / 2 + 10, rightY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
+        ctx.textAlign = 'left';
+        ctx.fillText(`↕ Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, midX + gapPx / 2 + 14, (leftY + rightY)/2 + 4);
+      }
     }
 
     function toggleAutoScan() {
@@ -1215,7 +1155,6 @@
       const labels = [], gapData = [], flushData = [];
       for (let i = 1; i <= 30; i++) {
         labels.push(`#${i}`);
-        // Introduce intermittent outlier vehicles
         const isSpike = (i === 7 || i === 18 || i === 25);
         gapData.push(isSpike ? 4.35 : (3.50 + (Math.random() - 0.5) * 0.35));
         flushData.push(isSpike ? 0.85 : (0.00 + (Math.random() - 0.5) * 0.30));
@@ -1300,7 +1239,7 @@
           </linearGradient>
         </defs>
         <rect x="25" y="${beamY}" width="550" height="${beamH}" rx="8" fill="url(#beamGrad)" stroke="#2b3d5b" stroke-width="1.5"/>
-        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#4a658a" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME</text>
+        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#4a658a" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME (차체 사이드실 프레임)</text>
         <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="8" fill="url(#gaugeGrad)" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4"/>
         <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#00f2fe" opacity="0.85">INSPECTION GAUGE BASE (10.0mm ±1.0mm)</text>
       `;
@@ -1562,7 +1501,7 @@
     }
 
     /* ============================================================
-     * AUDIO & MODALS
+     * AUDIO
      * ============================================================ */
     let audioCtx = null;
     function playBeep(freq) {
@@ -1583,20 +1522,8 @@
       audioEnabled = !audioEnabled;
       const iconName = audioEnabled ? 'volume-2' : 'volume-x';
       document.getElementById('soundIcon').setAttribute('data-lucide', iconName);
-      const mobIcon = document.getElementById('soundIconMob');
-      if (mobIcon) mobIcon.setAttribute('data-lucide', iconName);
       lucide.createIcons();
     }
-
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      if (window.renderMathInElement) renderMathInElement(document.getElementById(id));
-    }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal('studyModal');
-    });
 
     /* ============================================================
      * INITIALIZATION
