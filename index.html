@@ -92,10 +92,6 @@
     .cyber-glow {
       box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
     }
-
-    .gauge-needle {
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
@@ -128,7 +124,7 @@
         <!-- Synthetic Data Badge -->
         <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800/60 text-amber-300 text-xs">
           <i data-lucide="database" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span>물리 기반 합성 데이터 모델링</span>
+          <span>물리 기반 합성 데이터 모델</span>
         </div>
 
         <!-- Sound Toggle -->
@@ -154,6 +150,30 @@
   <!-- ================= MAIN CONTENT ================= -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-5">
     
+    <!-- Real-World Scalability & Synthetic Insight Banner -->
+    <div class="cyber-card rounded-2xl p-4 border border-cyan-900/70 bg-gradient-to-r from-dark-900 via-dark-850 to-dark-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+      <div class="flex items-start gap-3">
+        <div class="p-2 rounded-xl bg-cyan-950 border border-cyan-800 text-cyan-400 shrink-0 mt-0.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 font-bold text-slate-200 text-sm">
+            <span>현장 실측 데이터 연계 및 추세 분석 확장성</span>
+            <span class="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px] font-mono font-semibold">
+              Digital Twin Ready
+            </span>
+          </div>
+          <p class="text-slate-400 mt-1 leading-relaxed">
+            현재 시스템은 <strong>용접 열변형 특성 곡선, Box-Muller 가우시안 노이즈, 설비 열화 오차 모델</strong>을 기반으로 합성 데이터를 생성하여 시뮬레이션을 수행하고 있습니다. 향후 실제 양산 공장의 <strong>인라인 3차원 차체 계측기(CMM) 및 레이저 비전 실측 데이터(CSV / IoT 스트림)</strong>를 연결하면, <strong>실시간 공정 품질 추세 파악, 지그/전극 열화 예지 보전(PdM), 최적 심(Shim) 라이너 자동 추천 시스템</strong>으로 즉시 전환·확장 가능합니다.
+          </p>
+        </div>
+      </div>
+      <button onclick="openModal('guideModal')" class="shrink-0 px-3 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700/80 text-cyan-300 font-semibold text-xs transition-colors flex items-center gap-1.5 self-end md:self-center">
+        <span>모델 상세 명세 보기</span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+
     <!-- Top Summary Banner -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="cyber-card rounded-xl p-3.5 flex items-center space-x-3">
@@ -171,8 +191,8 @@
           <i data-lucide="sliders" class="w-5 h-5"></i>
         </div>
         <div>
-          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">허용 공차 (Tolerance)</div>
-          <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono">± 5.0 <span class="text-xs text-slate-400">mm</span> <span class="text-xs font-normal text-slate-500">(5.0~15.0)</span></div>
+          <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">정밀 허용 공차 (Tolerance)</div>
+          <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono">± 1.0 <span class="text-xs text-slate-400">mm</span> <span class="text-xs font-normal text-slate-500">(9.0~11.0)</span></div>
         </div>
       </div>
 
@@ -214,7 +234,7 @@
                 사이드실 & 검사구 디지털 트윈 실시간 계측
               </h2>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono">Real-Time Inspection Model</span>
+            <span class="text-[11px] text-cyan-400 font-mono">Tolerance: ±1.0mm (9.0~11.0mm)</span>
           </div>
 
           <!-- Dynamic SVG Canvas -->
@@ -223,8 +243,8 @@
               <!-- Rendered via JS dynamically -->
             </svg>
             <div class="absolute bottom-2 left-3 text-[10px] text-slate-500 font-mono flex items-center gap-2">
-              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span> 합격(OK: 5.0~15.0mm)
-              <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span> 규격 이탈(NG)
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span> 합격(OK: 9.0 ~ 11.0mm)
+              <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span> 정밀 공차 이탈(NG)
             </div>
           </div>
 
@@ -235,7 +255,7 @@
               <span>공정 실행 (5회 생산 런)</span>
             </button>
 
-            <button onclick="runAutoTuning()" class="py-2.5 px-3.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]" title="목표 H값에 근접하도록 라이너 자동 튜닝 탐색">
+            <button onclick="runAutoTuning()" class="py-2.5 px-3.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]" title="목표 H값(10.0mm)에 최적으로 근접하도록 라이너 자동 튜닝 탐색">
               <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
               <span>AI 자동 최적화 탐색</span>
             </button>
@@ -255,7 +275,7 @@
                 생산 런별 H값 산포 트렌드 모니터링 (SPC)
               </h3>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono">Target: 10.0mm [5~15mm]</span>
+            <span class="text-[11px] text-cyan-300 font-mono">Target: 10.0mm [LSL: 9.0mm / USL: 11.0mm]</span>
           </div>
           <div class="h-44 sm:h-48 w-full">
             <canvas id="spcChart"></canvas>
@@ -282,7 +302,7 @@
           </div>
 
           <p class="text-[11px] text-slate-400 mb-3 leading-relaxed">
-            라이너 개수를 추가할수록 검사구 접촉 높이(H값)가 <span class="text-cyan-300 font-semibold">비례하여 증가</span>합니다. 각 홀마다 최적 조합을 튜닝하세요.
+            라이너 개수를 추가할수록 검사구 접촉 높이(H값)가 <span class="text-cyan-300 font-semibold">비례하여 증가</span>합니다. <strong class="text-slate-200">±1.0mm (9.0~11.0mm)</strong> 정밀 공차를 만족하도록 튜닝하세요.
           </p>
 
           <!-- Dynamic 4 Holes List -->
@@ -294,8 +314,8 @@
           <div class="mt-3.5 p-2.5 rounded-xl bg-dark-900/80 border border-dark-750 text-[11px] text-slate-400 flex items-start gap-2">
             <i data-lucide="info" class="w-4 h-4 text-cyan-400 shrink-0 mt-0.5"></i>
             <div>
-              <span class="text-slate-300 font-semibold">최적화 가이드:</span>
-              기본 H값이 낮을 때(4mm대) 라이너를 약 8~11개 조절하여 목표 10.0mm ±5.0mm 중앙부에 안착시킵니다.
+              <span class="text-slate-300 font-semibold">정밀 공차 가이드:</span>
+              공차가 ±1.0mm로 엄격 관리되므로, 최적 개수(홀A: 8개, 홀B: 10개, 홀C: 11개, 홀D: 9개)에서 벗어나면 즉시 NG가 발생합니다.
             </div>
           </div>
         </div>
@@ -386,7 +406,7 @@
         사이드실(Side-Sill) 용접 공정 H값 최적화 디지털 트윈 시뮬레이터
       </div>
       <div class="flex items-center gap-4">
-        <span>Target: 10.0mm ± 5mm</span>
+        <span>Target: 10.0mm ± 1.0mm (9.0~11.0mm)</span>
         <span>•</span>
         <span class="text-slate-400 font-mono">Synthetic Data Engine</span>
       </div>
@@ -421,7 +441,7 @@
           <i data-lucide="target" class="w-4 h-4"></i> 1. 프로젝트 개발 목적 (Purpose)
         </h3>
         <p class="text-xs text-slate-300 leading-relaxed">
-          자동차 차체 조립 공정 중 사이드실(Side-Sill) 용접 시 발생하는 열응력 변형 및 조립 누적 공차로 인해 검사구 기준 <strong>H값(단차/간극 측정치)</strong>의 산포가 발생합니다. 본 시스템은 각 홀 부위의 라이너(Shim Plate) 개수를 가감 조절하여 목표 기준치인 <strong>10.0mm (공차: 5.0 ~ 15.0mm)</strong> 내로 수렴시키는 공정 엔지니어링 최적화 디지털 트윈 시뮬레이터입니다.
+          자동차 차체 조립 공정 중 사이드실(Side-Sill) 용접 시 발생하는 열응력 변형 및 조립 누적 공차로 인해 검사구 기준 <strong>H값(단차/간극 측정치)</strong>의 산포가 발생합니다. 본 시스템은 각 홀 부위의 라이너(Shim Plate) 개수를 가감 조절하여 정밀 공차 관리 기준인 <strong>10.0mm (공차: ±1.0mm / 9.0 ~ 11.0mm)</strong> 내로 수렴시키는 공정 엔지니어링 최적화 디지털 트윈 시뮬레이터입니다.
         </p>
       </div>
 
@@ -457,15 +477,32 @@
           </div>
           <div class="p-2.5 rounded-lg bg-dark-900/60 border border-dark-750">
             <strong class="text-cyan-400">SPC 공정능력지수 (Cpk):</strong><br/>
-            \(C_{pk} = \min\left(\frac{USL - \mu}{3\sigma}, \frac{\mu - LSL}{3\sigma}\right)\) 실시간 자동 연산 및 산포도 출력.
+            \(C_{pk} = \min\left(\frac{USL - \mu}{3\sigma}, \frac{\mu - LSL}{3\sigma}\right)\) (규격 상하한: 9.0 ~ 11.0mm) 실시간 자동 연산.
           </div>
         </div>
       </div>
 
-      <!-- Section 4: Tech Stack -->
+      <!-- Section 4: Real-World Scalability Roadmap -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
-          <i data-lucide="layers" class="w-4 h-4"></i> 4. 기술 스택 (Tech Stack)
+          <i data-lucide="trending-up" class="w-4 h-4"></i> 4. 현장 실측 데이터 연계 및 미래 확장성 (Scalability)
+        </h3>
+        <div class="p-3 rounded-xl bg-dark-900/90 border border-cyan-900/70 text-xs text-slate-300 space-y-2">
+          <p class="leading-relaxed">
+            현재 구현된 물리 기반 시뮬레이터는 실제 양산 라인의 <strong>인라인 3차원 계측기(CMM) / 비전 센서의 실측 데이터</strong>와 다음과 같이 유기적으로 연계할 수 있는 확장 구조를 갖추고 있습니다:
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
+            <li><strong class="text-slate-200">실시간 품질 트렌드 추적:</strong> 실제 차체 측정 CSV/IoT 스트림을 차트에 바인딩하여 런별 단차 추세 및 이상 발생 지점을 즉시 포착</li>
+            <li><strong class="text-slate-200">설비 열화 예지 보전(PdM):</strong> 지그 마모 및 열팽창 누적으로 인한 H값 드리프트를 사전 감지하여 전극 교체 및 검사구 캘리브레이션 주기 최적화</li>
+            <li><strong class="text-slate-200">최적 심(Shim) 라이너 자동 처방:</strong> 측정된 공차 이탈량에 맞춰 작업자에게 필요한 라이너 증감 매수를 자동으로 추천하는 AI 어시스턴트로 확장</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 5: Tech Stack -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i> 5. 기술 스택 (Tech Stack)
         </h3>
         <div class="flex flex-wrap gap-1.5 text-[11px] font-mono">
           <span class="px-2 py-1 rounded bg-dark-900 border border-cyan-900 text-cyan-300">HTML5 Canvas & SVG</span>
@@ -531,7 +568,7 @@
           <p>git commit -m "feat: 사이드실 용접 검사구 H값 최적화 디지털 트윈 시뮬레이터 고도화"</p>
           <p class="text-slate-500 pt-2"># 2. GitHub 원격 저장소 연결 및 푸시</p>
           <p>git branch -M main</p>
-          <p>git remote add origin https://github.com/사용자아이디/side-sill-welding-sim.git</p>
+          <p>git remote add origin https://github.com/jiu7021/side-sill-welding-sim.git</p>
           <p>git push -u origin main</p>
         </div>
       </div>
@@ -540,7 +577,7 @@
       <div class="p-3 rounded-xl bg-dark-900 border border-dark-750 text-xs space-y-1">
         <strong class="text-cyan-400">💡 GitHub Pages 무료 배포 활성화:</strong>
         <p class="text-slate-400 leading-relaxed">
-          생성된 GitHub 레포지토리 상단의 <strong class="text-slate-200">Settings</strong> ➔ <strong class="text-slate-200">Pages</strong> ➔ Branch를 <strong class="text-slate-200">main</strong>으로 선택하고 Save를 누르면 <span class="text-cyan-300 font-mono">https://아이디.github.io/레포명</span> 으로 즉시 웹에 배포됩니다.
+          생성된 GitHub 레포지토리 상단의 <strong class="text-slate-200">Settings</strong> ➔ <strong class="text-slate-200">Pages</strong> ➔ Branch를 <strong class="text-slate-200">main</strong>으로 선택하고 Save를 누르면 <span class="text-cyan-300 font-mono">https://jiu7021.github.io/side-sill-welding-sim/</span> 으로 즉시 웹에 배포됩니다.
         </p>
       </div>
 
@@ -558,9 +595,9 @@
      * CORE SIMULATION ENGINE & STATE
      * ============================================================ */
     const TARGET_H = 10.0;
-    const TOLERANCE = 5.0; // 5.0mm ~ 15.0mm
-    const USL = TARGET_H + TOLERANCE; // 15.0mm
-    const LSL = TARGET_H - TOLERANCE; // 5.0mm
+    const TOLERANCE = 1.0; // 정밀 공차 관리: 9.0mm ~ 11.0mm (±1.0mm)
+    const USL = TARGET_H + TOLERANCE; // 11.0mm
+    const LSL = TARGET_H - TOLERANCE; // 9.0mm
     const HOLE_NAMES = ['홀 A', '홀 B', '홀 C', '홀 D'];
     
     // 비례 경향 H값 테이블 (0개 ≈ 3.8~4.4mm -> 20개 ≈ 20.5~22.0mm)
@@ -730,7 +767,7 @@
         <!-- Bottom Inspection Gauge Bar -->
         <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="8" fill="url(#gaugeGrad)" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4"/>
         <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#00f2fe" opacity="0.85" letter-spacing="2">
-          INSPECTION GAUGE BASE (기준 검사구)
+          INSPECTION GAUGE BASE (기준 검사구: 10.0mm ±1.0mm)
         </text>
       `;
 
@@ -930,7 +967,7 @@
       historyData.push(historyItem);
 
       // Sound feedback
-      if (yieldRate >= 90) {
+      if (yieldRate >= 80) {
         playSuccessJingle();
       } else {
         playFailureTone();
@@ -1030,7 +1067,7 @@
             </div>
             <div class="flex items-center gap-3">
               <span class="text-xs text-slate-400 font-mono hidden md:inline">[ ${guideSummary} ]</span>
-              <span class="text-xs font-mono font-bold ${item.yieldRate >= 90 ? 'text-emerald-400' : 'text-amber-400'}">
+              <span class="text-xs font-mono font-bold ${item.yieldRate >= 80 ? 'text-emerald-400' : 'text-amber-400'}">
                 수율 ${item.yieldRate.toFixed(0)}% (${item.okCount}/${item.totalCount})
               </span>
             </div>
@@ -1206,8 +1243,8 @@
           animation: { duration: 400 },
           scales: {
             y: {
-              min: 2,
-              max: 22,
+              min: 6,
+              max: 14,
               grid: { color: 'rgba(255, 255, 255, 0.05)' },
               ticks: { color: '#94a3b8', font: { size: 10 } }
             },
@@ -1288,6 +1325,5 @@
       renderHoleControllers();
       initSPCChart();
     });
-  </script>
 </body>
 </html>
