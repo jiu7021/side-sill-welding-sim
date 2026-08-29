@@ -209,7 +209,12 @@
             </h2>
           </div>
           
-          <div class="flex items-center gap-1 bg-dark-900/80 p-0.5 rounded-lg border border-dark-750 text-xs">
+          <div class="flex items-center gap-1.5 bg-dark-900/90 p-1 rounded-lg border border-dark-750 text-xs">
+            <button id="xrayToggleBtn" onclick="toggleXRayView()" class="px-2 py-0.5 rounded bg-dark-800 hover:bg-dark-750 text-cyan-300 border border-cyan-800/80 flex items-center gap-1 font-mono text-[11px] transition-all">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span id="xrayBtnText">X-Ray 힌지 투시</span>
+            </button>
+            <span class="text-slate-600">|</span>
             <button onclick="setCameraView('iso')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Iso</button>
             <button onclick="setCameraView('front')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Front</button>
             <button onclick="setCameraView('side')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Side</button>
@@ -226,7 +231,7 @@
               <span id="robotStatusText">ROBOT SCANNING : PT-03 [FL DOOR]</span>
             </div>
             <div class="text-slate-400 text-[10px] flex items-center gap-2">
-              <span>TCP: X: 1240.2 Y: -620.5 Z: 890.1 mm</span>
+              <span id="tcpCoordText">TCP: X: 1240.2 Y: -620.5 Z: 890.1 mm</span>
               <span class="text-amber-400 font-bold bg-amber-950/80 px-1 rounded border border-amber-800/60">🔍 15x Visual Magnifier</span>
             </div>
           </div>
@@ -658,7 +663,6 @@
     const VEHICLE_DATASETS = [
       {
         vin: '#VIN-101', name: '차량 #001 (양품)', isAllOk: true,
-        // Panel deformation offsets for 15x Visual Magnifier
         doorFL_offset: { x: 0, y: 0, z: 0, rotZ: 0 },
         tailgate_offset: { x: 0, y: 0, z: 0 },
         points: [
@@ -674,7 +678,6 @@
       },
       {
         vin: '#VIN-102', name: '차량 #002 (도어처짐 NG ⚠️)', isAllOk: false,
-        // Door FL physically sags downward and protrudes outward
         doorFL_offset: { x: 0, y: -0.06, z: 0.16, rotZ: -0.06 },
         tailgate_offset: { x: 0, y: 0, z: 0 },
         points: [
@@ -690,7 +693,6 @@
       },
       {
         vin: '#VIN-103', name: '차량 #003 (간극과다 NG ⚠️)', isAllOk: false,
-        // Door FL shifted backwards along X-axis
         doorFL_offset: { x: 0.14, y: 0, z: 0.03, rotZ: 0 },
         tailgate_offset: { x: 0, y: 0, z: 0 },
         points: [
@@ -721,7 +723,6 @@
       },
       {
         vin: '#VIN-105', name: '차량 #005 (테일단차 NG ⚠️)', isAllOk: false,
-        // Tailgate physically depressed inward
         doorFL_offset: { x: 0, y: 0, z: 0, rotZ: 0 },
         tailgate_offset: { x: -0.15, y: -0.04, z: 0 },
         points: [
@@ -743,13 +744,19 @@
     let isAutoScanning = false;
     let autoScanTimer = null;
     let audioEnabled = true;
+    let isXRayMode = false;
 
-    // Three.js State & Separate Deformable Meshes
+    // Three.js State & Kinematic Targets
     let scene, camera, renderer;
     let carGroup, robotGroup, laserBeam;
-    let doorFLMesh, doorRLMesh, tailgateMesh, hoodMesh;
-    let seamFL_Mesh, seamTail_Mesh;
+    let doorFLMesh, doorRLMesh, tailgateMesh, hoodMesh, cabinMesh, roofMesh;
+    let hingeUpperMesh, hingeLowerMesh, shimUpperMesh;
+    let seamFL_Mesh;
     let pinMarkers = [];
+
+    // Smooth Kinematic Targets
+    let robotBaseTarget = new THREE.Vector3(-1.8, 0, 1.8);
+    let robotTCPTarget = new THREE.Vector3(0.4, 0.95, 0);
 
     let isDragging = false;
     let prevMouseX = 0, prevMouseY = 0;
@@ -780,7 +787,6 @@
         yieldText.className = 'text-base font-bold text-rose-400 font-mono';
       }
 
-      // Apply Physical 3D Geometric Deformation (15x Magnifier for visual clarity)
       apply3DDeformation(veh);
       updatePinMarkerColors();
       selectInspectionPoint(currentPointIdx);
@@ -796,16 +802,56 @@
       const dTG = veh.tailgate_offset;
       tailgateMesh.position.set(1.45 + dTG.x, 0.85 + dTG.y, 0 + dTG.z);
 
-      // Defect Color Heatmap & Seam Warning Glow
       const isDoorDefect = (Math.abs(dFL.z) > 0.05 || Math.abs(dFL.x) > 0.05);
       const isTailDefect = (Math.abs(dTG.x) > 0.05);
 
-      doorFLMesh.material.color.setHex(isDoorDefect ? 0xf43f5e : 0xe2e8f0);
-      tailgateMesh.material.color.setHex(isTailDefect ? 0xf43f5e : 0xe2e8f0);
+      if (!isXRayMode) {
+        doorFLMesh.material.color.setHex(isDoorDefect ? 0xf43f5e : 0xe2e8f0);
+        tailgateMesh.material.color.setHex(isTailDefect ? 0xf43f5e : 0xe2e8f0);
+      }
 
       if (seamFL_Mesh) {
         seamFL_Mesh.material.color.setHex(isDoorDefect ? 0xff0055 : 0x00f2fe);
         seamFL_Mesh.scale.set(isDoorDefect ? 2.5 : 1, 1, isDoorDefect ? 2.5 : 1);
+      }
+
+      // Highlight Shim in Hinge
+      if (shimUpperMesh) {
+        shimUpperMesh.material.color.setHex(isDoorDefect ? 0xf43f5e : 0xfbbf24);
+        shimUpperMesh.scale.set(1, isDoorDefect ? 2.5 : 1, 1);
+      }
+    }
+
+    function toggleXRayView() {
+      isXRayMode = !isXRayMode;
+      const btn = document.getElementById('xrayToggleBtn');
+      const text = document.getElementById('xrayBtnText');
+
+      if (isXRayMode) {
+        btn.className = 'px-2 py-0.5 rounded bg-cyan-500 text-dark-950 font-bold border border-cyan-400 flex items-center gap-1 font-mono text-[11px] shadow-lg';
+        text.textContent = 'X-Ray 모드 ON';
+        setCarOpacity(0.25, true);
+        if (hingeUpperMesh) hingeUpperMesh.visible = true;
+        if (hingeLowerMesh) hingeLowerMesh.visible = true;
+      } else {
+        btn.className = 'px-2 py-0.5 rounded bg-dark-800 hover:bg-dark-750 text-cyan-300 border border-cyan-800/80 flex items-center gap-1 font-mono text-[11px]';
+        text.textContent = 'X-Ray 힌지 투시';
+        setCarOpacity(1.0, false);
+      }
+    }
+
+    function setCarOpacity(opacity, wireframe) {
+      const meshes = [doorFLMesh, doorRLMesh, tailgateMesh, hoodMesh, roofMesh];
+      meshes.forEach(m => {
+        if (m) {
+          m.material.transparent = (opacity < 1.0);
+          m.material.opacity = opacity;
+          m.material.wireframe = wireframe;
+        }
+      });
+      if (cabinMesh) {
+        cabinMesh.material.opacity = wireframe ? 0.15 : 0.45;
+        cabinMesh.material.wireframe = wireframe;
       }
     }
 
@@ -837,26 +883,22 @@
       renderer.domElement.style.zIndex = '1';
       container.insertBefore(renderer.domElement, container.firstChild);
 
-      // Bright Studio Lighting Setup
+      // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
       scene.add(ambientLight);
 
-      // Key Directional Light 1 (Top Front Left)
       const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.8);
       dirLight1.position.set(6, 10, 8);
       scene.add(dirLight1);
 
-      // Key Directional Light 2 (Opposite Rim Light)
       const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 1.2);
       dirLight2.position.set(-6, 8, -8);
       scene.add(dirLight2);
 
-      // Floor Fill Light
       const floorLight = new THREE.DirectionalLight(0x0284c7, 0.6);
       floorLight.position.set(0, -5, 0);
       scene.add(floorLight);
 
-      // Bright Tech Floor Grid
       const grid = new THREE.GridHelper(12, 24, 0x00f2fe, 0x1e293b);
       grid.position.y = 0;
       scene.add(grid);
@@ -932,59 +974,45 @@
     function buildCarModel() {
       carGroup = new THREE.Group();
 
-      // Bright Metallic Pearl White Car Body Material
       const bodyMat = new THREE.MeshStandardMaterial({ 
-        color: 0xe2e8f0, 
-        metalness: 0.65, 
-        roughness: 0.15 
+        color: 0xe2e8f0, metalness: 0.65, roughness: 0.15 
       });
       const glassMat = new THREE.MeshPhysicalMaterial({ 
-        color: 0x0284c7, 
-        transparent: true, 
-        opacity: 0.45, 
-        roughness: 0.05 
+        color: 0x0284c7, transparent: true, opacity: 0.45, roughness: 0.05 
       });
       const chassisMat = new THREE.MeshStandardMaterial({ 
-        color: 0x0f172a, 
-        roughness: 0.6 
+        color: 0x0f172a, roughness: 0.6 
       });
 
-      // 1. Lower Chassis
+      // Chassis
       const chassis = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.45, 1.55), chassisMat);
-      chassis.position.set(0, 0.38, 0);
-      carGroup.add(chassis);
+      chassis.position.set(0, 0.38, 0); carGroup.add(chassis);
 
-      // 2. Cabin Glass (Greenhouse)
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.55, 1.38), glassMat);
-      cabin.position.set(0.1, 0.95, 0);
-      carGroup.add(cabin);
+      // Cabin Glass
+      cabinMesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.55, 1.38), glassMat);
+      cabinMesh.position.set(0.1, 0.95, 0); carGroup.add(cabinMesh);
 
-      // 3. Roof Panel
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.08, 1.35), bodyMat);
-      roof.position.set(0.1, 1.25, 0);
-      carGroup.add(roof);
+      // Roof
+      roofMesh = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.08, 1.35), bodyMat.clone());
+      roofMesh.position.set(0.1, 1.25, 0); carGroup.add(roofMesh);
 
-      // 4. Hood (Bonnet)
+      // Hood
       hoodMesh = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.12, 1.42), bodyMat.clone());
-      hoodMesh.position.set(-1.25, 0.72, 0);
-      carGroup.add(hoodMesh);
+      hoodMesh.position.set(-1.25, 0.72, 0); carGroup.add(hoodMesh);
 
-      // 5. Deformable FL Door (Front-Left Door)
+      // Deformable FL Door
       doorFLMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.52, 0.08), bodyMat.clone());
-      doorFLMesh.position.set(-0.15, 0.65, 0.81);
-      carGroup.add(doorFLMesh);
+      doorFLMesh.position.set(-0.15, 0.65, 0.81); carGroup.add(doorFLMesh);
 
-      // 6. Deformable RL Door (Rear-Left Door)
+      // Deformable RL Door
       doorRLMesh = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.52, 0.08), bodyMat.clone());
-      doorRLMesh.position.set(0.80, 0.65, 0.81);
-      carGroup.add(doorRLMesh);
+      doorRLMesh.position.set(0.80, 0.65, 0.81); carGroup.add(doorRLMesh);
 
-      // 7. Deformable Tailgate (Rear Trunk)
+      // Deformable Tailgate
       tailgateMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.58, 1.38), bodyMat.clone());
-      tailgateMesh.position.set(1.45, 0.85, 0);
-      carGroup.add(tailgateMesh);
+      tailgateMesh.position.set(1.45, 0.85, 0); carGroup.add(tailgateMesh);
 
-      // 8. 4 Wheels (Metallic Rims)
+      // 4 Wheels
       const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.22, 20);
       const wheelMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.5 });
       const wheelPositions = [
@@ -998,7 +1026,24 @@
         carGroup.add(wheel);
       });
 
-      // Split Gap Seam Lines (Neon Blue / Alert Red)
+      // Internal Door Hinge Brackets & Shim (X-Ray Highlights)
+      const hingeMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.2 });
+      const shimMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+
+      // Upper Hinge
+      hingeUpperMesh = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), hingeMat);
+      hingeUpperMesh.position.set(-0.62, 0.82, 0.76);
+      shimUpperMesh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 0.04), shimMat);
+      shimUpperMesh.position.set(0.06, 0, 0);
+      hingeUpperMesh.add(shimUpperMesh);
+      carGroup.add(hingeUpperMesh);
+
+      // Lower Hinge
+      hingeLowerMesh = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), hingeMat);
+      hingeLowerMesh.position.set(-0.62, 0.48, 0.76);
+      carGroup.add(hingeLowerMesh);
+
+      // Seam Split Line
       const seamMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
       seamFL_Mesh = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.54, 0.03), seamMat);
       seamFL_Mesh.position.set(0.35, 0.65, 0.82);
@@ -1010,35 +1055,28 @@
     let robotTCP;
     function buildIndustrialRobot() {
       robotGroup = new THREE.Group();
-      robotGroup.position.set(-1.8, 0, 1.8);
+      robotGroup.position.copy(robotBaseTarget);
 
-      // Bright High-Tech Industrial Robot Colors (White & Industrial Orange / Neon Blue)
       const robotWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.5, roughness: 0.2 });
       const robotOrange = new THREE.MeshStandardMaterial({ color: 0xf97316, metalness: 0.6, roughness: 0.3 });
       const robotJoint = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 });
 
-      // Pedestal
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 0.22, 18), robotJoint);
       base.position.y = 0.11; robotGroup.add(base);
 
-      // J1 Base Swivel
       const j1 = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.35, 16), robotOrange);
       j1.position.y = 0.38; robotGroup.add(j1);
 
-      // Arm 1
       const arm1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.95, 0.2), robotWhite);
       arm1.position.set(0.12, 0.9, 0); arm1.rotation.z = -0.3; robotGroup.add(arm1);
 
-      // Arm 2
       const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.9, 0.16), robotOrange);
       arm2.position.set(0.48, 1.5, -0.2); arm2.rotation.z = 0.6; robotGroup.add(arm2);
 
-      // 3D Laser Optical Tool Head (End-Effector)
       robotTCP = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.3), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 }));
-      robotTCP.position.set(0.7, 1.3, -0.4);
+      robotTCP.position.copy(robotTCPTarget);
       robotGroup.add(robotTCP);
 
-      // 3D Laser Fan Sheet (Translucent Neon Cyan)
       const laserGeo = new THREE.ConeGeometry(0.5, 1.3, 4, 1, true);
       const laserMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
       laserBeam = new THREE.Mesh(laserGeo, laserMat);
@@ -1083,12 +1121,31 @@
 
     function animateThree() {
       requestAnimationFrame(animateThree);
+
+      // Smooth Kinematic Motion Interpolation (Lerp)
+      if (robotGroup) {
+        robotGroup.position.lerp(robotBaseTarget, 0.08);
+      }
+      if (robotTCP) {
+        robotTCP.position.lerp(robotTCPTarget, 0.08);
+      }
+
       if (laserBeam) {
         laserBeam.material.opacity = 0.4 + Math.sin(Date.now() * 0.006) * 0.2;
       }
       pinMarkers.forEach((p, idx) => {
         p.group.position.y = inspectionPoints[idx].targetPos[1] + Math.sin(Date.now() * 0.004 + idx) * 0.015;
       });
+
+      // Update TCP Text smoothly
+      if (robotTCP && robotGroup) {
+        const realX = (robotGroup.position.x * 800).toFixed(1);
+        const realY = (robotTCP.position.y * 600).toFixed(1);
+        const realZ = (robotGroup.position.z * 500).toFixed(1);
+        const el = document.getElementById('tcpCoordText');
+        if (el) el.textContent = `TCP: X: ${realX} Y: ${realY} Z: ${realZ} mm`;
+      }
+
       if (renderer && scene && camera) {
         renderer.render(scene, camera);
       }
@@ -1112,10 +1169,9 @@
         }
       });
 
-      if (robotTCP) {
-        robotGroup.position.set(pt.targetPos[0] - 0.4, 0, pt.targetPos[2] > 0 ? 1.6 : -1.6);
-        robotTCP.position.set(0.4, pt.targetPos[1] + 0.3, 0);
-      }
+      // Set Smooth Motion Target for Industrial Robot
+      robotBaseTarget.set(pt.targetPos[0] - 0.4, 0, pt.targetPos[2] > 0 ? 1.6 : -1.6);
+      robotTCPTarget.set(0.4, pt.targetPos[1] + 0.3, 0);
 
       document.getElementById('activePtTitle').textContent = `${pt.code} : ${pt.name}`;
       document.getElementById('robotStatusText').textContent = `ROBOT SCANNING : ${pt.code} [${pt.name}]`;
@@ -1244,11 +1300,10 @@
       document.getElementById('boltTorqueVal').textContent = '22.1 N·m (토크 부족 ⚠️)';
       document.getElementById('boltTorqueVal').className = 'text-rose-400 font-mono font-bold';
       
-      // Inject physical 3D deformation
       if (doorFLMesh) {
         doorFLMesh.position.set(-0.15, 0.59, 0.97);
         doorFLMesh.rotation.z = -0.06;
-        doorFLMesh.material.color.setHex(0xf43f5e);
+        if (!isXRayMode) doorFLMesh.material.color.setHex(0xf43f5e);
       }
       updatePinMarkerColors();
       selectInspectionPoint(currentPointIdx);
