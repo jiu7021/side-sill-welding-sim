@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>AutoFit-3D | 지능형 인라인 3D 갭·단차 및 공차 최적화 디지털 트윈</title>
+  <title>AutoFit-3D | SnowUI Smart Twin Dashboard</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,25 +16,27 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              500: '#0284c7',
-              600: '#0369a1',
-              cyber: '#00f2fe',
-              neon: '#4facfe',
-            },
-            dark: {
-              950: '#06080e',
-              900: '#0a0d16',
-              850: '#0f1422',
-              800: '#151b2d',
-              750: '#1d253d',
-              700: '#263152'
+            snow: {
+              bg: '#18181b',       // Main background (Warm dark charcoal)
+              surface: '#222327',  // Card surface
+              surface2: '#27282d', // Elevated surface
+              border: '#323339',   // Subtle border
+              borderLight: 'rgba(255, 255, 255, 0.08)',
+              primary: '#3b82f6',  // Vivid Electric Blue
+              primaryHover: '#2563eb',
+              purple: '#a855f7',   // SnowUI Signature Purple
+              purpleDark: '#581c87',
+              cyan: '#06b6d4',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              amber: '#f59e0b',
+              textMuted: '#9ca3af',
+              textSub: '#d1d5db',
+              textMain: '#ffffff'
             }
           },
           fontFamily: {
-            sans: ['Pretendard', 'Inter', 'Segoe UI', 'sans-serif'],
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
             mono: ['JetBrains Mono', 'Fira Code', 'monospace']
           }
         }
@@ -56,514 +58,664 @@
     
     body {
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #06080e;
-      color: #e2e8f0;
+      background-color: #18181b;
+      color: #f3f4f6;
       overflow-x: hidden;
     }
 
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0a0d16; }
-    ::-webkit-scrollbar-thumb { background: #1d253d; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #263152; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #323339; border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4b4d56; }
 
-    .glass-panel {
-      background: linear-gradient(135deg, rgba(15, 20, 34, 0.9) 0%, rgba(10, 13, 22, 0.95) 100%);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(38, 49, 82, 0.6);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+    .snow-card {
+      background-color: #222327;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 1.25rem; /* 20px */
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    .snow-card-blue {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 1.25rem;
+      box-shadow: 0 12px 28px -4px rgba(37, 99, 235, 0.35);
+    }
+
+    .nav-item-active {
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #ffffff;
+      font-weight: 600;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+<body class="min-h-screen flex bg-snow-bg selection:bg-snow-purple selection:text-white">
 
-  <!-- ================= HEADER WITH PROCESS TABS ================= -->
-  <header class="border-b border-dark-750 bg-dark-900/95 sticky top-0 z-50 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row items-center justify-between gap-2.5">
-      <!-- Title & Branding -->
-      <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
-            <i data-lucide="scan-line" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-sm sm:text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
-                AutoFit-3D | 지능형 인라인 디지털 트윈
-              </h1>
-              <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">
-                PRO-DX
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-400">완성차 6축 로봇 3D 갭·단차 계측 및 차체 공차 최적화 시스템</p>
-          </div>
+  <!-- ================= LEFT SIDEBAR (SnowUI Aesthetic) ================= -->
+  <aside class="w-64 bg-[#1c1d21] border-r border-snow-border flex flex-col justify-between hidden md:flex shrink-0 min-h-screen p-4">
+    <div class="space-y-6">
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 px-2 py-1">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="text-base font-black tracking-tight text-white flex items-center gap-1.5">
+            AutoFit<span class="text-snow-purple">3D</span>
+          </span>
+          <span class="text-[10px] text-snow-textMuted font-mono block -mt-0.5">Metrology Twin v2.8</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1.5 text-xs">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-snow-textMuted px-3 py-1">
+          디지털 트윈 공정 (Processes)
         </div>
 
-        <!-- Audio toggle button -->
-        <button id="soundBtn" onclick="toggleAudio()" class="p-2 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 transition-colors" title="효과음 토글">
-          <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-cyan-400"></i>
+        <button id="sideNav-trim" onclick="switchProcessTab('trim')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all nav-item-active text-left">
+          <i data-lucide="scan-line" class="w-4 h-4 text-snow-purple"></i>
+          <span>① 의장 3D 갭·단차 트윈</span>
         </button>
-      </div>
 
-      <!-- Process Switcher Tabs (2-in-1 Dual Twin) -->
-      <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-750 text-xs w-full md:w-auto justify-center">
-        <button id="tabBtn-trim" onclick="switchProcessTab('trim')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md">
-          <i data-lucide="scan-line" class="w-4 h-4"></i>
-          <span>① 의장 공정: 3D 로봇 갭·단차 트윈</span>
+        <button id="sideNav-sidesill" onclick="switchProcessTab('sidesill')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-snow-textSub hover:bg-snow-surface hover:text-white text-left">
+          <i data-lucide="layers" class="w-4 h-4 text-snow-textMuted"></i>
+          <span>② 차체 사이드실 H값</span>
         </button>
-        <button id="tabBtn-sidesill" onclick="switchProcessTab('sidesill')" class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200">
-          <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>② 차체 공정: 사이드실 H값 최적화</span>
-        </button>
+
+        <div class="pt-4 text-[10px] font-bold uppercase tracking-wider text-snow-textMuted px-3 py-1">
+          인라인 모니터링 (Analytics)
+        </div>
+
+        <div class="flex items-center gap-3 px-3 py-2 rounded-xl text-snow-textSub hover:bg-snow-surface hover:text-white cursor-pointer" onclick="scrollToSection('spcSection')">
+          <i data-lucide="trending-up" class="w-4 h-4 text-snow-textMuted"></i>
+          <span>SPC 트렌드 모니터</span>
+        </div>
+
+        <div class="flex items-center gap-3 px-3 py-2 rounded-xl text-snow-textSub hover:bg-snow-surface hover:text-white cursor-pointer" onclick="scrollToSection('laserSection')">
+          <i data-lucide="activity" class="w-4 h-4 text-snow-textMuted"></i>
+          <span>2D 광학 프로파일러</span>
+        </div>
+
+        <div class="flex items-center gap-3 px-3 py-2 rounded-xl text-snow-textSub hover:bg-snow-surface hover:text-white cursor-pointer" onclick="scrollToSection('hingeSection')">
+          <i data-lucide="wrench" class="w-4 h-4 text-snow-textMuted"></i>
+          <span>AI 힌지 보정 처방</span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Sidebar Bottom Status Widget -->
+    <div class="p-3 rounded-2xl bg-snow-surface border border-snow-borderLight space-y-2">
+      <div class="flex items-center justify-between text-[11px]">
+        <span class="text-snow-textMuted flex items-center gap-1.5 font-medium">
+          <span class="w-2 h-2 rounded-full bg-snow-emerald animate-pulse"></span>
+          라인 가동 상태
+        </span>
+        <span class="font-mono text-snow-emerald font-bold">NORMAL</span>
+      </div>
+      <div class="text-[10px] text-snow-textMuted leading-tight font-mono">
+        Cycle: 48.2s | Robot-01: RUN
       </div>
     </div>
-  </header>
+  </aside>
 
-  <!-- ================= TAB 1: TRIM & FINAL ASSEMBLY (3D ROBOT GAP & FLUSH) ================= -->
-  <main id="tabContent-trim" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-4">
-    
-    <!-- Vehicle Selection Queue Bar (Real-world Production Line) -->
-    <div class="glass-panel rounded-xl p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border border-cyan-900/60">
+  <!-- ================= MAIN CONTENT WRAPPER ================= -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+    <!-- Top Header Bar -->
+    <header class="h-16 border-b border-snow-border bg-[#1c1d21]/90 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40">
+      <!-- Breadcrumbs & Process Switcher (Mobile) -->
       <div class="flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400 shrink-0">
-          <i data-lucide="git-commit" class="w-4 h-4"></i>
+        <div class="hidden sm:flex items-center gap-2 text-xs text-snow-textMuted font-medium">
+          <span>Dashboards</span>
+          <span>/</span>
+          <span class="text-white font-bold" id="currentBreadcrumb">의장 6축 로봇 3D 갭·단차 트윈</span>
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-white uppercase tracking-wide">인라인 생산 라인 실시간 차체 투입 큐 (VIN Inspection Queue)</span>
-            <span id="vehicleStateBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700">
-              #VIN-101 (ALL PASS OK)
-            </span>
+
+        <!-- Mobile Process Switcher Tab Bar -->
+        <div class="flex md:hidden items-center bg-snow-surface p-1 rounded-xl border border-snow-border text-xs">
+          <button id="mobTab-trim" onclick="switchProcessTab('trim')" class="px-2.5 py-1 rounded-lg font-bold bg-snow-purple text-white">① 의장</button>
+          <button id="mobTab-sidesill" onclick="switchProcessTab('sidesill')" class="px-2.5 py-1 rounded-lg text-snow-textSub">② 차체</button>
+        </div>
+      </div>
+
+      <!-- Header Tools & Audio Toggle -->
+      <div class="flex items-center space-x-3">
+        <div class="hidden lg:flex items-center bg-snow-surface border border-snow-border rounded-xl px-3 py-1.5 text-xs text-snow-textMuted gap-2 w-56">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <input type="text" placeholder="포인트 검색 (PT-01...)" class="bg-transparent border-none outline-none text-white w-full text-xs placeholder:text-snow-textMuted" />
+          <kbd class="text-[10px] bg-snow-surface2 px-1.5 py-0.5 rounded text-snow-textMuted font-mono">/</kbd>
+        </div>
+
+        <button id="soundBtn" onclick="toggleAudio()" class="p-2 rounded-xl bg-snow-surface hover:bg-snow-surface2 border border-snow-border text-snow-textSub transition-all" title="효과음 토글">
+          <i id="soundIcon" data-lucide="volume-2" class="w-4 h-4 text-snow-cyan"></i>
+        </button>
+
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shadow-md">
+          OP
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- ================= TAB 1: TRIM 3D ROBOT GAP & FLUSH ================= -->
+      <div id="tabContent-trim" class="space-y-6">
+
+        <!-- Top 4 KPI Metric Cards (SnowUI Style) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1 (Vivid Gradient Accent Card) -->
+          <div class="snow-card-blue p-5 text-white flex flex-col justify-between h-32 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-blue-100 uppercase tracking-wide">기준 간극 (Gap Target)</span>
+              <span class="p-1.5 rounded-lg bg-white/15 backdrop-blur-md">
+                <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight">3.50 <span class="text-xs font-normal text-blue-100">± 0.5 mm</span></div>
+              <div class="text-[11px] text-blue-200 mt-0.5 flex items-center gap-1 font-mono">
+                <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                <span>정밀 공차 한계: 3.0 ~ 4.0mm</span>
+              </div>
+            </div>
           </div>
-          <p class="text-[11px] text-slate-400 mt-0.5">
-            차체를 클릭하면 3D 화면상에서 실제 패널의 <strong>단차 돌출(Flush) 및 간극 벌어짐(Gap)</strong>이 물리적으로 변형되어 가시화됩니다.
-          </p>
-        </div>
-      </div>
 
-      <!-- Vehicle Selector Pills -->
-      <div class="flex items-center gap-1.5 flex-wrap self-end md:self-center">
-        <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md">#001 (양품)</button>
-        <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#002 (도어처짐 NG ⚠️)</button>
-        <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#003 (간극과다 NG ⚠️)</button>
-        <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#004 (양품)</button>
-        <button onclick="loadVehicleData(4)" id="vehBtn-4" class="veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700">#005 (테일단차 NG ⚠️)</button>
-      </div>
-    </div>
-
-    <!-- Process KPI Summary Bar -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
-          <i data-lucide="maximize-2" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">기준 간극 (Gap Target)</div>
-          <div class="text-base font-bold text-white font-mono">3.50 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-blue-950 border border-blue-800 text-blue-400">
-          <i data-lucide="align-vertical-space-around" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">기준 단차 (Flush Target)</div>
-          <div class="text-base font-bold text-cyan-300 font-mono">0.00 <span class="text-xs text-slate-400">± 0.5 mm</span></div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400">
-          <i data-lucide="check-circle" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">현재 차체 검사 결과</div>
-          <div id="topYield" class="text-base font-bold text-emerald-400 font-mono">ALL PASS (OK)</div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
-          <i data-lucide="activity" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">공정능력지수 (Cpk)</div>
-          <div id="topCpk" class="text-base font-bold text-indigo-300 font-mono">1.38</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Workspace: 3D WebGL Canvas + Real-Time Metrology Panel -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      
-      <!-- [LEFT 60%] 3D WebGL Digital Twin Canvas -->
-      <div class="lg:col-span-7 glass-panel rounded-2xl p-3.5 sm:p-4 flex flex-col relative overflow-hidden">
-        <div class="flex items-center justify-between mb-2 z-10">
-          <div class="flex items-center gap-2">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-            <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-              3D WebGL 의장 라인 6축 로봇 인라인 계측
-            </h2>
+          <!-- Card 2 (Dark Elevated Card) -->
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">기준 단차 (Flush Target)</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-cyan border border-snow-border">
+                <i data-lucide="align-vertical-space-around" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">0.00 <span class="text-xs text-snow-textMuted font-normal">± 0.5 mm</span></div>
+              <div class="text-[11px] text-snow-cyan mt-0.5 flex items-center gap-1 font-mono">
+                <i data-lucide="check" class="w-3 h-3"></i>
+                <span>풍절음 및 누수 방지 한계</span>
+              </div>
+            </div>
           </div>
+
+          <!-- Card 3 (Dark Elevated Card) -->
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">현재 차체 검사 결과</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-emerald border border-snow-border">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div id="topYield" class="text-xl sm:text-2xl font-extrabold font-mono text-snow-emerald tracking-tight">ALL PASS (OK)</div>
+              <div class="text-[11px] text-snow-textMuted mt-0.5 font-mono">8개 부위 전수 검사 완료</div>
+            </div>
+          </div>
+
+          <!-- Card 4 (Dark Elevated Card) -->
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">공정능력지수 (Cpk)</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-purple border border-snow-border">
+                <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div id="topCpk" class="text-2xl sm:text-3xl font-extrabold font-mono text-snow-purple tracking-tight">1.38</div>
+              <div class="text-[11px] text-snow-emerald mt-0.5 flex items-center gap-1 font-mono">
+                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                <span>4-Sigma 양산 품질 보증</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicle Selection Queue Bar (Clean Pills) -->
+        <div class="snow-card p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-purple shrink-0">
+              <i data-lucide="git-commit" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">인라인 실시간 차체 투입 큐 (Inspection Queue)</span>
+                <span id="vehicleStateBadge" class="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-emerald-950/80 text-snow-emerald border border-emerald-800">
+                  #VIN-101 (ALL PASS OK)
+                </span>
+              </div>
+              <p class="text-[11px] text-snow-textMuted mt-0.5">
+                차체를 선택하면 3D 차체에서 실제 도어 처짐/단차 돌출(Flush) 및 간극(Gap)이 물리적으로 실시간 변형됩니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- 5 Vehicles Quick Buttons -->
+          <div class="flex items-center gap-1.5 flex-wrap self-end lg:self-center">
+            <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-purple text-white shadow-md">#001 (양품)</button>
+            <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#002 (도어처짐 NG ⚠️)</button>
+            <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#003 (간극과다 NG ⚠️)</button>
+            <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#004 (양품)</button>
+            <button onclick="loadVehicleData(4)" id="vehBtn-4" class="veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#005 (테일단차 NG ⚠️)</button>
+          </div>
+        </div>
+
+        <!-- Middle Workspace: 3D WebGL Canvas + Inspection & Hinge Panels -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <div class="flex items-center gap-1.5 bg-dark-900/90 p-1 rounded-lg border border-dark-750 text-xs">
-            <button id="xrayToggleBtn" onclick="toggleXRayView()" class="px-2 py-0.5 rounded bg-dark-800 hover:bg-dark-750 text-cyan-300 border border-cyan-800/80 flex items-center gap-1 font-mono text-[11px] transition-all">
-              <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
-              <span id="xrayBtnText">X-Ray 힌지 투시</span>
-            </button>
-            <span class="text-slate-600">|</span>
-            <button onclick="setCameraView('iso')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Iso</button>
-            <button onclick="setCameraView('front')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Front</button>
-            <button onclick="setCameraView('side')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Side</button>
-            <button onclick="setCameraView('top')" class="px-2 py-0.5 rounded hover:bg-dark-750 text-slate-300">Top</button>
-          </div>
-        </div>
-
-        <!-- Three.js Container (Bright High-Tech Studio) -->
-        <div id="threeContainer" class="w-full h-[360px] sm:h-[420px] bg-gradient-to-b from-[#0e1626] to-[#070b14] rounded-xl relative overflow-hidden border border-cyan-900/40 cursor-grab active:cursor-grabbing">
-          <!-- Canvas Overlay Elements -->
-          <div class="absolute top-3 left-3 z-10 bg-dark-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-dark-750 text-[11px] font-mono space-y-1 pointer-events-none shadow-lg">
-            <div class="text-cyan-300 font-bold flex items-center gap-1.5">
-              <i data-lucide="bot" class="w-3.5 h-3.5 text-cyan-400"></i>
-              <span id="robotStatusText">ROBOT SCANNING : PT-03 [FL DOOR]</span>
+          <!-- [LEFT 60%] 3D WebGL Digital Twin Studio -->
+          <div class="lg:col-span-7 snow-card p-4 sm:p-5 flex flex-col relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3 z-10">
+              <div class="flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-snow-cyan opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-snow-cyan"></span>
+                </span>
+                <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                  3D WebGL 의장 라인 6축 로봇 인라인 계측
+                </h2>
+              </div>
+              
+              <div class="flex items-center gap-1.5 bg-snow-surface2 p-1 rounded-xl border border-snow-border text-xs">
+                <button id="xrayToggleBtn" onclick="toggleXRayView()" class="px-2 py-0.5 rounded-lg bg-snow-surface hover:bg-snow-border text-snow-cyan border border-snow-border flex items-center gap-1 font-mono text-[11px] transition-all">
+                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                  <span id="xrayBtnText">X-Ray 힌지 투시</span>
+                </button>
+                <span class="text-snow-border">|</span>
+                <button onclick="setCameraView('iso')" class="px-2 py-0.5 rounded-lg hover:bg-snow-border text-snow-textSub">Iso</button>
+                <button onclick="setCameraView('front')" class="px-2 py-0.5 rounded-lg hover:bg-snow-border text-snow-textSub">Front</button>
+                <button onclick="setCameraView('side')" class="px-2 py-0.5 rounded-lg hover:bg-snow-border text-snow-textSub">Side</button>
+                <button onclick="setCameraView('top')" class="px-2 py-0.5 rounded-lg hover:bg-snow-border text-snow-textSub">Top</button>
+              </div>
             </div>
-            <div class="text-slate-400 text-[10px] flex items-center gap-2">
-              <span id="tcpCoordText">TCP: X: 1240.2 Y: -620.5 Z: 890.1 mm</span>
-              <span class="text-amber-400 font-bold bg-amber-950/80 px-1 rounded border border-amber-800/60">🔍 15x Visual Magnifier</span>
+
+            <!-- Three.js Container -->
+            <div id="threeContainer" class="w-full h-[360px] sm:h-[400px] bg-[#141518] rounded-2xl relative overflow-hidden border border-snow-border cursor-grab active:cursor-grabbing">
+              <!-- Floating Overlay Status -->
+              <div class="absolute top-3 left-3 z-10 bg-snow-surface/90 backdrop-blur-md px-3 py-2 rounded-xl border border-snow-border text-[11px] font-mono space-y-1 pointer-events-none shadow-lg">
+                <div class="text-snow-cyan font-bold flex items-center gap-1.5">
+                  <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                  <span id="robotStatusText">ROBOT SCANNING : PT-03 [FL DOOR]</span>
+                </div>
+                <div class="text-snow-textMuted text-[10px] flex items-center gap-2">
+                  <span id="tcpCoordText">TCP: X: 1240.2 Y: -620.5 Z: 890.1 mm</span>
+                  <span class="text-snow-amber font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-800/40">🔍 15x Visual Magnifier</span>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 z-10 text-[10px] text-snow-textMuted font-mono flex items-center gap-1.5 pointer-events-none bg-snow-surface/80 px-2.5 py-1 rounded-xl">
+                <span>🖱️ 좌클릭 드래그: 360° 회전</span>
+                <span>•</span>
+                <span>휠: 줌</span>
+              </div>
+
+              <div class="absolute bottom-3 right-3 z-10">
+                <button onclick="toggleAutoScan()" id="autoScanBtn" class="px-3 py-1.5 rounded-xl bg-snow-primary hover:bg-snow-primaryHover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg transition-all">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <span id="autoScanText">로봇 자동 연속 스캔</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 8 Inspection Points Selector Grid -->
+            <div class="mt-3.5 grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+              <button onclick="selectInspectionPoint(0)" id="ptBtn-0" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-01<br/><span class="text-[9px] font-normal text-snow-textMuted">Hood-L</span></button>
+              <button onclick="selectInspectionPoint(1)" id="ptBtn-1" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-02<br/><span class="text-[9px] font-normal text-snow-textMuted">Hood-R</span></button>
+              <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-2 rounded-xl bg-snow-purple border border-snow-purple text-white text-[11px] font-bold text-center transition-all shadow-md">PT-03<br/><span class="text-[9px] font-normal text-purple-200">FL-Fender</span></button>
+              <button onclick="selectInspectionPoint(3)" id="ptBtn-3" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-04<br/><span class="text-[9px] font-normal text-snow-textMuted">FR-Fender</span></button>
+              <button onclick="selectInspectionPoint(4)" id="ptBtn-4" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-05<br/><span class="text-[9px] font-normal text-snow-textMuted">FL-RL Door</span></button>
+              <button onclick="selectInspectionPoint(5)" id="ptBtn-5" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-06<br/><span class="text-[9px] font-normal text-snow-textMuted">FR-RR Door</span></button>
+              <button onclick="selectInspectionPoint(6)" id="ptBtn-6" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-07<br/><span class="text-[9px] font-normal text-snow-textMuted">Tail-Lamp L</span></button>
+              <button onclick="selectInspectionPoint(7)" id="ptBtn-7" class="pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center transition-all">PT-08<br/><span class="text-[9px] font-normal text-snow-textMuted">Tail-Lamp R</span></button>
             </div>
           </div>
 
-          <div class="absolute bottom-3 left-3 z-10 text-[10px] text-slate-400 font-mono flex items-center gap-1.5 pointer-events-none bg-dark-900/70 px-2 py-1 rounded-lg">
-            <span>🖱️ 마우스 좌클릭 드래그: 360° 회전</span>
-            <span>•</span>
-            <span>휠: 줌</span>
+          <!-- [RIGHT 40%] Metrology & AI Prescriptive Hinge Panel -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <!-- Live Metrology Card -->
+            <div id="laserSection" class="snow-card p-5 space-y-4">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="crosshair" class="w-4 h-4 text-snow-cyan"></i>
+                  <h3 id="activePtTitle" class="text-xs sm:text-sm font-bold text-white uppercase">
+                    PT-03 : 프론트 도어 (FL) - 펜더 갭단차
+                  </h3>
+                </div>
+                <span id="activePtStatus" class="px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-950/80 text-snow-emerald border border-emerald-800">
+                  OK (합격)
+                </span>
+              </div>
+
+              <!-- Gap & Flush Meters -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-2xl bg-snow-surface2 border border-snow-border">
+                  <div class="flex justify-between text-xs text-snow-textMuted mb-1">
+                    <span>간극 (Gap)</span>
+                    <span class="font-mono text-[10px]">목표 3.50mm</span>
+                  </div>
+                  <div id="liveGapVal" class="text-xl sm:text-2xl font-extrabold font-mono text-white">3.48 <span class="text-xs text-snow-textMuted font-normal">mm</span></div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-snow-surface2 border border-snow-border">
+                  <div class="flex justify-between text-xs text-snow-textMuted mb-1">
+                    <span>단차 (Flush)</span>
+                    <span class="font-mono text-[10px]">목표 0.00mm</span>
+                  </div>
+                  <div id="liveFlushVal" class="text-xl sm:text-2xl font-extrabold font-mono text-snow-cyan">-0.05 <span class="text-xs text-snow-textMuted font-normal">mm</span></div>
+                </div>
+              </div>
+
+              <!-- 2D Laser Triangulation Profile Slice Canvas -->
+              <div class="p-3 rounded-2xl bg-[#141518] border border-snow-border">
+                <div class="flex items-center justify-between text-[11px] text-snow-textMuted font-mono mb-2">
+                  <span class="text-snow-cyan font-semibold flex items-center gap-1.5">
+                    <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+                    2D 레이저 광학 프로파일러
+                  </span>
+                  <span class="text-snow-emerald font-mono text-[10px]">60 FPS LIVE</span>
+                </div>
+                <canvas id="laserCanvas" class="w-full h-24 bg-[#141518] rounded-xl"></canvas>
+              </div>
+            </div>
+
+            <!-- AI Prescriptive Hinge Card -->
+            <div id="hingeSection" class="snow-card p-5 space-y-3 border-snow-purple/30 bg-gradient-to-b from-snow-surface to-[#24212c]">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-xl bg-purple-950 border border-purple-800 flex items-center justify-center text-snow-purple">
+                    <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <h3 class="text-xs sm:text-sm font-bold text-white">
+                    AI 도어 힌지(Hinge) 자동 처방
+                  </h3>
+                </div>
+                <span class="text-[10px] font-mono bg-purple-950 text-purple-300 px-2 py-0.5 rounded-lg border border-purple-800">Prescriptive Engine</span>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="p-3 rounded-xl bg-[#18181b]/80 border border-snow-border text-snow-textSub flex items-start gap-2.5">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-snow-emerald shrink-0 mt-0.5"></i>
+                  <div>
+                    <span class="font-bold text-white">상단 힌지 보정:</span>
+                    <span id="upperHingePrescription" class="font-mono text-snow-cyan font-bold ml-1">심(Shim) 유지 (±0.00mm)</span>
+                  </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-[#18181b]/80 border border-snow-border text-snow-textSub flex items-start gap-2.5">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-snow-emerald shrink-0 mt-0.5"></i>
+                  <div>
+                    <span class="font-bold text-white">하단 힌지 보정:</span>
+                    <span id="lowerHingePrescription" class="font-mono text-snow-cyan font-bold ml-1">체결 각도 정방향 (0.0°)</span>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-snow-surface2 border border-snow-border text-[11px] text-snow-textMuted flex justify-between">
+                  <span>체결 토크: <strong id="boltTorqueVal" class="text-snow-emerald font-mono font-bold">28.4 N·m</strong></span>
+                  <span class="text-snow-textMuted font-mono">표준 규격: 28~32 N·m</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div class="absolute bottom-3 right-3 z-10">
-            <button onclick="toggleAutoScan()" id="autoScanBtn" class="px-3 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-cyan-300 font-semibold text-xs flex items-center gap-1.5 shadow-lg transition-all">
-              <i data-lucide="play" class="w-3.5 h-3.5"></i>
-              <span id="autoScanText">로봇 자동 연속 스캔</span>
-            </button>
+        </div>
+
+        <!-- Bottom SPC Trend Analytics Card (SnowUI Purple Curved Chart) -->
+        <div id="spcSection" class="snow-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-snow-border pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-snow-purple"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                인라인 30대 연속 생산 Gap & Flush SPC 관리도 (Trend Monitor)
+              </h3>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="injectDistortion()" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-400"></i>
+                <span>단차 불량(NG) 강제 주입</span>
+              </button>
+              <button onclick="resetProcessData()" class="px-3 py-1.5 rounded-xl bg-snow-surface2 hover:bg-snow-border border border-snow-border text-snow-textSub text-xs font-semibold flex items-center gap-1.5 transition-all">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-snow-cyan"></i>
+                <span>초기화</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="h-44 sm:h-52 w-full pt-1">
+            <canvas id="spcTrendChart"></canvas>
           </div>
         </div>
 
-        <!-- 8 Inspection Points Selector Quick Buttons -->
-        <div class="mt-3 grid grid-cols-4 sm:grid-cols-8 gap-1.5">
-          <button onclick="selectInspectionPoint(0)" id="ptBtn-0" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-01<br/><span class="text-[9px] font-normal text-slate-400">Hood-L</span></button>
-          <button onclick="selectInspectionPoint(1)" id="ptBtn-1" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-02<br/><span class="text-[9px] font-normal text-slate-400">Hood-R</span></button>
-          <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center transition-all">PT-03<br/><span class="text-[9px] font-normal text-slate-400">FL-Fender</span></button>
-          <button onclick="selectInspectionPoint(3)" id="ptBtn-3" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-04<br/><span class="text-[9px] font-normal text-slate-400">FR-Fender</span></button>
-          <button onclick="selectInspectionPoint(4)" id="ptBtn-4" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-05<br/><span class="text-[9px] font-normal text-slate-400">FL-RL Door</span></button>
-          <button onclick="selectInspectionPoint(5)" id="ptBtn-5" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-06<br/><span class="text-[9px] font-normal text-slate-400">FR-RR Door</span></button>
-          <button onclick="selectInspectionPoint(6)" id="ptBtn-6" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-07<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp L</span></button>
-          <button onclick="selectInspectionPoint(7)" id="ptBtn-7" class="pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center transition-all">PT-08<br/><span class="text-[9px] font-normal text-slate-400">Tail-Lamp R</span></button>
-        </div>
       </div>
 
-      <!-- [RIGHT 40%] Real-time Inspection & AI Prescriptive Hinge Panel -->
-      <div class="lg:col-span-5 space-y-3.5">
+      <!-- ================= TAB 2: SIDE-SILL H-VALUE SIMULATOR ================= -->
+      <div id="tabContent-sidesill" class="space-y-6 hidden">
         
-        <!-- Live Measured Gap & Flush Card -->
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="flex items-center justify-between border-b border-dark-750 pb-2 mb-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="crosshair" class="w-4 h-4 text-cyan-400"></i>
-              <h2 id="activePtTitle" class="text-xs sm:text-sm font-bold text-white uppercase">
-                PT-03 : 프론트 도어 (FL) - 펜더 갭단차
-              </h2>
-            </div>
-            <span id="activePtStatus" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700">
-              OK (합격)
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2.5 mb-3">
-            <!-- Gap Meter -->
-            <div class="p-2.5 rounded-xl bg-dark-900/90 border border-dark-750">
-              <div class="flex justify-between text-xs text-slate-400 mb-1">
-                <span>간극 (Gap)</span>
-                <span class="font-mono text-[10px]">목표: 3.50mm</span>
-              </div>
-              <div id="liveGapVal" class="text-lg sm:text-xl font-bold font-mono text-white">3.48 <span class="text-xs text-slate-400">mm</span></div>
-            </div>
-
-            <!-- Flush Meter -->
-            <div class="p-2.5 rounded-xl bg-dark-900/90 border border-dark-750">
-              <div class="flex justify-between text-xs text-slate-400 mb-1">
-                <span>단차 (Flush)</span>
-                <span class="font-mono text-[10px]">목표: 0.00mm</span>
-              </div>
-              <div id="liveFlushVal" class="text-lg sm:text-xl font-bold font-mono text-cyan-300">-0.05 <span class="text-xs text-slate-400">mm</span></div>
-            </div>
-          </div>
-
-          <!-- 2D Laser Triangulation Profile Slice Canvas -->
-          <div class="p-3 rounded-xl bg-dark-950 border border-dark-800">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1.5">
-              <span class="text-cyan-300 font-bold flex items-center gap-1.5">
-                <i data-lucide="scan" class="w-3.5 h-3.5 text-cyan-400"></i>
-                3D 레이저 삼각측량 단면 프로파일 (Laser Profile)
+        <!-- Top 4 KPI Metric Cards (Side-Sill) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="snow-card-blue p-5 text-white flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-blue-100 uppercase tracking-wide">목표 H값 (Target)</span>
+              <span class="p-1.5 rounded-lg bg-white/15">
+                <i data-lucide="target" class="w-3.5 h-3.5"></i>
               </span>
-              <span class="text-emerald-400 font-mono text-[10px]">60 FPS LIVE</span>
             </div>
-            <canvas id="laserCanvas" class="w-full h-24 bg-dark-950 rounded border border-dark-850"></canvas>
-          </div>
-        </div>
-
-        <!-- 💡 AI Prescriptive Hinge Alignment Card -->
-        <div class="glass-panel rounded-2xl p-4 border border-cyan-900/60 bg-gradient-to-b from-dark-900 via-dark-850 to-dark-900">
-          <div class="flex items-center justify-between border-b border-dark-750 pb-2 mb-2">
-            <div class="flex items-center gap-2">
-              <div class="w-5 h-5 rounded-lg bg-cyan-950 border border-cyan-700 flex items-center justify-center text-cyan-300">
-                <i data-lucide="wrench" class="w-3 h-3"></i>
-              </div>
-              <h3 class="text-xs sm:text-sm font-bold text-white">
-                AI 도어 힌지(Hinge) 자동 얼라인먼트 처방
-              </h3>
-            </div>
-            <span class="text-[10px] font-mono bg-cyan-950 text-cyan-400 px-1.5 py-0.5 rounded border border-cyan-800">Prescriptive AI</span>
-          </div>
-
-          <div class="space-y-2 text-xs">
-            <div class="p-2 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
-              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
-              <div>
-                <span class="font-bold text-white">상단 힌지:</span>
-                <span id="upperHingePrescription" class="font-mono text-cyan-300 font-bold ml-1">심(Shim) 유지 (±0.00mm)</span>
-              </div>
-            </div>
-
-            <div class="p-2 rounded-xl bg-dark-950/80 border border-dark-800 text-slate-300 flex items-start gap-2">
-              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5"></i>
-              <div>
-                <span class="font-bold text-white">하단 힌지:</span>
-                <span id="lowerHingePrescription" class="font-mono text-cyan-300 font-bold ml-1">체결 각도 정방향 (0.0°)</span>
-              </div>
-            </div>
-
-            <div class="p-1.5 rounded-lg bg-dark-900 border border-dark-800 text-[11px] text-slate-400 flex justify-between">
-              <span>체결 토크: <strong id="boltTorqueVal" class="text-emerald-400 font-mono">28.4 N·m</strong></span>
-              <span class="text-slate-500 font-mono">규격: 28~32 N·m</span>
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight">10.0 <span class="text-xs font-normal text-blue-100">mm</span></div>
+              <div class="text-[11px] text-blue-200 mt-0.5 font-mono">단품 검사구 설계 기준점</div>
             </div>
           </div>
-        </div>
 
-      </div>
-
-    </div>
-
-    <!-- Bottom Statistical Process Control (SPC) Section -->
-    <div class="glass-panel rounded-2xl p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-2.5 mb-2.5">
-        <div class="flex items-center gap-2">
-          <i data-lucide="line-chart" class="w-4 h-4 text-cyan-400"></i>
-          <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-            인라인 30대 연속 생산 Gap & Flush SPC 관리도 (Trend Monitor)
-          </h2>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button onclick="injectDistortion()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1">
-            <i data-lucide="alert-triangle" class="w-3 h-3 text-rose-400"></i>
-            <span>단차 불량(NG) 강제 주입</span>
-          </button>
-          <button onclick="resetProcessData()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
-            <i data-lucide="refresh-cw" class="w-3 h-3 text-cyan-400"></i>
-            <span>데이터 초기화</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="h-40 sm:h-48 w-full">
-        <canvas id="spcTrendChart"></canvas>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ================= TAB 2: SIDE-SILL H-VALUE LINER SIMULATOR (ORIGINAL RESTORED) ================= -->
-  <main id="tabContent-sidesill" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-4 hidden">
-    
-    <!-- Top Summary Banner -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
-          <i data-lucide="target" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">목표 H값 (Target)</div>
-          <div class="text-base font-bold text-white font-mono">10.0 <span class="text-xs text-slate-400">mm</span></div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-blue-950 border border-blue-800 text-blue-400">
-          <i data-lucide="sliders" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">정밀 허용 공차</div>
-          <div class="text-base font-bold text-cyan-300 font-mono">± 1.0 <span class="text-xs text-slate-400">mm (9~11mm)</span></div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400">
-          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">공정 수율 (Yield)</div>
-          <div id="yieldStat" class="text-base font-bold text-emerald-400 font-mono">- %</div>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-xl p-3 flex items-center space-x-3">
-        <div class="p-2 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
-          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <div class="text-[10px] font-medium text-slate-400 uppercase">공정능력지수 (Cpk)</div>
-          <div id="cpkStat" class="text-base font-bold text-indigo-300 font-mono">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Middle Interactive Area: 2D Twin Canvas + Shim Control Panel -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      
-      <!-- [LEFT] 2D Digital Twin & Sensor Dashboard (7 Cols) -->
-      <div class="lg:col-span-7 space-y-4">
-        <div class="glass-panel rounded-2xl p-4 relative overflow-hidden">
-          <div class="flex items-center justify-between mb-3 border-b border-dark-750 pb-2">
-            <div class="flex items-center gap-2">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">정밀 허용 공차</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-cyan border border-snow-border">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
               </span>
-              <h2 class="text-xs sm:text-sm font-bold tracking-wider text-slate-200 uppercase">
-                사이드실 & 검사구 2D 디지털 트윈 실시간 계측
-              </h2>
             </div>
-            <span class="text-[11px] text-cyan-400 font-mono">Tolerance: ±1.0mm (9.0~11.0mm)</span>
-          </div>
-
-          <!-- Dynamic SVG Canvas -->
-          <div class="w-full bg-dark-950 rounded-xl p-2 border border-dark-800 relative">
-            <svg id="twinSvg" class="w-full h-auto max-h-[280px]" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
-              <!-- Rendered via JS dynamically -->
-            </svg>
-            <div class="absolute bottom-2 left-3 text-[10px] text-slate-500 font-mono flex items-center gap-2">
-              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span> 합격(OK: 9.0 ~ 11.0mm)
-              <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span> 정밀 공차 이탈(NG)
+            <div>
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-snow-cyan tracking-tight">± 1.0 <span class="text-xs text-snow-textMuted font-normal">mm</span></div>
+              <div class="text-[11px] text-snow-textMuted mt-0.5 font-mono">합격 범위: 9.0 ~ 11.0mm</div>
             </div>
           </div>
 
-          <!-- Simulation Execution Controls -->
-          <div class="mt-3.5 flex flex-wrap gap-2 items-center">
-            <button onclick="runSimulation(5)" class="flex-1 min-w-[160px] py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-cyan-900/30 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
-              <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
-              <span>공정 실행 (5회 생산 런)</span>
-            </button>
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">누적 공정 수율 (Yield)</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-emerald border border-snow-border">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div id="yieldStat" class="text-2xl sm:text-3xl font-extrabold font-mono text-snow-emerald tracking-tight">- %</div>
+              <div class="text-[11px] text-snow-textMuted mt-0.5 font-mono">5회 생산 런 단위 집계</div>
+            </div>
+          </div>
 
-            <button onclick="runAutoTuning()" class="py-2 px-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 font-semibold text-xs transition-all flex items-center gap-1 shadow-sm active:scale-[0.98]">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
-              <span>AI 자동 최적화 탐색</span>
-            </button>
-
-            <button onclick="resetAllLiners()" class="py-2 px-2.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-400 hover:text-slate-200 text-xs transition-colors" title="설정 초기화">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            </button>
+          <div class="snow-card p-5 flex flex-col justify-between h-32">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-snow-textMuted uppercase tracking-wide">공정능력지수 (Cpk)</span>
+              <span class="p-1.5 rounded-lg bg-snow-surface2 text-snow-purple border border-snow-border">
+                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
+            <div>
+              <div id="cpkStat" class="text-2xl sm:text-3xl font-extrabold font-mono text-snow-purple tracking-tight">-</div>
+              <div class="text-[11px] text-snow-textMuted mt-0.5 font-mono">목표 Cpk 1.33 이상</div>
+            </div>
           </div>
         </div>
 
-        <!-- Real-Time SPC Trend Chart (Side-Sill) -->
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
+        <!-- Middle Workspace: 2D SVG Twin + Shim Controllers -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- [LEFT 7 Cols] 2D SVG Twin Canvas & Execution Buttons -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="snow-card p-5 space-y-4">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-snow-emerald opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-snow-emerald"></span>
+                  </span>
+                  <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                    사이드실 & 검사구 2D 디지털 트윈 계측
+                  </h3>
+                </div>
+                <span class="text-[11px] text-snow-cyan font-mono">Tolerance: 9.0 ~ 11.0mm</span>
+              </div>
+
+              <!-- SVG Visualizer -->
+              <div class="w-full bg-[#141518] rounded-2xl p-3 border border-snow-border relative">
+                <svg id="twinSvg" class="w-full h-auto max-h-[280px]" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Injected via JS -->
+                </svg>
+                <div class="absolute bottom-3 left-4 text-[10px] text-snow-textMuted font-mono flex items-center gap-2">
+                  <span class="inline-block w-2 h-2 rounded-full bg-snow-emerald"></span> 합격(OK: 9.0~11.0mm)
+                  <span class="inline-block w-2 h-2 rounded-full bg-snow-rose ml-2"></span> 공차 이탈(NG)
+                </div>
+              </div>
+
+              <!-- Simulation Run Controls -->
+              <div class="flex flex-wrap gap-2.5 items-center pt-1">
+                <button onclick="runSimulation(5)" class="flex-1 min-w-[160px] py-2.5 px-4 rounded-xl bg-snow-primary hover:bg-snow-primaryHover text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+                  <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+                  <span>공정 실행 (5회 생산 런)</span>
+                </button>
+
+                <button onclick="runAutoTuning()" class="py-2.5 px-4 rounded-xl bg-snow-surface2 hover:bg-snow-border border border-snow-purple/60 text-purple-300 font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-snow-purple"></i>
+                  <span>AI 자동 최적화 탐색</span>
+                </button>
+
+                <button onclick="resetAllLiners()" class="py-2.5 px-3 rounded-xl bg-snow-surface2 hover:bg-snow-border border border-snow-border text-snow-textSub text-xs transition-colors" title="설정 초기화">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Real-Time SPC Trend Chart (Side-Sill) -->
+            <div class="snow-card p-5 space-y-3">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-snow-cyan"></i>
+                  <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
+                    생산 런별 H값 산포 트렌드 모니터링 (SPC)
+                  </h3>
+                </div>
+                <span class="text-[11px] text-snow-cyan font-mono">Target: 10.0mm</span>
+              </div>
+              <div class="h-44 sm:h-48 w-full pt-1">
+                <canvas id="spcChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- [RIGHT 5 Cols] Shim Stepper Controls & Noise Params -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- Hole Shim Controllers -->
+            <div class="snow-card p-5 space-y-3">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-snow-cyan"></i>
+                  <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                    홀별 라이너(Shim) 개수 설정
+                  </h3>
+                </div>
+                <span class="text-[10px] text-snow-cyan font-mono bg-cyan-950/80 px-2 py-0.5 rounded-lg border border-cyan-800">
+                  비례 증가 모드
+                </span>
+              </div>
+
+              <!-- 4 Dynamic Holes List -->
+              <div id="holeControlsContainer" class="space-y-2.5">
+                <!-- Injected via JS -->
+              </div>
+
+              <div class="p-3 rounded-xl bg-snow-surface2 border border-snow-border text-[11px] text-snow-textMuted flex items-start gap-2">
+                <i data-lucide="info" class="w-3.5 h-3.5 text-snow-cyan shrink-0 mt-0.5"></i>
+                <div>
+                  <span class="text-white font-semibold">정밀 공차 가이드:</span>
+                  최적 개수(홀A: 8매, 홀B: 10매, 홀C: 11매, 홀D: 9매) 설정 시 100% 수율을 달성합니다.
+                </div>
+              </div>
+            </div>
+
+            <!-- Synthetic Environmental Noise Params -->
+            <div class="snow-card p-5 space-y-3">
+              <div class="flex items-center justify-between border-b border-snow-border pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="flame" class="w-4 h-4 text-snow-amber"></i>
+                  <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                    용접 열변형 & 설비 열화 오차 설정
+                  </h3>
+                </div>
+                <span class="text-[10px] text-snow-amber font-mono bg-amber-950/80 px-2 py-0.5 rounded-lg border border-amber-800">
+                  Synthetic Noise
+                </span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div>
+                  <div class="flex justify-between text-snow-textSub mb-1.5">
+                    <span>용접 열변형 표준편차 ($\sigma$)</span>
+                    <span id="noiseThermalVal" class="font-mono text-snow-cyan font-bold">± 0.55 mm</span>
+                  </div>
+                  <input type="range" id="noiseThermalSlider" min="0.1" max="1.5" step="0.05" value="0.55" oninput="updateNoiseParam()" class="w-full accent-snow-cyan bg-[#141518] h-1.5 rounded-lg cursor-pointer" />
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-snow-textSub mb-1.5">
+                    <span>지그 전극 마모/열화 드리프트</span>
+                    <span id="noiseDegradeVal" class="font-mono text-snow-amber font-bold">보통 (Standard)</span>
+                  </div>
+                  <input type="range" id="noiseDegradeSlider" min="0" max="2" step="1" value="1" oninput="updateNoiseParam()" class="w-full accent-snow-amber bg-[#141518] h-1.5 rounded-lg cursor-pointer" />
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-snow-textSub mb-1.5">
+                    <span>순간 스패터 이상치(Outlier) 확률</span>
+                    <span id="noiseSpikeVal" class="font-mono text-snow-rose font-bold">10 %</span>
+                  </div>
+                  <input type="range" id="noiseSpikeSlider" min="0" max="30" step="5" value="10" oninput="updateNoiseParam()" class="w-full accent-snow-rose bg-[#141518] h-1.5 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- History & Log Section -->
+        <div class="snow-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-snow-border pb-3">
             <div class="flex items-center gap-2">
-              <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
-              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wide">
-                생산 런별 H값 산포 트렌드 모니터링 (SPC)
+              <i data-lucide="history" class="w-4 h-4 text-snow-purple"></i>
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                생산 런 히스토리 및 통계 분석 로그
               </h3>
+              <span id="bestTryBadge" class="hidden text-xs px-2 py-0.5 rounded-lg bg-purple-950/80 text-purple-300 border border-purple-800 font-mono font-bold"></span>
             </div>
-            <span class="text-[11px] text-cyan-300 font-mono">Target: 10.0mm (9.0~11.0mm)</span>
-          </div>
-          <div class="h-40 sm:h-44 w-full">
-            <canvas id="spcChart"></canvas>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- [RIGHT] Shim/Liner Controls & Process Settings (5 Cols) -->
-      <div class="lg:col-span-5 space-y-4">
-        
-        <!-- Hole Shim Controllers -->
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2.5 border-b border-dark-750 pb-2">
             <div class="flex items-center gap-2">
-              <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
-              <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-                홀별 라이너(Shim) 개수 설정
-              </h2>
-            </div>
-            <span class="text-[10px] text-cyan-400 font-mono bg-cyan-950 px-2 py-0.5 rounded border border-cyan-900">
-              비례 증가 모드
-            </span>
-          </div>
-
-          <!-- Dynamic 4 Holes List -->
-          <div id="holeControlsContainer" class="space-y-2">
-            <!-- Injected via JS -->
-          </div>
-
-          <div class="mt-3 p-2.5 rounded-xl bg-dark-900/80 border border-dark-750 text-[11px] text-slate-400 flex items-start gap-2">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5"></i>
-            <div>
-              <span class="text-slate-300 font-semibold">정밀 공차 가이드:</span>
-              최적 개수(홀A: 8개, 홀B: 10개, 홀C: 11개, 홀D: 9개)에서 벗어나면 NG가 발생합니다.
+              <button onclick="exportCSV()" class="px-3 py-1.5 rounded-xl bg-snow-surface2 hover:bg-snow-border border border-snow-border text-snow-textSub text-xs flex items-center gap-1.5 transition-all">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-snow-cyan"></i>
+                <span>CSV 저장</span>
+              </button>
+              <button onclick="clearHistory()" class="px-3 py-1.5 rounded-xl bg-snow-surface2 hover:bg-rose-950 border border-snow-border text-snow-textMuted hover:text-rose-400 text-xs flex items-center gap-1.5 transition-all">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>초기화</span>
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Environmental Noise & Degradation Params -->
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2.5 border-b border-dark-750 pb-2">
-            <div class="flex items-center gap-2">
-              <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
-              <h3 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-                용접 열변형 & 설비 열화 오차 설정
-              </h3>
-            </div>
-            <span class="text-[10px] text-amber-300 font-mono bg-amber-950 px-1.5 py-0.5 rounded border border-amber-900">
-              Synthetic Noise
-            </span>
-          </div>
-
-          <div class="space-y-2.5 text-xs">
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>용접 열변형 표준편차 ($\sigma$)</span>
-                <span id="noiseThermalVal" class="font-mono text-cyan-400 font-bold">± 0.55 mm</span>
-              </div>
-              <input type="range" id="noiseThermalSlider" min="0.1" max="1.5" step="0.05" value="0.55" oninput="updateNoiseParam()" class="w-full accent-cyan-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
-            </div>
-
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>지그 전극 마모/열화 드리프트</span>
-                <span id="noiseDegradeVal" class="font-mono text-amber-400 font-bold">보통 (Standard)</span>
-              </div>
-              <input type="range" id="noiseDegradeSlider" min="0" max="2" step="1" value="1" oninput="updateNoiseParam()" class="w-full accent-amber-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
-            </div>
-
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>순간 스패터 이상치(Outlier) 확률</span>
-                <span id="noiseSpikeVal" class="font-mono text-rose-400 font-bold">10 %</span>
-              </div>
-              <input type="range" id="noiseSpikeSlider" min="0" max="30" step="5" value="10" oninput="updateNoiseParam()" class="w-full accent-rose-400 bg-dark-800 h-1.5 rounded-lg cursor-pointer" />
+          <div id="historyLogContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+            <div class="text-center py-8 text-snow-textMuted text-xs font-mono">
+              아직 생산 이력이 없습니다. 상단의 [공정 실행] 버튼을 눌러 시뮬레이션을 가동하세요.
             </div>
           </div>
         </div>
@@ -572,52 +724,23 @@
 
     </div>
 
-    <!-- Bottom History & Analytics Log Section (Side-Sill) -->
-    <div class="glass-panel rounded-2xl p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-750 pb-2.5 mb-3">
-        <div class="flex items-center gap-2">
-          <i data-lucide="history" class="w-4 h-4 text-cyan-400"></i>
-          <h2 class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
-            생산 런 히스토리 및 통계 분석 로그
-          </h2>
-          <span id="bestTryBadge" class="hidden text-xs px-2 py-0.5 rounded-md bg-cyan-950 text-cyan-300 border border-cyan-700 font-medium"></span>
+    <!-- Minimalist Footer -->
+    <footer class="border-t border-snow-border bg-[#1c1d21]/60 py-4 px-6 mt-8">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-snow-textMuted gap-2">
+        <div>
+          AutoFit-3D | 지능형 인라인 로봇 3D 갭·단차 및 공차 최적화 디지털 트윈 시스템
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="exportCSV()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-300 text-xs flex items-center gap-1">
-            <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i>
-            <span>CSV 저장</span>
-          </button>
-          <button onclick="clearHistory()" class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>이력 삭제</span>
-          </button>
+        <div class="flex items-center gap-4 font-mono text-[11px]">
+          <span>Standard Gap: 3.5mm / Flush: 0.0mm / H: 10.0mm</span>
+          <span>•</span>
+          <span class="text-snow-textSub">SnowUI Design System</span>
         </div>
       </div>
+    </footer>
 
-      <div id="historyLogContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
-        <div class="text-center py-6 text-slate-500 text-xs font-mono">
-          아직 생산 이력이 없습니다. 상단의 [공정 실행 (5회 생산 런)] 버튼을 클릭하여 시뮬레이션을 가동하세요.
-        </div>
-      </div>
-    </div>
+  </div>
 
-  </main>
-
-  <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-dark-750 bg-dark-900/60 py-3.5 mt-4">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-      <div>
-        AutoFit-3D | 지능형 인라인 3D 갭·단차 및 공차 최적화 디지털 트윈 시스템
-      </div>
-      <div class="flex items-center gap-4">
-        <span>Standard: Gap 3.5mm / Flush 0.0mm / H 10.0mm (±1.0mm)</span>
-        <span>•</span>
-        <span class="text-slate-400 font-mono">Three.js WebGL & SVG Engine</span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
   <script>
     /* ============================================================
      * TAB SWITCHER LOGIC
@@ -626,14 +749,21 @@
 
     function switchProcessTab(tabId) {
       currentTab = tabId;
-      const trimBtn = document.getElementById('tabBtn-trim');
-      const sideBtn = document.getElementById('tabBtn-sidesill');
+      const trimNav = document.getElementById('sideNav-trim');
+      const sideNav = document.getElementById('sideNav-sidesill');
+      const mobTrim = document.getElementById('mobTab-trim');
+      const mobSide = document.getElementById('mobTab-sidesill');
       const trimContent = document.getElementById('tabContent-trim');
       const sideContent = document.getElementById('tabContent-sidesill');
+      const breadcrumb = document.getElementById('currentBreadcrumb');
 
       if (tabId === 'trim') {
-        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
-        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        if (trimNav) trimNav.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all nav-item-active text-left';
+        if (sideNav) sideNav.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-snow-textSub hover:bg-snow-surface hover:text-white text-left';
+        if (mobTrim) mobTrim.className = 'px-2.5 py-1 rounded-lg font-bold bg-snow-purple text-white';
+        if (mobSide) mobSide.className = 'px-2.5 py-1 rounded-lg text-snow-textSub';
+        if (breadcrumb) breadcrumb.textContent = '의장 6축 로봇 3D 갭·단차 트윈';
+
         trimContent.classList.remove('hidden');
         sideContent.classList.add('hidden');
         setTimeout(() => {
@@ -641,8 +771,12 @@
           if (spcTrimChart) spcTrimChart.resize();
         }, 50);
       } else {
-        sideBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md';
-        trimBtn.className = 'flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg font-bold transition-all text-slate-400 hover:text-slate-200';
+        if (sideNav) sideNav.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all nav-item-active text-left';
+        if (trimNav) trimNav.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-snow-textSub hover:bg-snow-surface hover:text-white text-left';
+        if (mobSide) mobSide.className = 'px-2.5 py-1 rounded-lg font-bold bg-snow-purple text-white';
+        if (mobTrim) mobTrim.className = 'px-2.5 py-1 rounded-lg text-snow-textSub';
+        if (breadcrumb) breadcrumb.textContent = '차체 사이드실 H값 최적화 시뮬레이터';
+
         sideContent.classList.remove('hidden');
         trimContent.classList.add('hidden');
         setTimeout(() => {
@@ -650,6 +784,11 @@
           if (chartInstance) chartInstance.resize();
         }, 50);
       }
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
 
     /* ============================================================
@@ -769,22 +908,22 @@
 
       document.querySelectorAll('.veh-btn').forEach((btn, i) => {
         btn.className = (i === vIdx)
-          ? 'veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-cyan-950 border border-cyan-400 text-cyan-300 shadow-md'
-          : 'veh-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-dark-900 border border-dark-750 text-slate-300 hover:border-dark-700';
+          ? 'veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-purple text-white shadow-md'
+          : 'veh-btn px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight';
       });
 
       const badge = document.getElementById('vehicleStateBadge');
       const yieldText = document.getElementById('topYield');
       if (veh.isAllOk) {
         badge.textContent = `${veh.vin} (ALL PASS OK)`;
-        badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700';
+        badge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-emerald-950/80 text-snow-emerald border border-emerald-800';
         yieldText.textContent = 'ALL PASS (OK)';
-        yieldText.className = 'text-base font-bold text-emerald-400 font-mono';
+        yieldText.className = 'text-xl sm:text-2xl font-extrabold font-mono text-snow-emerald tracking-tight';
       } else {
         badge.textContent = `${veh.vin} (단차 이탈 NG ⚠️)`;
-        badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
+        badge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-rose-950/80 text-snow-rose border border-rose-800';
         yieldText.textContent = 'DEFECT DETECTED (NG)';
-        yieldText.className = 'text-base font-bold text-rose-400 font-mono';
+        yieldText.className = 'text-xl sm:text-2xl font-extrabold font-mono text-snow-rose tracking-tight';
       }
 
       apply3DDeformation(veh);
@@ -811,11 +950,10 @@
       }
 
       if (seamFL_Mesh) {
-        seamFL_Mesh.material.color.setHex(isDoorDefect ? 0xff0055 : 0x00f2fe);
+        seamFL_Mesh.material.color.setHex(isDoorDefect ? 0xff0055 : 0x06b6d4);
         seamFL_Mesh.scale.set(isDoorDefect ? 2.5 : 1, 1, isDoorDefect ? 2.5 : 1);
       }
 
-      // Highlight Shim in Hinge
       if (shimUpperMesh) {
         shimUpperMesh.material.color.setHex(isDoorDefect ? 0xf43f5e : 0xfbbf24);
         shimUpperMesh.scale.set(1, isDoorDefect ? 2.5 : 1, 1);
@@ -828,13 +966,13 @@
       const text = document.getElementById('xrayBtnText');
 
       if (isXRayMode) {
-        btn.className = 'px-2 py-0.5 rounded bg-cyan-500 text-dark-950 font-bold border border-cyan-400 flex items-center gap-1 font-mono text-[11px] shadow-lg';
+        btn.className = 'px-2 py-0.5 rounded-lg bg-snow-purple text-white font-bold border border-purple-400 flex items-center gap-1 font-mono text-[11px] shadow-lg';
         text.textContent = 'X-Ray 모드 ON';
         setCarOpacity(0.25, true);
         if (hingeUpperMesh) hingeUpperMesh.visible = true;
         if (hingeLowerMesh) hingeLowerMesh.visible = true;
       } else {
-        btn.className = 'px-2 py-0.5 rounded bg-dark-800 hover:bg-dark-750 text-cyan-300 border border-cyan-800/80 flex items-center gap-1 font-mono text-[11px]';
+        btn.className = 'px-2 py-0.5 rounded-lg bg-snow-surface hover:bg-snow-border text-snow-cyan border border-snow-border flex items-center gap-1 font-mono text-[11px]';
         text.textContent = 'X-Ray 힌지 투시';
         setCarOpacity(1.0, false);
       }
@@ -863,8 +1001,8 @@
       const height = container.clientHeight || 380;
 
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x0e1626);
-      scene.fog = new THREE.FogExp2(0x0e1626, 0.05);
+      scene.background = new THREE.Color(0x141518);
+      scene.fog = new THREE.FogExp2(0x141518, 0.05);
 
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
       updateCameraSpherical();
@@ -883,7 +1021,7 @@
       renderer.domElement.style.zIndex = '1';
       container.insertBefore(renderer.domElement, container.firstChild);
 
-      // Lighting
+      // Studio Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
       scene.add(ambientLight);
 
@@ -895,11 +1033,11 @@
       dirLight2.position.set(-6, 8, -8);
       scene.add(dirLight2);
 
-      const floorLight = new THREE.DirectionalLight(0x0284c7, 0.6);
+      const floorLight = new THREE.DirectionalLight(0x3b82f6, 0.6);
       floorLight.position.set(0, -5, 0);
       scene.add(floorLight);
 
-      const grid = new THREE.GridHelper(12, 24, 0x00f2fe, 0x1e293b);
+      const grid = new THREE.GridHelper(12, 24, 0x3b82f6, 0x27282d);
       grid.position.y = 0;
       scene.add(grid);
 
@@ -1044,7 +1182,7 @@
       carGroup.add(hingeLowerMesh);
 
       // Seam Split Line
-      const seamMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
+      const seamMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
       seamFL_Mesh = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.54, 0.03), seamMat);
       seamFL_Mesh.position.set(0.35, 0.65, 0.82);
       carGroup.add(seamFL_Mesh);
@@ -1059,7 +1197,7 @@
 
       const robotWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.5, roughness: 0.2 });
       const robotOrange = new THREE.MeshStandardMaterial({ color: 0xf97316, metalness: 0.6, roughness: 0.3 });
-      const robotJoint = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 });
+      const robotJoint = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.8, roughness: 0.2 });
 
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 0.22, 18), robotJoint);
       base.position.y = 0.11; robotGroup.add(base);
@@ -1073,12 +1211,12 @@
       const arm2 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.9, 0.16), robotOrange);
       arm2.position.set(0.48, 1.5, -0.2); arm2.rotation.z = 0.6; robotGroup.add(arm2);
 
-      robotTCP = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.3), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 }));
+      robotTCP = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.3), new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.9 }));
       robotTCP.position.copy(robotTCPTarget);
       robotGroup.add(robotTCP);
 
       const laserGeo = new THREE.ConeGeometry(0.5, 1.3, 4, 1, true);
-      const laserMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+      const laserMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
       laserBeam = new THREE.Mesh(laserGeo, laserMat);
       laserBeam.rotation.x = Math.PI;
       laserBeam.position.set(0, -0.65, 0);
@@ -1093,11 +1231,11 @@
         const pinGroup = new THREE.Group();
         pinGroup.position.set(pt.targetPos[0], pt.targetPos[1], pt.targetPos[2]);
 
-        const ring = new THREE.Mesh(new THREE.RingGeometry(0.06, 0.09, 16), new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide }));
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.06, 0.09, 16), new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide }));
         ring.rotation.x = -Math.PI / 2;
         pinGroup.add(ring);
 
-        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), new THREE.MeshBasicMaterial({ color: 0x00f2fe }));
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), new THREE.MeshBasicMaterial({ color: 0x06b6d4 }));
         dot.position.y = 0.05;
         pinGroup.add(dot);
 
@@ -1114,8 +1252,8 @@
         const flushOk = (pt.flush >= (TARGET_FLUSH - FLUSH_TOL) && pt.flush <= (TARGET_FLUSH + FLUSH_TOL));
         const allOk = gapOk && flushOk;
 
-        p.ring.material.color.setHex(allOk ? 0x22c55e : 0xf43f5e);
-        p.dot.material.color.setHex(allOk ? 0x00f2fe : 0xf43f5e);
+        p.ring.material.color.setHex(allOk ? 0x10b981 : 0xf43f5e);
+        p.dot.material.color.setHex(allOk ? 0x06b6d4 : 0xf43f5e);
       });
     }
 
@@ -1123,16 +1261,10 @@
       requestAnimationFrame(animateThree);
 
       // Smooth Kinematic Motion Interpolation (Lerp)
-      if (robotGroup) {
-        robotGroup.position.lerp(robotBaseTarget, 0.08);
-      }
-      if (robotTCP) {
-        robotTCP.position.lerp(robotTCPTarget, 0.08);
-      }
+      if (robotGroup) robotGroup.position.lerp(robotBaseTarget, 0.08);
+      if (robotTCP) robotTCP.position.lerp(robotTCPTarget, 0.08);
 
-      if (laserBeam) {
-        laserBeam.material.opacity = 0.4 + Math.sin(Date.now() * 0.006) * 0.2;
-      }
+      if (laserBeam) laserBeam.material.opacity = 0.4 + Math.sin(Date.now() * 0.006) * 0.2;
       pinMarkers.forEach((p, idx) => {
         p.group.position.y = inspectionPoints[idx].targetPos[1] + Math.sin(Date.now() * 0.004 + idx) * 0.015;
       });
@@ -1160,16 +1292,15 @@
         const ok = (ptItem.gap >= 3.0 && ptItem.gap <= 4.0) && (ptItem.flush >= -0.5 && ptItem.flush <= 0.5);
         if (i === idx) {
           btn.className = ok
-            ? 'pt-btn p-1.5 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-300 text-[11px] font-bold text-center shadow-md'
-            : 'pt-btn p-1.5 rounded-lg bg-rose-950 border border-rose-400 text-rose-300 text-[11px] font-bold text-center shadow-md';
+            ? 'pt-btn p-2 rounded-xl bg-snow-purple border border-snow-purple text-white text-[11px] font-bold text-center shadow-md'
+            : 'pt-btn p-2 rounded-xl bg-snow-rose border border-snow-rose text-white text-[11px] font-bold text-center shadow-md';
         } else {
           btn.className = ok
-            ? 'pt-btn p-1.5 rounded-lg bg-dark-900 border border-dark-750 text-slate-300 text-[11px] font-bold text-center'
-            : 'pt-btn p-1.5 rounded-lg bg-rose-950/40 border border-rose-900 text-rose-300 text-[11px] font-bold text-center';
+            ? 'pt-btn p-2 rounded-xl bg-snow-surface2 border border-snow-border text-snow-textSub text-[11px] font-bold text-center hover:border-snow-borderLight'
+            : 'pt-btn p-2 rounded-xl bg-rose-950/50 border border-rose-900 text-rose-300 text-[11px] font-bold text-center';
         }
       });
 
-      // Set Smooth Motion Target for Industrial Robot
       robotBaseTarget.set(pt.targetPos[0] - 0.4, 0, pt.targetPos[2] > 0 ? 1.6 : -1.6);
       robotTCPTarget.set(0.4, pt.targetPos[1] + 0.3, 0);
 
@@ -1183,11 +1314,11 @@
       const badge = document.getElementById('activePtStatus');
       badge.textContent = allOk ? 'OK (합격)' : 'NG (규격 이탈 ⚠️)';
       badge.className = allOk
-        ? 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700'
-        : 'px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-950 text-rose-400 border border-rose-700';
+        ? 'px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-950/80 text-snow-emerald border border-emerald-800'
+        : 'px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold bg-rose-950/80 text-snow-rose border border-rose-800';
 
-      document.getElementById('liveGapVal').innerHTML = `${pt.gap.toFixed(2)} <span class="text-xs text-slate-400">mm</span>`;
-      document.getElementById('liveFlushVal').innerHTML = `${(pt.flush > 0 ? '+' : '') + pt.flush.toFixed(2)} <span class="text-xs text-slate-400">mm</span>`;
+      document.getElementById('liveGapVal').innerHTML = `${pt.gap.toFixed(2)} <span class="text-xs text-snow-textMuted font-normal">mm</span>`;
+      document.getElementById('liveFlushVal').innerHTML = `${(pt.flush > 0 ? '+' : '') + pt.flush.toFixed(2)} <span class="text-xs text-snow-textMuted font-normal">mm</span>`;
       document.getElementById('upperHingePrescription').textContent = pt.upperShim;
       document.getElementById('lowerHingePrescription').textContent = pt.lowerShim;
 
@@ -1205,7 +1336,7 @@
       ctx.clearRect(0, 0, w, h);
 
       // Grid Background
-      ctx.strokeStyle = 'rgba(0, 242, 254, 0.08)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
       for (let x = 0; x < w; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
       for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
@@ -1217,7 +1348,7 @@
 
       // Left Panel Surface
       const leftY = midY - 6;
-      ctx.strokeStyle = '#00f2fe';
+      ctx.strokeStyle = '#06b6d4';
       ctx.lineWidth = 3.5;
       ctx.beginPath();
       ctx.moveTo(20, leftY);
@@ -1233,7 +1364,7 @@
       // Right Panel Surface
       const rightY = leftY + flushPx;
       const isFlushNg = Math.abs(flush) > FLUSH_TOL;
-      ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
+      ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#a855f7';
       ctx.lineWidth = 3.5;
       ctx.beginPath();
       ctx.moveTo(midX + gapPx / 2, rightY);
@@ -1241,13 +1372,13 @@
       ctx.stroke();
 
       // Right Laser Point Cloud Dots
-      ctx.fillStyle = isFlushNg ? '#fb7185' : '#38bdf8';
+      ctx.fillStyle = isFlushNg ? '#fb7185' : '#c084fc';
       for (let px = midX + gapPx / 2; px < w - 20; px += 8) {
         ctx.fillRect(px, rightY - 1, 2, 2);
       }
 
       // Gap Dimension Line
-      ctx.strokeStyle = '#94a3b8';
+      ctx.strokeStyle = '#9ca3af';
       ctx.lineWidth = 1.2;
       ctx.setLineDash([2, 2]);
       ctx.beginPath();
@@ -1256,14 +1387,14 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.fillStyle = '#00f2fe';
+      ctx.fillStyle = '#06b6d4';
       ctx.font = 'bold 11px JetBrains Mono';
       ctx.textAlign = 'center';
       ctx.fillText(`↔ Gap: ${gap.toFixed(2)}mm`, midX, leftY + 32);
 
       // Flush Dimension Line
       if (Math.abs(flush) > 0.02) {
-        ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
+        ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#a855f7';
         ctx.setLineDash([2, 2]);
         ctx.beginPath();
         ctx.moveTo(midX + gapPx / 2 + 10, leftY);
@@ -1271,7 +1402,7 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = isFlushNg ? '#f43f5e' : '#38bdf8';
+        ctx.fillStyle = isFlushNg ? '#f43f5e' : '#a855f7';
         ctx.textAlign = 'left';
         ctx.fillText(`↕ Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, midX + gapPx / 2 + 14, (leftY + rightY)/2 + 4);
       }
@@ -1298,7 +1429,7 @@
       pt.upperShim = '심(Shim) +0.45mm 추가 처방 필요';
       pt.lowerShim = '체결 각도 +0.8° 보정 필요';
       document.getElementById('boltTorqueVal').textContent = '22.1 N·m (토크 부족 ⚠️)';
-      document.getElementById('boltTorqueVal').className = 'text-rose-400 font-mono font-bold';
+      document.getElementById('boltTorqueVal').className = 'text-snow-rose font-mono font-bold';
       
       if (doorFLMesh) {
         doorFLMesh.position.set(-0.15, 0.59, 0.97);
@@ -1328,18 +1459,42 @@
         data: {
           labels: labels,
           datasets: [
-            { label: '간극 (Gap: 3.5±0.5mm)', data: gapData, borderColor: '#00f2fe', borderWidth: 2, pointRadius: 2.5 },
-            { label: '단차 (Flush: 0.0±0.5mm)', data: flushData, borderColor: '#818cf8', borderWidth: 2, pointRadius: 2.5 }
+            { 
+              label: '간극 (Gap: 3.5±0.5mm)', 
+              data: gapData, 
+              borderColor: '#a855f7', 
+              backgroundColor: 'rgba(168, 85, 247, 0.1)',
+              fill: true,
+              tension: 0.4, // SnowUI signature smooth bezier
+              borderWidth: 2.5, 
+              pointRadius: 3,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#a855f7',
+              pointBorderWidth: 2
+            },
+            { 
+              label: '단차 (Flush: 0.0±0.5mm)', 
+              data: flushData, 
+              borderColor: '#3b82f6', 
+              backgroundColor: 'rgba(59, 130, 246, 0.05)',
+              fill: true,
+              tension: 0.4, 
+              borderWidth: 2.5, 
+              pointRadius: 3,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#3b82f6',
+              pointBorderWidth: 2
+            }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y: { min: -1.0, max: 5.0, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+            y: { min: -1.0, max: 5.0, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } }
           },
-          plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+          plugins: { legend: { labels: { color: '#e5e7eb', font: { size: 11, weight: '600' } } } }
         }
       });
     }
@@ -1396,16 +1551,16 @@
       let html = `
         <defs>
           <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#162032" /><stop offset="50%" stop-color="#1e2c44" /><stop offset="100%" stop-color="#162032" />
+            <stop offset="0%" stop-color="#222327" /><stop offset="50%" stop-color="#2b2d33" /><stop offset="100%" stop-color="#222327" />
           </linearGradient>
           <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0a192f" /><stop offset="50%" stop-color="#112240" /><stop offset="100%" stop-color="#0a192f" />
+            <stop offset="0%" stop-color="#18181b" /><stop offset="50%" stop-color="#222327" /><stop offset="100%" stop-color="#18181b" />
           </linearGradient>
         </defs>
-        <rect x="25" y="${beamY}" width="550" height="${beamH}" rx="8" fill="url(#beamGrad)" stroke="#2b3d5b" stroke-width="1.5"/>
-        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#4a658a" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME (차체 사이드실 프레임)</text>
-        <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="8" fill="url(#gaugeGrad)" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4"/>
-        <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#00f2fe" opacity="0.85">INSPECTION GAUGE BASE (10.0mm ±1.0mm)</text>
+        <rect x="25" y="${beamY}" width="550" height="${beamH}" rx="12" fill="url(#beamGrad)" stroke="#323339" stroke-width="1.5"/>
+        <text x="45" y="${beamY + 28}" font-size="11" font-weight="700" fill="#9ca3af" letter-spacing="1">SIDE-SILL STRUCTURAL FRAME (차체 사이드실 프레임)</text>
+        <rect x="25" y="${gaugeY}" width="550" height="${gaugeH}" rx="12" fill="url(#gaugeGrad)" stroke="#3b82f6" stroke-width="1.2" stroke-opacity="0.6"/>
+        <text x="300" y="${gaugeY + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="#3b82f6">INSPECTION GAUGE BASE (10.0mm ±1.0mm)</text>
       `;
 
       for (let i = 0; i < 4; i++) {
@@ -1413,22 +1568,22 @@
         const count = guides[i];
         const hVal = getBaseH(i, count);
         const ok = isHValueOk(hVal);
-        const color = ok ? '#22c55e' : '#f43f5e';
+        const color = ok ? '#10b981' : '#f43f5e';
         const cy = beamY + beamH / 2;
 
-        html += `<text x="${x}" y="${beamY - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">${HOLE_NAMES[i]}</text>`;
+        html += `<text x="${x}" y="${beamY - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#e5e7eb">${HOLE_NAMES[i]}</text>`;
         const shimHeight = Math.min(18, count * 0.9);
         const shimY = beamY + beamH;
         if (count > 0) {
           html += `
-            <rect x="${x - 18}" y="${shimY}" width="36" height="${shimHeight}" rx="2" fill="#0284c7" stroke="#38bdf8" stroke-width="1" opacity="0.9"/>
-            <text x="${x}" y="${shimY + shimHeight + 11}" text-anchor="middle" font-size="9" font-weight="600" fill="#38bdf8">${count}매</text>
+            <rect x="${x - 18}" y="${shimY}" width="36" height="${shimHeight}" rx="3" fill="#2563eb" stroke="#60a5fa" stroke-width="1"/>
+            <text x="${x}" y="${shimY + shimHeight + 11}" text-anchor="middle" font-size="9" font-weight="600" fill="#93c5fd">${count}매</text>
           `;
         }
         html += `
-          <circle cx="${x}" cy="${cy}" r="12" fill="#07090e" stroke="${color}" stroke-width="2"/>
+          <circle cx="${x}" cy="${cy}" r="12" fill="#141518" stroke="${color}" stroke-width="2.5"/>
           <line x1="${x}" y1="${cy + 12}" x2="${x}" y2="${gaugeY - 5}" stroke="${color}" stroke-width="1.8" stroke-dasharray="4,3"/>
-          <rect x="${x - 30}" y="${(gaugeY + beamY + beamH) / 2 - 13}" width="60" height="26" rx="6" fill="#07090e" stroke="${color}" stroke-width="1.5"/>
+          <rect x="${x - 30}" y="${(gaugeY + beamY + beamH) / 2 - 13}" width="60" height="26" rx="8" fill="#18181b" stroke="${color}" stroke-width="1.5"/>
           <text x="${x}" y="${(gaugeY + beamY + beamH) / 2 + 5}" text-anchor="middle" font-size="13" font-weight="800" fill="${color}" font-family="JetBrains Mono">${hVal.toFixed(1)}mm</text>
         `;
       }
@@ -1446,23 +1601,23 @@
         const ok = isHValueOk(hVal);
 
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border transition-all ${ok ? 'bg-dark-900 border-dark-750' : 'bg-rose-950/20 border-rose-900/60'}`;
+        card.className = `p-3 rounded-2xl border transition-all ${ok ? 'bg-snow-surface2 border-snow-border' : 'bg-rose-950/30 border-rose-800'}`;
         card.innerHTML = `
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded bg-dark-800 border border-dark-700 flex items-center justify-center font-bold text-xs text-slate-300">${HOLE_NAMES[i].replace('홀 ','')}</span>
+              <span class="w-6 h-6 rounded-lg bg-snow-surface border border-snow-border flex items-center justify-center font-bold text-xs text-white">${HOLE_NAMES[i].replace('홀 ','')}</span>
               <span class="text-xs font-bold text-white">${HOLE_NAMES[i]}</span>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="adjustLiner(${i}, -1)" class="w-6 h-6 rounded bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-200 font-bold">-</button>
-              <span class="w-7 text-center font-mono font-bold text-sm text-cyan-300">${count}</span>
-              <button onclick="adjustLiner(${i}, 1)" class="w-6 h-6 rounded bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-200 font-bold">+</button>
+              <button onclick="adjustLiner(${i}, -1)" class="w-6 h-6 rounded-lg bg-snow-surface hover:bg-snow-border border border-snow-border text-white font-bold transition-all">-</button>
+              <span class="w-7 text-center font-mono font-bold text-sm text-snow-cyan">${count}</span>
+              <button onclick="adjustLiner(${i}, 1)" class="w-6 h-6 rounded-lg bg-snow-surface hover:bg-snow-border border border-snow-border text-white font-bold transition-all">+</button>
             </div>
-            <div class="px-2 py-0.5 rounded font-mono font-bold text-xs ${ok ? 'bg-emerald-950 text-emerald-400 border border-emerald-700' : 'bg-rose-950 text-rose-400 border border-rose-700'}">
+            <div class="px-2.5 py-0.5 rounded-lg font-mono font-bold text-xs ${ok ? 'bg-emerald-950/80 text-snow-emerald border border-emerald-800' : 'bg-rose-950/80 text-snow-rose border border-rose-800'}">
               ${hVal.toFixed(1)}mm (${ok ? 'OK' : 'NG'})
             </div>
           </div>
-          <input type="range" min="0" max="20" value="${count}" oninput="setLiner(${i}, this.value)" class="w-full accent-cyan-400 bg-dark-950 h-1 rounded-lg cursor-pointer mt-1.5" />
+          <input type="range" min="0" max="20" value="${count}" oninput="setLiner(${i}, this.value)" class="w-full accent-snow-cyan bg-[#141518] h-1.5 rounded-lg cursor-pointer mt-2" />
         `;
         container.appendChild(card);
       }
@@ -1547,7 +1702,7 @@
       if (!container) return;
 
       if (historyData.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs font-mono">생산 이력이 없습니다.</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-snow-textMuted text-xs font-mono">생산 이력이 없습니다.</div>`;
         badge.classList.add('hidden');
         return;
       }
@@ -1564,14 +1719,14 @@
         const item = historyData[r];
         const isBest = (r === bestIdx);
         const card = document.createElement('div');
-        card.className = `p-3 rounded-xl border ${isBest ? 'bg-cyan-950/40 border-cyan-700' : 'bg-dark-900 border-dark-750'}`;
+        card.className = `p-3.5 rounded-2xl border transition-all ${isBest ? 'bg-purple-950/30 border-purple-800' : 'bg-snow-surface2 border-snow-border'}`;
         card.innerHTML = `
-          <div class="flex justify-between text-xs pb-1 mb-1 border-b border-dark-800">
+          <div class="flex justify-between text-xs pb-1.5 mb-1.5 border-b border-snow-border">
             <span class="font-bold text-white">시도 #${item.id} (${item.timestamp})</span>
-            <span class="font-mono font-bold ${item.yieldRate >= 80 ? 'text-emerald-400' : 'text-amber-400'}">수율 ${item.yieldRate.toFixed(0)}%</span>
+            <span class="font-mono font-bold ${item.yieldRate >= 80 ? 'text-snow-emerald' : 'text-snow-amber'}">수율 ${item.yieldRate.toFixed(0)}%</span>
           </div>
           <div class="flex gap-1.5 flex-wrap text-[11px] font-mono">
-            ${item.guides.map((g, i) => `<span class="px-1.5 py-0.5 rounded bg-dark-950 text-cyan-300 border border-dark-750">${HOLE_NAMES[i]}:${g}매</span>`).join('')}
+            ${item.guides.map((g, i) => `<span class="px-2 py-0.5 rounded-lg bg-snow-surface text-snow-cyan border border-snow-border">${HOLE_NAMES[i]}:${g}매</span>`).join('')}
           </div>
         `;
         container.appendChild(card);
@@ -1603,20 +1758,20 @@
         data: {
           labels: [],
           datasets: [
-            { label: '홀 A', data: [], borderColor: '#38bdf8', borderWidth: 2, pointRadius: 2.5 },
-            { label: '홀 B', data: [], borderColor: '#818cf8', borderWidth: 2, pointRadius: 2.5 },
-            { label: '홀 C', data: [], borderColor: '#34d399', borderWidth: 2, pointRadius: 2.5 },
-            { label: '홀 D', data: [], borderColor: '#fbbf24', borderWidth: 2, pointRadius: 2.5 }
+            { label: '홀 A', data: [], borderColor: '#38bdf8', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: '홀 B', data: [], borderColor: '#a855f7', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: '홀 C', data: [], borderColor: '#10b981', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: '홀 D', data: [], borderColor: '#f59e0b', borderWidth: 2, tension: 0.35, pointRadius: 2.5 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y: { min: 6, max: 14, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+            y: { min: 6, max: 14, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } }
           },
-          plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+          plugins: { legend: { labels: { color: '#e5e7eb', font: { size: 11, weight: '600' } } } }
         }
       });
     }
