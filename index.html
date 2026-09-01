@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>AutoFit-3D | SnowUI Smart Twin Dashboard</title>
+  <title>AutoTwin-3D | 지능형 인라인 3D 갭·단차 및 공차 최적화 디지털 트윈</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,14 +23,13 @@
               surface2: '#27282e', // Inner Container Surface
               border: '#2f3037',   // Clean Border
               borderLight: 'rgba(255, 255, 255, 0.08)',
-              primary: '#3b82f6',  // Figma Electric Blue
-              primaryDark: '#2563eb',
-              purple: '#a855f7',   // Figma SnowUI Purple
-              purpleDark: '#7e22ce',
-              cyan: '#06b6d4',
-              emerald: '#10b981',
-              rose: '#f43f5e',
-              amber: '#f59e0b',
+              primary: '#2563eb',  // High-Tech Royal Blue
+              primaryHover: '#1d4ed8',
+              cyan: '#06b6d4',     // Cyber Cyan Accent
+              cyanHover: '#0891b2',
+              emerald: '#10b981',  // Pass Green
+              rose: '#f43f5e',     // Fail Alert Red
+              amber: '#f59e0b',    // Warning Amber
               textMuted: '#9ca3af',
               textSub: '#d1d5db',
               textMain: '#ffffff'
@@ -62,7 +61,7 @@
       background-color: #141416;
       color: #f3f4f6;
       overflow-x: hidden;
-      font-size: 15px; /* Upgraded Base Font Size */
+      font-size: 15px;
     }
 
     ::-webkit-scrollbar { width: 7px; height: 7px; }
@@ -78,35 +77,35 @@
     }
 
     .snow-card-blue {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 1.5rem;
       box-shadow: 0 16px 36px -6px rgba(37, 99, 235, 0.45);
     }
 
     .nav-item-active {
-      background: rgba(168, 85, 247, 0.15);
-      border: 1px solid rgba(168, 85, 247, 0.45);
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(37, 99, 235, 0.6);
       color: #ffffff;
       font-weight: 700;
     }
   </style>
 </head>
-<body class="min-h-screen flex bg-snow-bg selection:bg-snow-purple selection:text-white">
+<body class="min-h-screen flex bg-snow-bg selection:bg-blue-600 selection:text-white">
 
-  <!-- ================= LEFT SIDEBAR (Expanded & High Legibility) ================= -->
+  <!-- ================= LEFT SIDEBAR (Automotive High-Tech Brand) ================= -->
   <aside class="w-72 bg-snow-sidebar border-r border-snow-border flex flex-col justify-between hidden lg:flex shrink-0 min-h-screen p-5">
     <div class="space-y-8">
-      <!-- Brand Logo (High Impact) -->
+      <!-- Brand Logo (Car Icon + AutoTwin 3D) -->
       <div class="flex items-center space-x-3.5 px-2 py-1">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/30">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-blue-600/35 border border-white/10">
+          <i data-lucide="car-front" class="w-6 h-6"></i>
         </div>
         <div>
           <span class="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
-            AutoFit<span class="text-snow-purple">3D</span>
+            AutoTwin<span class="text-snow-cyan">3D</span>
           </span>
-          <span class="text-xs text-snow-textMuted font-mono block">Metrology Twin v3.0</span>
+          <span class="text-xs text-snow-textMuted font-mono block">완성차 인라인 계측 시스템</span>
         </div>
       </div>
 
@@ -117,7 +116,7 @@
         </div>
 
         <button id="sideNav-trim" onclick="switchProcessTab('trim')" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all nav-item-active text-left text-sm">
-          <i data-lucide="scan-line" class="w-5 h-5 text-snow-purple shrink-0"></i>
+          <i data-lucide="scan-line" class="w-5 h-5 text-snow-cyan shrink-0"></i>
           <span class="font-bold">① 의장 3D 갭·단차 트윈</span>
         </button>
 
@@ -165,7 +164,7 @@
   <!-- ================= MAIN CONTENT WRAPPER ================= -->
   <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
 
-    <!-- Top Header Bar (Clean SnowUI Style) -->
+    <!-- Top Header Bar -->
     <header class="h-20 border-b border-snow-border bg-snow-sidebar/95 backdrop-blur-md px-6 sm:px-10 flex items-center justify-between sticky top-0 z-40">
       <!-- Breadcrumbs -->
       <div class="flex items-center gap-3">
@@ -177,7 +176,7 @@
 
         <!-- Mobile Process Switcher -->
         <div class="flex lg:hidden items-center bg-snow-surface p-1.5 rounded-2xl border border-snow-border text-sm">
-          <button id="mobTab-trim" onclick="switchProcessTab('trim')" class="px-3.5 py-1.5 rounded-xl font-bold bg-snow-purple text-white">① 의장</button>
+          <button id="mobTab-trim" onclick="switchProcessTab('trim')" class="px-3.5 py-1.5 rounded-xl font-bold bg-blue-600 text-white">① 의장</button>
           <button id="mobTab-sidesill" onclick="switchProcessTab('sidesill')" class="px-3.5 py-1.5 rounded-xl text-snow-textSub font-medium">② 차체</button>
         </div>
       </div>
@@ -194,7 +193,7 @@
           <i id="soundIcon" data-lucide="volume-2" class="w-5 h-5 text-snow-cyan"></i>
         </button>
 
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center font-bold text-sm text-white shadow-lg">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-lg border border-white/10">
           DX
         </div>
       </div>
@@ -206,9 +205,9 @@
       <!-- ================= TAB 1: TRIM 3D ROBOT GAP & FLUSH ================= -->
       <div id="tabContent-trim" class="space-y-8">
 
-        <!-- Top 4 KPI Metric Cards (Figma 1:1 Large Fonts & High Impact) -->
+        <!-- Top 4 KPI Metric Cards (Electric Blue Accent & High Legibility) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <!-- Card 1 (Figma Vibrant Blue Card) -->
+          <!-- Card 1 (Vibrant High-Tech Blue Card) -->
           <div class="snow-card-blue p-6 text-white flex flex-col justify-between h-36 relative overflow-hidden">
             <div class="flex items-center justify-between">
               <span class="text-sm font-bold text-blue-100 uppercase tracking-wide">기준 간극 (Gap Target)</span>
@@ -260,12 +259,12 @@
           <div class="snow-card p-6 flex flex-col justify-between h-36">
             <div class="flex items-center justify-between">
               <span class="text-sm font-bold text-snow-textMuted uppercase tracking-wide">공정능력지수 (Cpk)</span>
-              <span class="p-2 rounded-xl bg-snow-surface2 text-snow-purple border border-snow-border">
+              <span class="p-2 rounded-xl bg-snow-surface2 text-blue-400 border border-snow-border">
                 <i data-lucide="activity" class="w-4 h-4"></i>
               </span>
             </div>
             <div>
-              <div id="topCpk" class="text-3xl sm:text-4xl font-black font-mono text-snow-purple tracking-tight">1.38</div>
+              <div id="topCpk" class="text-3xl sm:text-4xl font-black font-mono text-blue-400 tracking-tight">1.38</div>
               <div class="text-xs text-snow-emerald mt-1 flex items-center gap-1.5 font-mono font-medium">
                 <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
                 <span>4-Sigma 양산 품질 보증</span>
@@ -274,10 +273,10 @@
           </div>
         </div>
 
-        <!-- Vehicle Selection Queue Bar (Spacious & Clean) -->
+        <!-- Vehicle Selection Queue Bar (Clean Blue Pills) -->
         <div class="snow-card p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
           <div class="flex items-center gap-4">
-            <div class="p-3 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-purple shrink-0">
+            <div class="p-3 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-cyan shrink-0">
               <i data-lucide="git-commit" class="w-5 h-5"></i>
             </div>
             <div>
@@ -295,7 +294,7 @@
 
           <!-- 5 Vehicles Quick Buttons -->
           <div class="flex items-center gap-2 flex-wrap self-end lg:self-center">
-            <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-purple text-white shadow-md">#001 (양품)</button>
+            <button onclick="loadVehicleData(0)" id="vehBtn-0" class="veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-blue-600 text-white shadow-md">#001 (양품)</button>
             <button onclick="loadVehicleData(1)" id="vehBtn-1" class="veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#002 (도어처짐 NG ⚠️)</button>
             <button onclick="loadVehicleData(2)" id="vehBtn-2" class="veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#003 (간극과다 NG ⚠️)</button>
             <button onclick="loadVehicleData(3)" id="vehBtn-3" class="veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight">#004 (양품)</button>
@@ -353,18 +352,18 @@
               </div>
 
               <div class="absolute bottom-4 right-4 z-10">
-                <button onclick="toggleAutoScan()" id="autoScanBtn" class="px-4 py-2 rounded-2xl bg-snow-primary hover:bg-snow-primaryDark text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-all">
+                <button onclick="toggleAutoScan()" id="autoScanBtn" class="px-4 py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-all">
                   <i data-lucide="play" class="w-4 h-4"></i>
                   <span id="autoScanText">로봇 자동 연속 스캔</span>
                 </button>
               </div>
             </div>
 
-            <!-- 8 Inspection Points Selector Grid (Spacious & Clean) -->
+            <!-- 8 Inspection Points Selector Grid -->
             <div class="mt-4 grid grid-cols-4 sm:grid-cols-8 gap-2">
               <button onclick="selectInspectionPoint(0)" id="ptBtn-0" class="pt-btn p-2.5 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-textSub text-xs font-bold text-center transition-all">PT-01<br/><span class="text-[10px] font-normal text-snow-textMuted">Hood-L</span></button>
               <button onclick="selectInspectionPoint(1)" id="ptBtn-1" class="pt-btn p-2.5 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-textSub text-xs font-bold text-center transition-all">PT-02<br/><span class="text-[10px] font-normal text-snow-textMuted">Hood-R</span></button>
-              <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-2.5 rounded-2xl bg-snow-purple border border-snow-purple text-white text-xs font-bold text-center transition-all shadow-md">PT-03<br/><span class="text-[10px] font-normal text-purple-200">FL-Fender</span></button>
+              <button onclick="selectInspectionPoint(2)" id="ptBtn-2" class="pt-btn p-2.5 rounded-2xl bg-blue-600 border border-blue-500 text-white text-xs font-bold text-center transition-all shadow-md">PT-03<br/><span class="text-[10px] font-normal text-blue-200">FL-Fender</span></button>
               <button onclick="selectInspectionPoint(3)" id="ptBtn-3" class="pt-btn p-2.5 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-textSub text-xs font-bold text-center transition-all">PT-04<br/><span class="text-[10px] font-normal text-snow-textMuted">FR-Fender</span></button>
               <button onclick="selectInspectionPoint(4)" id="ptBtn-4" class="pt-btn p-2.5 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-textSub text-xs font-bold text-center transition-all">PT-05<br/><span class="text-[10px] font-normal text-snow-textMuted">FL-RL Door</span></button>
               <button onclick="selectInspectionPoint(5)" id="ptBtn-5" class="pt-btn p-2.5 rounded-2xl bg-snow-surface2 border border-snow-border text-snow-textSub text-xs font-bold text-center transition-all">PT-06<br/><span class="text-[10px] font-normal text-snow-textMuted">FR-RR Door</span></button>
@@ -423,17 +422,17 @@
             </div>
 
             <!-- AI Prescriptive Hinge Card -->
-            <div id="hingeSection" class="snow-card p-6 space-y-3.5 border-snow-purple/40 bg-gradient-to-b from-snow-surface to-[#262230]">
+            <div id="hingeSection" class="snow-card p-6 space-y-3.5 border-blue-500/40 bg-gradient-to-b from-snow-surface to-[#1a2333]">
               <div class="flex items-center justify-between border-b border-snow-border pb-3.5">
                 <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-2xl bg-purple-950 border border-purple-800 flex items-center justify-center text-snow-purple">
+                  <div class="w-8 h-8 rounded-2xl bg-blue-950 border border-blue-700 flex items-center justify-center text-blue-400">
                     <i data-lucide="wrench" class="w-4 h-4"></i>
                   </div>
                   <h3 class="text-sm sm:text-base font-bold text-white">
                     AI 도어 힌지(Hinge) 자동 처방
                   </h3>
                 </div>
-                <span class="text-xs font-mono bg-purple-950 text-purple-300 px-2.5 py-1 rounded-xl border border-purple-800 font-bold">Prescriptive Engine</span>
+                <span class="text-xs font-mono bg-blue-950 text-blue-300 px-2.5 py-1 rounded-xl border border-blue-800 font-bold">Prescriptive AI</span>
               </div>
 
               <div class="space-y-2.5 text-xs sm:text-sm">
@@ -464,11 +463,11 @@
 
         </div>
 
-        <!-- Bottom SPC Trend Analytics Card (SnowUI Purple Curved Chart) -->
+        <!-- Bottom SPC Trend Analytics Card (High-Tech Electric Cyan Line Chart) -->
         <div id="spcSection" class="snow-card p-6 space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-snow-border pb-4">
             <div class="flex items-center gap-2.5">
-              <i data-lucide="trending-up" class="w-5 h-5 text-snow-purple"></i>
+              <i data-lucide="trending-up" class="w-5 h-5 text-snow-cyan"></i>
               <h3 class="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
                 인라인 30대 연속 생산 Gap & Flush SPC 관리도 (Trend Monitor)
               </h3>
@@ -540,12 +539,12 @@
           <div class="snow-card p-6 flex flex-col justify-between h-36">
             <div class="flex items-center justify-between">
               <span class="text-sm font-bold text-snow-textMuted uppercase tracking-wide">공정능력지수 (Cpk)</span>
-              <span class="p-2 rounded-xl bg-snow-surface2 text-snow-purple border border-snow-border">
+              <span class="p-2 rounded-xl bg-snow-surface2 text-blue-400 border border-snow-border">
                 <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
               </span>
             </div>
             <div>
-              <div id="cpkStat" class="text-3xl sm:text-4xl font-black font-mono text-snow-purple tracking-tight">-</div>
+              <div id="cpkStat" class="text-3xl sm:text-4xl font-black font-mono text-blue-400 tracking-tight">-</div>
               <div class="text-xs text-snow-textMuted mt-1 font-mono">목표 Cpk 1.33 이상</div>
             </div>
           </div>
@@ -583,13 +582,13 @@
 
               <!-- Simulation Run Controls -->
               <div class="flex flex-wrap gap-3 items-center pt-2">
-                <button onclick="runSimulation(5)" class="flex-1 min-w-[180px] py-3 px-5 rounded-2xl bg-snow-primary hover:bg-snow-primaryDark text-white font-bold text-sm shadow-xl shadow-blue-500/30 transition-all flex items-center justify-center gap-2.5 active:scale-[0.98]">
+                <button onclick="runSimulation(5)" class="flex-1 min-w-[180px] py-3 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-2.5 active:scale-[0.98]">
                   <i data-lucide="play" class="w-4 h-4 fill-white"></i>
                   <span>공정 실행 (5회 생산 런)</span>
                 </button>
 
-                <button onclick="runAutoTuning()" class="py-3 px-5 rounded-2xl bg-snow-surface2 hover:bg-snow-border border border-snow-purple/60 text-purple-300 font-bold text-sm transition-all flex items-center gap-2 shadow-sm active:scale-[0.98]">
-                  <i data-lucide="sparkles" class="w-4 h-4 text-snow-purple"></i>
+                <button onclick="runAutoTuning()" class="py-3 px-5 rounded-2xl bg-snow-surface2 hover:bg-snow-border border border-cyan-500/50 text-cyan-300 font-bold text-sm transition-all flex items-center gap-2 shadow-sm active:scale-[0.98]">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-snow-cyan"></i>
                   <span>AI 자동 최적화 탐색</span>
                 </button>
 
@@ -697,11 +696,11 @@
         <div class="snow-card p-6 space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-snow-border pb-4">
             <div class="flex items-center gap-2.5">
-              <i data-lucide="history" class="w-5 h-5 text-snow-purple"></i>
+              <i data-lucide="history" class="w-5 h-5 text-snow-cyan"></i>
               <h3 class="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
                 생산 런 히스토리 및 통계 분석 로그
               </h3>
-              <span id="bestTryBadge" class="hidden text-xs px-3 py-1 rounded-xl bg-purple-950/90 text-purple-300 border border-purple-700 font-mono font-bold"></span>
+              <span id="bestTryBadge" class="hidden text-xs px-3 py-1 rounded-xl bg-blue-950/90 text-blue-300 border border-blue-700 font-mono font-bold"></span>
             </div>
             <div class="flex items-center gap-3">
               <button onclick="exportCSV()" class="px-4 py-2 rounded-2xl bg-snow-surface2 hover:bg-snow-border border border-snow-border text-snow-textSub text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all">
@@ -730,12 +729,12 @@
     <footer class="border-t border-snow-border bg-snow-sidebar/70 py-5 px-8 mt-10">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-snow-textMuted gap-3">
         <div>
-          AutoFit-3D | 지능형 인라인 로봇 3D 갭·단차 및 공차 최적화 디지털 트윈 시스템
+          AutoTwin-3D | 지능형 인라인 로봇 3D 갭·단차 및 공차 최적화 디지털 트윈 시스템
         </div>
         <div class="flex items-center gap-4 font-mono text-xs">
           <span>Standard Gap: 3.5mm / Flush: 0.0mm / H: 10.0mm</span>
           <span>•</span>
-          <span class="text-snow-textSub font-bold">SnowUI Design System</span>
+          <span class="text-snow-textSub font-bold">Smart Manufacturing Twin</span>
         </div>
       </div>
     </footer>
@@ -762,7 +761,7 @@
       if (tabId === 'trim') {
         if (trimNav) trimNav.className = 'w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all nav-item-active text-left text-sm';
         if (sideNav) sideNav.className = 'w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all text-snow-textSub hover:bg-snow-surface hover:text-white text-left text-sm';
-        if (mobTrim) mobTrim.className = 'px-3.5 py-1.5 rounded-xl font-bold bg-snow-purple text-white';
+        if (mobTrim) mobTrim.className = 'px-3.5 py-1.5 rounded-xl font-bold bg-blue-600 text-white';
         if (mobSide) mobSide.className = 'px-3.5 py-1.5 rounded-xl text-snow-textSub font-medium';
         if (breadcrumb) breadcrumb.textContent = '의장 6축 로봇 3D 갭·단차 트윈';
 
@@ -775,7 +774,7 @@
       } else {
         if (sideNav) sideNav.className = 'w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all nav-item-active text-left text-sm';
         if (trimNav) trimNav.className = 'w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all text-snow-textSub hover:bg-snow-surface hover:text-white text-left text-sm';
-        if (mobSide) mobSide.className = 'px-3.5 py-1.5 rounded-xl font-bold bg-snow-purple text-white';
+        if (mobSide) mobSide.className = 'px-3.5 py-1.5 rounded-xl font-bold bg-blue-600 text-white';
         if (mobTrim) mobTrim.className = 'px-3.5 py-1.5 rounded-xl text-snow-textSub font-medium';
         if (breadcrumb) breadcrumb.textContent = '차체 사이드실 H값 최적화 시뮬레이터';
 
@@ -910,7 +909,7 @@
 
       document.querySelectorAll('.veh-btn').forEach((btn, i) => {
         btn.className = (i === vIdx)
-          ? 'veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-purple text-white shadow-md'
+          ? 'veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-blue-600 text-white shadow-md'
           : 'veh-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-mono font-bold transition-all bg-snow-surface2 border border-snow-border text-snow-textSub hover:border-snow-borderLight';
       });
 
@@ -968,7 +967,7 @@
       const text = document.getElementById('xrayBtnText');
 
       if (isXRayMode) {
-        btn.className = 'px-3 py-1 rounded-xl bg-snow-purple text-white font-bold border border-purple-400 flex items-center gap-1.5 font-mono text-xs shadow-lg';
+        btn.className = 'px-3 py-1 rounded-xl bg-blue-600 text-white font-bold border border-blue-400 flex items-center gap-1.5 font-mono text-xs shadow-lg';
         text.textContent = 'X-Ray 모드 ON';
         setCarOpacity(0.25, true);
         if (hingeUpperMesh) hingeUpperMesh.visible = true;
@@ -1035,11 +1034,11 @@
       dirLight2.position.set(-6, 8, -8);
       scene.add(dirLight2);
 
-      const floorLight = new THREE.DirectionalLight(0x3b82f6, 0.6);
+      const floorLight = new THREE.DirectionalLight(0x0284c7, 0.6);
       floorLight.position.set(0, -5, 0);
       scene.add(floorLight);
 
-      const grid = new THREE.GridHelper(12, 24, 0x3b82f6, 0x27282e);
+      const grid = new THREE.GridHelper(12, 24, 0x0284c7, 0x27282e);
       grid.position.y = 0;
       scene.add(grid);
 
@@ -1199,7 +1198,7 @@
 
       const robotWhite = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.5, roughness: 0.2 });
       const robotOrange = new THREE.MeshStandardMaterial({ color: 0xf97316, metalness: 0.6, roughness: 0.3 });
-      const robotJoint = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.8, roughness: 0.2 });
+      const robotJoint = new THREE.MeshStandardMaterial({ color: 0x2563eb, metalness: 0.8, roughness: 0.2 });
 
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 0.22, 18), robotJoint);
       base.position.y = 0.11; robotGroup.add(base);
@@ -1294,7 +1293,7 @@
         const ok = (ptItem.gap >= 3.0 && ptItem.gap <= 4.0) && (ptItem.flush >= -0.5 && ptItem.flush <= 0.5);
         if (i === idx) {
           btn.className = ok
-            ? 'pt-btn p-2.5 rounded-2xl bg-snow-purple border border-snow-purple text-white text-xs font-bold text-center shadow-md'
+            ? 'pt-btn p-2.5 rounded-2xl bg-blue-600 border border-blue-500 text-white text-xs font-bold text-center shadow-md'
             : 'pt-btn p-2.5 rounded-2xl bg-snow-rose border border-snow-rose text-white text-xs font-bold text-center shadow-md';
         } else {
           btn.className = ok
@@ -1366,7 +1365,7 @@
       // Right Panel Surface
       const rightY = leftY + flushPx;
       const isFlushNg = Math.abs(flush) > FLUSH_TOL;
-      ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#a855f7';
+      ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#0ea5e9';
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(midX + gapPx / 2, rightY);
@@ -1374,7 +1373,7 @@
       ctx.stroke();
 
       // Right Laser Point Cloud Dots
-      ctx.fillStyle = isFlushNg ? '#fb7185' : '#c084fc';
+      ctx.fillStyle = isFlushNg ? '#fb7185' : '#38bdf8';
       for (let px = midX + gapPx / 2; px < w - 20; px += 8) {
         ctx.fillRect(px, rightY - 1, 2.5, 2.5);
       }
@@ -1396,7 +1395,7 @@
 
       // Flush Dimension Line
       if (Math.abs(flush) > 0.02) {
-        ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#a855f7';
+        ctx.strokeStyle = isFlushNg ? '#f43f5e' : '#0ea5e9';
         ctx.setLineDash([2, 2]);
         ctx.beginPath();
         ctx.moveTo(midX + gapPx / 2 + 10, leftY);
@@ -1404,7 +1403,7 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = isFlushNg ? '#f43f5e' : '#a855f7';
+        ctx.fillStyle = isFlushNg ? '#f43f5e' : '#0ea5e9';
         ctx.textAlign = 'left';
         ctx.fillText(`↕ Flush: ${(flush>0?'+':'')+flush.toFixed(2)}mm`, midX + gapPx / 2 + 14, (leftY + rightY)/2 + 4);
       }
@@ -1464,21 +1463,21 @@
             { 
               label: '간극 (Gap: 3.5±0.5mm)', 
               data: gapData, 
-              borderColor: '#a855f7', 
-              backgroundColor: 'rgba(168, 85, 247, 0.12)',
+              borderColor: '#06b6d4', 
+              backgroundColor: 'rgba(6, 182, 212, 0.12)',
               fill: true,
-              tension: 0.45, // SnowUI signature smooth bezier
+              tension: 0.45,
               borderWidth: 3, 
               pointRadius: 3.5,
               pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#a855f7',
+              pointBorderColor: '#06b6d4',
               pointBorderWidth: 2.5
             },
             { 
               label: '단차 (Flush: 0.0±0.5mm)', 
               data: flushData, 
               borderColor: '#3b82f6', 
-              backgroundColor: 'rgba(59, 130, 246, 0.06)',
+              backgroundColor: 'rgba(59, 130, 246, 0.08)',
               fill: true,
               tension: 0.45, 
               borderWidth: 3, 
@@ -1721,7 +1720,7 @@
         const item = historyData[r];
         const isBest = (r === bestIdx);
         const card = document.createElement('div');
-        card.className = `p-4 rounded-2xl border transition-all ${isBest ? 'bg-purple-950/40 border-purple-700' : 'bg-snow-surface2 border-snow-border'}`;
+        card.className = `p-4 rounded-2xl border transition-all ${isBest ? 'bg-blue-950/40 border-blue-700' : 'bg-snow-surface2 border-snow-border'}`;
         card.innerHTML = `
           <div class="flex justify-between text-sm pb-2 mb-2 border-b border-snow-border">
             <span class="font-bold text-white">시도 #${item.id} (${item.timestamp})</span>
@@ -1761,7 +1760,7 @@
           labels: [],
           datasets: [
             { label: '홀 A', data: [], borderColor: '#38bdf8', borderWidth: 2.5, tension: 0.4, pointRadius: 3 },
-            { label: '홀 B', data: [], borderColor: '#a855f7', borderWidth: 2.5, tension: 0.4, pointRadius: 3 },
+            { label: '홀 B', data: [], borderColor: '#3b82f6', borderWidth: 2.5, tension: 0.4, pointRadius: 3 },
             { label: '홀 C', data: [], borderColor: '#10b981', borderWidth: 2.5, tension: 0.4, pointRadius: 3 },
             { label: '홀 D', data: [], borderColor: '#f59e0b', borderWidth: 2.5, tension: 0.4, pointRadius: 3 }
           ]
