@@ -615,8 +615,8 @@
               <span class="p-2 rounded-xl bg-snow-surface2 text-blue-400 border border-snow-border"><i data-lucide="cylinder" class="w-4 h-4"></i></span>
             </div>
             <div>
-              <div id="jigKpiClamp" class="text-2xl sm:text-3xl font-black font-mono text-snow-cyan tracking-tight">클램프 #2 전진 체결</div>
-              <div class="text-xs text-snow-textMuted mt-1 font-mono">#1 대기(OFF) / #2 파이프 내경 삽입 완료</div>
+              <div id="jigKpiClamp" class="text-2xl sm:text-3xl font-black font-mono text-snow-cyan tracking-tight">클램프 #2 세로 하강 체결</div>
+              <div class="text-xs text-snow-textMuted mt-1 font-mono">#1 상부 대기(OFF) / #2 수직 하강 파이프 내경 삽입 완료</div>
             </div>
           </div>
 
@@ -647,7 +647,7 @@
                 </span>
               </div>
               <p class="text-xs sm:text-sm text-snow-textMuted mt-1 leading-relaxed">
-                차종을 선택하면 곡률에 따른 들뜸 높이가 연산되고, <strong>해당 파이프 위치의 전용 원통형 클램프가 파이프 내경 안으로 전진 체결</strong>됩니다.
+                차종을 선택하면 곡률에 따른 들뜸 높이가 연산되고, <strong>상부 전용 원통형 클램프가 세로로 위에서 아래로 하강하여 파이프 내경 안으로 삽입 체결</strong>됩니다.
               </p>
             </div>
           </div>
@@ -2008,31 +2008,40 @@
       centerPillar.position.set(0, 0.76, 0);
       jigBaseGroup.add(centerPillar);
 
-      // 2. Dual Cylindrical Mandrel Units (Unit #1 at X: +0.38, Unit #2 at X: +0.52)
-      const clampBaseMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.85, roughness: 0.2 });
-      const pinMatActive = new THREE.MeshStandardMaterial({ color: 0x06b6d4, metalness: 0.9, roughness: 0.1 });
-      const pinMatIdle = new THREE.MeshStandardMaterial({ color: 0x475569, transparent: true, opacity: 0.45 });
+      // 2. Dual Overhead Vertical Cylindrical Mandrel Units
+      // Unit #1 at X: +0.38 (NH2, FE), Unit #2 at X: +0.52 (DE Series)
+      const gantryMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.25 });
+      const cylBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.85, roughness: 0.2 });
+      const pinMatActive = new THREE.MeshStandardMaterial({ color: 0x06b6d4, metalness: 0.95, roughness: 0.1 });
 
-      // Clamp Unit #1 (Group A: NH2, FE - X: 0.38m)
+      // Overhead Gantry Frame Bridge
+      const gantryBridge = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.18), gantryMat);
+      gantryBridge.position.set(0.45, 1.28, 0);
+      jigBaseGroup.add(gantryBridge);
+
+      const gantrySupport = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.2, 0.12), gantryMat);
+      gantrySupport.position.set(0.68, 0.64, 0);
+      jigBaseGroup.add(gantrySupport);
+
+      // Clamp Unit #1 (Group A: NH2, FE - X: 0.38m) - Vertical Cylinder
       clampUnit1 = new THREE.Group();
-      clampUnit1.position.set(0.38, 0.12, 0);
-      const post1 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.65, 0.14), clampBaseMat);
-      post1.position.y = 0.325; clampUnit1.add(post1);
-      // Telescoping Cylindrical Mandrel Pin
-      mandrelPin1 = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.35, 20), pinMatActive);
-      mandrelPin1.rotation.x = Math.PI / 2;
-      mandrelPin1.position.set(0, 0.65, 0.18);
+      clampUnit1.position.set(0.38, 0, 0);
+      const cyl1 = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.28, 20), cylBodyMat);
+      cyl1.position.set(0, 1.15, 0); clampUnit1.add(cyl1);
+
+      mandrelPin1 = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.38, 20), pinMatActive);
+      mandrelPin1.position.set(0, 0.68, 0); // Vertical Top-Down Mandrel Pin
       clampUnit1.add(mandrelPin1);
       jigBaseGroup.add(clampUnit1);
 
-      // Clamp Unit #2 (Group B: DE, DE EV, DE PE, DE PBV - X: 0.52m)
+      // Clamp Unit #2 (Group B: DE Series - X: 0.52m) - Vertical Cylinder
       clampUnit2 = new THREE.Group();
-      clampUnit2.position.set(0.52, 0.12, 0);
-      const post2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.65, 0.14), clampBaseMat);
-      post2.position.y = 0.325; clampUnit2.add(post2);
-      mandrelPin2 = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.35, 20), pinMatActive);
-      mandrelPin2.rotation.x = Math.PI / 2;
-      mandrelPin2.position.set(0, 0.65, 0.18);
+      clampUnit2.position.set(0.52, 0, 0);
+      const cyl2 = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.28, 20), cylBodyMat);
+      cyl2.position.set(0, 1.15, 0); clampUnit2.add(cyl2);
+
+      mandrelPin2 = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.38, 20), pinMatActive);
+      mandrelPin2.position.set(0, 0.68, 0); // Vertical Top-Down Mandrel Pin
       clampUnit2.add(mandrelPin2);
       jigBaseGroup.add(clampUnit2);
 
@@ -2096,11 +2105,11 @@
       bumperBeamMesh = new THREE.Mesh(tubeGeo, beamMat);
       jigBaseGroup.add(bumperBeamMesh);
 
-      // Internal Pipe Collar (Where the Mandrel Enters)
-      const pipeGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.18, 20);
+      // Vertical Internal Pipe Collar (Standing up vertically along Y-axis)
+      const pipeGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.24, 20);
       const pipeMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 });
       bumperPipeMesh = new THREE.Mesh(pipeGeo, pipeMat);
-      bumperPipeMesh.rotation.x = Math.PI / 2;
+      // Perfectly Vertical Orientation
       bumperPipeMesh.position.set(m.pipeOffset, 0.68, 0);
       jigBaseGroup.add(bumperPipeMesh);
     }
@@ -2114,31 +2123,37 @@
       document.getElementById('jigModelBadge').textContent = `${m.code} (${m.length.toFixed(2)}m / R${m.radius})`;
       document.getElementById('matrixPipePos').textContent = `X: +${(m.pipeOffset * 1000).toFixed(0)} mm (Group ${m.pipeGroup === 1 ? 'A' : 'B'})`;
 
-      // 1. Dual Cylindrical Mandrel Selection: #1 vs #2
+      // 1. Dual Vertical Cylindrical Mandrel Selection & Top-Down Motion
       const isGroup1 = (m.pipeGroup === 1);
-      const activeUnit = isGroup1 ? clampUnit1 : clampUnit2;
-      const idleUnit = isGroup1 ? clampUnit2 : clampUnit1;
 
-      // Animate/Position Mandrel Pins
+      // Animate/Position Mandrel Pins vertically from Top to Bottom
       if (mandrelPin1 && mandrelPin2) {
         if (isGroup1) {
           mandrelPin1.visible = true;
-          mandrelPin1.position.z = isMandrelClampEngaged ? 0.0 : 0.22; // In pipe vs Retracted
+          // When engaged: descends into pipe (Y = 0.68). When retracted: ascends up (Y = 1.08)
+          mandrelPin1.position.y = isMandrelClampEngaged ? 0.68 : 1.08;
           mandrelPin1.material.color.setHex(isMandrelClampEngaged ? 0x06b6d4 : 0x38bdf8);
-          mandrelPin2.visible = false; // Hide non-matching clamp to prevent collision
-          clampUnit2.position.y = -0.4; // Retract idle clamp down below bed
-          clampUnit1.position.y = 0.12;
-          document.getElementById('jigKpiClamp').textContent = '클램프 #1 전진 체결';
-          document.getElementById('matrixClampActive').textContent = '클램프 #1 전진 체결 (Group A 전용)';
+
+          // Idle pin stays safely pulled up at the top
+          mandrelPin2.visible = true;
+          mandrelPin2.position.y = 1.25; // Fully retracted up
+          mandrelPin2.material.color.setHex(0x475569);
+
+          document.getElementById('jigKpiClamp').textContent = isMandrelClampEngaged ? '클램프 #1 수직 하강 체결' : '클램프 #1 상부 대기(OFF)';
+          document.getElementById('matrixClampActive').textContent = isMandrelClampEngaged ? '클램프 #1 세로 하강 삽입 (ACTIVE)' : '클램프 #1 상부 후진 대기';
         } else {
           mandrelPin2.visible = true;
-          mandrelPin2.position.z = isMandrelClampEngaged ? 0.0 : 0.22;
+          // Descends into pipe (Y = 0.68) vs Ascends up (Y = 1.08)
+          mandrelPin2.position.y = isMandrelClampEngaged ? 0.68 : 1.08;
           mandrelPin2.material.color.setHex(isMandrelClampEngaged ? 0x06b6d4 : 0x38bdf8);
-          mandrelPin1.visible = false;
-          clampUnit1.position.y = -0.4; // Retract idle clamp down below bed
-          clampUnit2.position.y = 0.12;
-          document.getElementById('jigKpiClamp').textContent = '클램프 #2 전진 체결';
-          document.getElementById('matrixClampActive').textContent = '클램프 #2 전진 체결 (Group B 전용)';
+
+          // Idle pin stays safely pulled up at the top
+          mandrelPin1.visible = true;
+          mandrelPin1.position.y = 1.25; // Fully retracted up
+          mandrelPin1.material.color.setHex(0x475569);
+
+          document.getElementById('jigKpiClamp').textContent = isMandrelClampEngaged ? '클램프 #2 수직 하강 체결' : '클램프 #2 상부 대기(OFF)';
+          document.getElementById('matrixClampActive').textContent = isMandrelClampEngaged ? '클램프 #2 세로 하강 삽입 (ACTIVE)' : '클램프 #2 상부 후진 대기';
         }
       }
 
@@ -2266,7 +2281,7 @@
     function toggleMandrelClamp() {
       isMandrelClampEngaged = !isMandrelClampEngaged;
       const btn = document.getElementById('toggleClampBtn');
-      btn.textContent = isMandrelClampEngaged ? '전진 체결 ON' : '후진 대기 OFF';
+      btn.textContent = isMandrelClampEngaged ? '세로 하강 체결 ON' : '상부 상승 대기 OFF';
       btn.className = isMandrelClampEngaged
         ? 'px-4 py-2 rounded-xl font-mono text-xs font-bold transition-all bg-snow-surface hover:bg-snow-border text-snow-cyan border border-snow-border'
         : 'px-4 py-2 rounded-xl font-mono text-xs font-bold transition-all bg-rose-950/80 text-rose-300 border border-rose-800';
